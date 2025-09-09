@@ -189,22 +189,53 @@ namespace XisCoreSensors
             if (_isZoomed) return;
             _isZoomed = true;
 
-            // 1. Agrandamos el lienzo (picCanvas)
-            picCanvas.Size = new Size(
-                (int)(pnlViewport.ClientSize.Width * ZoomFactor),
-                (int)(pnlViewport.ClientSize.Height * ZoomFactor)
-            );
+            // Factor de zoom más moderado para una transición menos brusca
+            float smoothZoomFactor = 2.0f; // Reducido de 3.0f para ser menos agresivo
 
-            // 2. Calculamos el punto central del sensor en el lienzo agrandado
+            // Calculamos el nuevo tamaño con una transición más suave
+            int newWidth = (int)(pnlViewport.ClientSize.Width * smoothZoomFactor);
+            int newHeight = (int)(pnlViewport.ClientSize.Height * smoothZoomFactor);
+
+            // Aplicamos el nuevo tamaño
+            picCanvas.Size = new Size(newWidth, newHeight);
+
+            // Forzamos el repintado inmediato para que se vea más fluido
+            picCanvas.Refresh();
+            Application.DoEvents(); // Procesa eventos pendientes para suavizar la transición
+
+            // Calculamos la posición del sensor en el lienzo agrandado
             RectangleF imageRectangle = CalculateImageRectangle(picCanvas);
             PointF relativePos = _relativeSensorLocations[sensorToFocus.SensorId];
-            int targetCenterX = (int)(imageRectangle.Left + (relativePos.X * imageRectangle.Width));
-            int targetCenterY = (int)(imageRectangle.Top + (relativePos.Y * imageRectangle.Height));
 
-            // 3. Movemos el scroll del viewport para centrar ese punto
-            int scrollX = targetCenterX - (pnlViewport.ClientSize.Width / 2);
-            int scrollY = targetCenterY - (pnlViewport.ClientSize.Height / 2);
-            pnlViewport.AutoScrollPosition = new Point(scrollX, scrollY);
+            // Calculamos el centro del sensor
+            int sensorCenterX = (int)(imageRectangle.Left + (relativePos.X * imageRectangle.Width));
+            int sensorCenterY = (int)(imageRectangle.Top + (relativePos.Y * imageRectangle.Height));
+
+            // Añadimos un pequeño offset para que el sensor no quede exactamente centrado
+            // sino ligeramente desplazado, lo que da una sensación más natural
+            int offsetX = _originalSensorSize.Width / 2;
+            int offsetY = _originalSensorSize.Height / 2;
+
+            // Calculamos la posición del scroll con suavizado
+            int targetScrollX = sensorCenterX - (pnlViewport.ClientSize.Width / 2) - offsetX;
+            int targetScrollY = sensorCenterY - (pnlViewport.ClientSize.Height / 2) - offsetY;
+
+            // Limitamos los valores del scroll para evitar saltos bruscos
+            targetScrollX = Math.Max(0, Math.Min(targetScrollX, picCanvas.Width - pnlViewport.ClientSize.Width));
+            targetScrollY = Math.Max(0, Math.Min(targetScrollY, picCanvas.Height - pnlViewport.ClientSize.Height));
+
+            // Aplicamos el scroll de forma progresiva en dos pasos para suavizar
+            // Primero movemos a la mitad del camino
+            int intermediateX = pnlViewport.AutoScrollPosition.X + (targetScrollX / 2);
+            int intermediateY = pnlViewport.AutoScrollPosition.Y + (targetScrollY / 2);
+            pnlViewport.AutoScrollPosition = new Point(intermediateX, intermediateY);
+            Application.DoEvents();
+
+            // Luego completamos el movimiento
+            pnlViewport.AutoScrollPosition = new Point(targetScrollX, targetScrollY);
+
+            // Resaltamos visualmente el sensor que tiene la falla
+            //HighlightFailedSensor(sensorToFocus);
         }
 
         private void ResetZoom()
@@ -212,9 +243,30 @@ namespace XisCoreSensors
             if (!_isZoomed) return;
             _isZoomed = false;
 
-            // Simplemente regresamos el lienzo a su tamaño original
+            // Guardamos la posición actual del scroll para hacer una transición suave
+            Point currentScroll = new Point(
+                Math.Abs(pnlViewport.AutoScrollPosition.X),
+                Math.Abs(pnlViewport.AutoScrollPosition.Y)
+            );
+
+            // Primero reducimos el scroll a la mitad para suavizar la transición
+            if (currentScroll.X > 0 || currentScroll.Y > 0)
+            {
+                pnlViewport.AutoScrollPosition = new Point(currentScroll.X / 2, currentScroll.Y / 2);
+                Application.DoEvents();
+            }
+
+            // Reseteamos completamente el scroll
             pnlViewport.AutoScrollPosition = new Point(0, 0);
+
+            // Restauramos el tamaño original del canvas de forma suave
             picCanvas.Size = pnlViewport.ClientSize;
+
+            // Quitamos cualquier resaltado de sensores
+           // RemoveSensorHighlights();
+
+            // Forzamos el repintado para que se vea fluido
+            picCanvas.Refresh();
         }
 
         private void Sensor_StatusChanged(object sender, EventArgs e)
@@ -224,14 +276,19 @@ namespace XisCoreSensors
 
             if (sensor.Status == SensorControl.SensorStatus.Fail)
             {
+                // Aplicamos un pequeño delay virtual para que el cambio de estado se vea primero
+                sensor.Refresh();
+                Application.DoEvents();
+
+                // Ahora hacemos el zoom suavizado
                 ZoomToSensor(sensor);
 
                 var message = $"¡Alerta! Falla detectada en el sensor: {sensor.SensorId}";
-                
                 OnSensorFailed?.Invoke(message);
             }
             else
             {
+                // Si no hay otros sensores con falla, reseteamos el zoom
                 if (!_sensors.Any(s => s.SensorId != sensor.SensorId && s.Status == SensorControl.SensorStatus.Fail))
                 {
                     ResetZoom();

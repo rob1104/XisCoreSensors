@@ -147,7 +147,9 @@
             // 
             // notificationBar1
             // 
-            this.notificationBar1.BackColor = System.Drawing.Color.DimGray;
+            this.notificationBar1.BackColor = System.Drawing.Color.Red;
+            this.notificationBar1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.notificationBar1.Dock = System.Windows.Forms.DockStyle.Top;
             this.notificationBar1.ForeColor = System.Drawing.Color.White;
             this.notificationBar1.Location = new System.Drawing.Point(0, 24);
             this.notificationBar1.Name = "notificationBar1";
