@@ -86,6 +86,7 @@ namespace XisCoreSensors
                 _nextSensorNumber = 1; // Reinicia el contador de IDs
                 _currentLayoutPath = null; // Resetea la ruta del layout actual
                 _hasUnsavedChanges = true;
+                Text += " Modfied";
                 // Forzamos un redibujado
                 picCanvas.Invalidate();
             }
@@ -138,6 +139,7 @@ namespace XisCoreSensors
                 System.IO.File.WriteAllText(path, json);
                 _currentLayoutPath = path;         // <-- Actualiza la ruta actual
                 _hasUnsavedChanges = false;        // <-- Resetea la bandera de cambios
+                Text += " Modfied";
                 Properties.Settings.Default.LastLayoutPath = path;
                 Properties.Settings.Default.Save();
                 return true; 
@@ -473,6 +475,7 @@ namespace XisCoreSensors
                 var sensorId = _sensors.First(s => s == _draggedSensor).SensorId;
                 _relativeSensorLocations[sensorId] = new PointF(relativeX, relativeY);
                 _hasUnsavedChanges = true;
+                Text += " Modfied";
                 _draggedSensor = null;
             }
         }
@@ -515,6 +518,7 @@ namespace XisCoreSensors
             float relativeY = (sensor.Top - imageRect.Top) / imageRect.Height;
             _relativeSensorLocations[newId] = new PointF(relativeX, relativeY);
             _hasUnsavedChanges = true;
+            Text += " Modfied";
         }
 
         private void RepositionAllSensors()
@@ -569,6 +573,7 @@ namespace XisCoreSensors
                 // 5. Liberamos sus recursos.
                 sensorToDelete.Dispose();
                 _hasUnsavedChanges = true;
+                Text += " Modfied";
             }
         }
 
@@ -616,6 +621,7 @@ namespace XisCoreSensors
                         sensorToRename.SensorId = newId;
                         sensorToRename.Tag = newId; // También actualizamos el Tag por consistencia.
                         _hasUnsavedChanges = true;
+                        Text += " Modfied";
                     }
                 }
             }
