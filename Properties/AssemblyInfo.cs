@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // conjunto de atributos. Cambie estos valores de atributo para modificar la información
 // asociada con un ensamblado.
 [assembly: AssemblyTitle("XisCoreSensors")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Sistema de detección de alerta con sesnores")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Xis Desarrollos")]
 [assembly: AssemblyProduct("XisCoreSensors")]
 [assembly: AssemblyCopyright("Copyright ©  2025")]
 [assembly: AssemblyTrademark("")]

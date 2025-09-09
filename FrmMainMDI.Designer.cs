@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMainMDI));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.model1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -147,7 +148,6 @@
             // notificationBar1
             // 
             this.notificationBar1.BackColor = System.Drawing.Color.DimGray;
-            this.notificationBar1.Dock = System.Windows.Forms.DockStyle.Top;
             this.notificationBar1.ForeColor = System.Drawing.Color.White;
             this.notificationBar1.Location = new System.Drawing.Point(0, 24);
             this.notificationBar1.Name = "notificationBar1";
@@ -163,11 +163,13 @@
             this.Controls.Add(this.notificationBar1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
-            this.Text = "Xis Sensors";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Xis Sensors 0.1.3";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmMainMDI_KeyDown);

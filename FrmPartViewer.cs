@@ -16,7 +16,6 @@ namespace XisCoreSensors
         private bool _isZoomed = false;
         private const float ZoomFactor = 3.0f;
         private Size _originalSensorSize = new Size(40,40);
-
         // Variable para controlar si podemos mover/añadir sensores.
         private bool _isEditMode = false;
         // Variables para gestionar el arrastre de sensores.
@@ -25,8 +24,9 @@ namespace XisCoreSensors
         private SensorControl _draggedSensor = null;
         // Contador para generar IDs únicos de sensores.
         private int _nextSensorNumber = 1;
-
         public event Action<string> OnSensorFailed;
+
+        
 
         public FrmPartViewer()
         {

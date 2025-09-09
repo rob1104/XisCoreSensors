@@ -16,6 +16,7 @@ namespace XisCoreSensors
         public FrmMainMDI()
         {
             InitializeComponent();
+            ConfigureNotificationBar();
         }
 
         private void model1ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -226,8 +227,17 @@ namespace XisCoreSensors
         
         private void ViewerForm_OnSensorFailed(string message)
         {
+            notificationBar1.BringToFront();
             notificationBar1.ShowMessage(message);
         }
         
+        private void ConfigureNotificationBar()
+        {
+            if(notificationBar1 != null)
+            {
+                notificationBar1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                notificationBar1.Width = ClientSize.Width;
+            }
+        }
     }
 }
