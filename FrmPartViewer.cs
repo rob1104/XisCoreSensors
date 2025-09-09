@@ -14,7 +14,7 @@ namespace XisCoreSensors
         private List<SensorControl> _sensors = new List<SensorControl>();
         private Dictionary<string, PointF> _relativeSensorLocations = new Dictionary<string, PointF>();
         private bool _isZoomed = false;
-        private const float ZoomFactor = 3.0f;
+        private const float ZoomFactor = 2.5f;
         private Size _originalSensorSize = new Size(40,40);
         // Variable para controlar si podemos mover/añadir sensores.
         private bool _isEditMode = false;
@@ -25,8 +25,6 @@ namespace XisCoreSensors
         // Contador para generar IDs únicos de sensores.
         private int _nextSensorNumber = 1;
         public event Action<string> OnSensorFailed;
-
-        
 
         public FrmPartViewer()
         {
@@ -190,7 +188,7 @@ namespace XisCoreSensors
             _isZoomed = true;
 
             // Factor de zoom más moderado para una transición menos brusca
-            float smoothZoomFactor = 2.0f; // Reducido de 3.0f para ser menos agresivo
+            float smoothZoomFactor = ZoomFactor; // Reducido de 3.0f para ser menos agresivo
 
             // Calculamos el nuevo tamaño con una transición más suave
             int newWidth = (int)(pnlViewport.ClientSize.Width * smoothZoomFactor);

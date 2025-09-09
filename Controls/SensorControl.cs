@@ -41,7 +41,7 @@ namespace XisCoreSensors.Controls
         {
             InitializeComponent();
             // Establecemos el tamaño por defecto y habilitamos el doble búfer para un dibujo más suave.
-            Size = new Size(50, 50);
+            Size = new Size(42, 42);
             DoubleBuffered = true;
         }
 
