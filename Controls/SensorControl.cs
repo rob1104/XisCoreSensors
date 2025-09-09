@@ -11,6 +11,13 @@ namespace XisCoreSensors.Controls
         public enum SensorStatus { Ok, Fail }
         private SensorStatus _status = SensorStatus.Ok;
 
+        // --- INICIO: CÓDIGO NUEVO PARA PARPADEO ---
+        private Timer _flashTimer;
+        // Controla la intensidad actual del color (255 es opaco, valores menores son más tenues)
+        private int _flashAlpha = 255;
+        private bool _isFadingOut = true; // Controla si estamos atenuando o abrillantando
+        // --- FIN: CÓDIGO NUEVO ---
+
         public string SensorId
         {
             get => _sensorId;
@@ -32,7 +39,18 @@ namespace XisCoreSensors.Controls
                 {
                     _status = value;
                     StatusChanged?.Invoke(this, EventArgs.Empty);
-                    Invalidate(); // Redibuja el control cuando cambia el estado
+
+                    // Si el sensor falla, inicia el parpadeo.
+                    if (_status == SensorStatus.Fail)
+                    {
+                        _flashTimer.Start();
+                    }
+                    else // Si el sensor está OK, detiene el parpadeo y resetea el color.
+                    {
+                        _flashTimer.Stop();
+                        _flashAlpha = 255; // Resetea la intensidad al máximo
+                    }
+                    Invalidate(); // Fuerza el redibujado
                 }
             }
         }
@@ -43,36 +61,71 @@ namespace XisCoreSensors.Controls
             // Establecemos el tamaño por defecto y habilitamos el doble búfer para un dibujo más suave.
             Size = new Size(42, 42);
             DoubleBuffered = true;
+
+            // --- INICIO: CÓDIGO NUEVO ---
+            // Configuración del Timer para el efecto de parpadeo
+            _flashTimer = new Timer();
+            _flashTimer.Interval = 30; // Controla la velocidad del pulso (más bajo = más rápido)
+            _flashTimer.Tick += FlashTimer_Tick;
+            // --- FIN: CÓDIGO NUEVO ---
+        }
+
+        // --- MÉTODO NUEVO: El corazón del efecto de pulso ---
+        private void FlashTimer_Tick(object sender, EventArgs e)
+        {
+            int step = 20; // El "salto" de intensidad en cada paso
+
+            if (_isFadingOut)
+            {
+                _flashAlpha -= step; // Reduce la intensidad
+                if (_flashAlpha <= 100) // Límite inferior (para que no desaparezca)
+                {
+                    _flashAlpha = 100;
+                    _isFadingOut = false; // Cambia de dirección
+                }
+            }
+            else // Aumentando intensidad
+            {
+                _flashAlpha += step; // Aumenta la intensidad
+                if (_flashAlpha >= 255) // Límite superior (opaco)
+                {
+                    _flashAlpha = 255;
+                    _isFadingOut = true; // Cambia de dirección
+                }
+            }
+            Invalidate(); // Pide al control que se redibuje con la nueva intensidad
         }
 
         private void SensorControl_Paint(object sender, PaintEventArgs e)
         {
-            // Usamos AntiAlias para que los bordes del círculo se vean suaves.
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-            // 1. Determina los colores basados en el estado del sensor.
-            Color baseColor = (_status == SensorStatus.Ok) ? Color.LimeGreen : Color.Red;
-            Color highlightColor = Color.FromArgb(200, Color.White); // Un blanco semitransparente para el brillo.
+            Color baseColor;
+            // Si el sensor está en falla, usa el color rojo con la intensidad variable.
+            if (_status == SensorStatus.Fail)
+            {
+                baseColor = Color.FromArgb(_flashAlpha, Color.Red);
+            }
+            else // Si está OK, usa el verde lima sólido.
+            {
+                baseColor = Color.LimeGreen;
+            }
 
-            // 2. Crea una ruta circular para darle forma al control.
+            Color highlightColor = Color.FromArgb(200, Color.White);
+
             using (var path = new GraphicsPath())
             {
                 path.AddEllipse(0, 0, this.Width - 1, this.Height - 1);
                 this.Region = new Region(path);
 
-                // 3. Rellena el fondo con el color base.
                 using (var solidBrush = new SolidBrush(baseColor))
                 {
                     e.Graphics.FillEllipse(solidBrush, 0, 0, this.Width - 1, this.Height - 1);
                 }
 
-                // 4. Dibuja un efecto de brillo en la parte superior para dar un aspecto 3D.
                 RectangleF highlightRect = new RectangleF(
-                    this.Width * 0.15f,
-                    this.Height * 0.1f,
-                    this.Width * 0.7f,
-                    this.Height * 0.4f
-                );
+                    this.Width * 0.15f, this.Height * 0.1f,
+                    this.Width * 0.7f, this.Height * 0.4f);
 
                 using (var highlightBrush = new LinearGradientBrush(highlightRect, highlightColor, Color.Transparent, LinearGradientMode.Vertical))
                 {
@@ -80,26 +133,17 @@ namespace XisCoreSensors.Controls
                 }
             }
 
-            // 5. Dibuja el texto del SensorId, centrado y con un color que contraste.
+            // El código para dibujar el texto no necesita cambios
             using (StringFormat stringFormat = new StringFormat())
             {
                 stringFormat.Alignment = StringAlignment.Center;
                 stringFormat.LineAlignment = StringAlignment.Center;
-
                 if (!string.IsNullOrEmpty(this.SensorId))
                 {
-
-                    var fontSize = Math.Max(1, Height * 0.35f); // Ajusta el tamaño de la fuente según el tamaño del control
-                    // Creamos una nueva fuente con el tamaño calculado en píxeles.
+                    float fontSize = Math.Max(1, this.Height * 0.35f);
                     using (var font = new Font("Arial", fontSize, FontStyle.Bold, GraphicsUnit.Pixel))
                     {
-                        e.Graphics.DrawString(
-                            this.SensorId,
-                            font,
-                            Brushes.White,
-                            this.ClientRectangle,
-                            stringFormat
-                        );
+                        e.Graphics.DrawString(this.SensorId, font, Brushes.White, this.ClientRectangle, stringFormat);
                     }
                 }
             }

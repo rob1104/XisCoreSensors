@@ -45,11 +45,11 @@ namespace XisCoreSensors.Controls
             // Alternamos el color del texto entre Negro y Rojo oscuro para llamar la atención.
             if (_isTextColorToggled)
             {
-                this.lblMessage.ForeColor = Color.Black;
+                this.lblMessage.ForeColor = Color.Yellow;
             }
             else
             {
-                this.lblMessage.ForeColor = Color.DarkRed;
+                this.lblMessage.ForeColor = Color.Orange;
             }
             _isTextColorToggled = !_isTextColorToggled; // Invertimos el estado
         }

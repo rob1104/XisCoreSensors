@@ -125,7 +125,7 @@ namespace XisCoreSensors
             if (activeChild is FrmPartViewer viewer)
             {
                 // 3. Llamamos al método público del hijo para que haga todo el trabajo.
-                viewer.SaveLayout();
+                viewer.SaveLayoutAs();
             }
             else
             {
@@ -236,6 +236,15 @@ namespace XisCoreSensors
             {
                 notificationBar1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
                 notificationBar1.Width = ClientSize.Width;
+            }
+        }
+
+        private void saveLayoutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // Llama al método SaveLayout del formulario hijo ACTIVO.
+            if (this.ActiveMdiChild is FrmPartViewer activeChild)
+            {
+                activeChild.SaveLayout();
             }
         }
     }

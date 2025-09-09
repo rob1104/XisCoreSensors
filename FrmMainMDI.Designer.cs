@@ -42,6 +42,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblEditModeStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
+            this.saveLayoutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -63,8 +64,9 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.model1ToolStripMenuItem,
             this.loadImageToolStripMenuItem,
-            this.loadLayoutToolStripMenuItem,
-            this.saveLayoutToolStripMenuItem});
+            this.saveLayoutToolStripMenuItem,
+            this.saveLayoutToolStripMenuItem1,
+            this.loadLayoutToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -72,29 +74,29 @@
             // model1ToolStripMenuItem
             // 
             this.model1ToolStripMenuItem.Name = "model1ToolStripMenuItem";
-            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.model1ToolStripMenuItem.Text = "View";
             this.model1ToolStripMenuItem.Click += new System.EventHandler(this.model1ToolStripMenuItem_Click);
             // 
             // loadImageToolStripMenuItem
             // 
             this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadImageToolStripMenuItem.Text = "Change image...";
             this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
             // 
             // loadLayoutToolStripMenuItem
             // 
             this.loadLayoutToolStripMenuItem.Name = "loadLayoutToolStripMenuItem";
-            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadLayoutToolStripMenuItem.Text = "Load Layout...";
             this.loadLayoutToolStripMenuItem.Click += new System.EventHandler(this.loadLayoutToolStripMenuItem_Click);
             // 
             // saveLayoutToolStripMenuItem
             // 
             this.saveLayoutToolStripMenuItem.Name = "saveLayoutToolStripMenuItem";
-            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.saveLayoutToolStripMenuItem.Text = "Save Layout...";
+            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveLayoutToolStripMenuItem.Text = "Save Layout As...";
             this.saveLayoutToolStripMenuItem.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
@@ -147,15 +149,22 @@
             // 
             // notificationBar1
             // 
-            this.notificationBar1.BackColor = System.Drawing.Color.Yellow;
+            this.notificationBar1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.notificationBar1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.notificationBar1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.notificationBar1.ForeColor = System.Drawing.Color.Black;
+            this.notificationBar1.ForeColor = System.Drawing.Color.Yellow;
             this.notificationBar1.Location = new System.Drawing.Point(0, 24);
             this.notificationBar1.Name = "notificationBar1";
-            this.notificationBar1.Size = new System.Drawing.Size(991, 72);
+            this.notificationBar1.Size = new System.Drawing.Size(991, 100);
             this.notificationBar1.TabIndex = 5;
             this.notificationBar1.Visible = false;
+            // 
+            // saveLayoutToolStripMenuItem1
+            // 
+            this.saveLayoutToolStripMenuItem1.Name = "saveLayoutToolStripMenuItem1";
+            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.saveLayoutToolStripMenuItem1.Text = "Save Layout";
+            this.saveLayoutToolStripMenuItem1.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem1_Click);
             // 
             // FrmMainMDI
             // 
@@ -199,6 +208,7 @@
         private System.Windows.Forms.ToolStripStatusLabel lblEditModeStatus;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private Controls.NotificationBar notificationBar1;
+        private System.Windows.Forms.ToolStripMenuItem saveLayoutToolStripMenuItem1;
     }
 }
 

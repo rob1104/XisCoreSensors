@@ -14,8 +14,8 @@ namespace XisCoreSensors
         private List<SensorControl> _sensors = new List<SensorControl>();
         private Dictionary<string, PointF> _relativeSensorLocations = new Dictionary<string, PointF>();
         private bool _isZoomed = false;
-        private const float ZoomFactor = 2.5f;
-        private Size _originalSensorSize = new Size(40,40);
+        private const float ZoomFactor = 3f;
+        private Size _originalSensorSize = new Size(42,42);
         // Variable para controlar si podemos mover/añadir sensores.
         private bool _isEditMode = false;
         // Variables para gestionar el arrastre de sensores.
@@ -26,9 +26,32 @@ namespace XisCoreSensors
         private int _nextSensorNumber = 1;
         public event Action<string> OnSensorFailed;
 
+
+        //Secuencia de errores (Modo patrulla)
+        private Timer _sequenceTimer;
+        private List<SensorControl> _failedSensorsList = new List<SensorControl>();
+        private enum SequenceState { Idle, ZoomedIn, PausedBetweenSensors }
+        private int _sequenceIndex = -1;
+        private SequenceState _currentSequenceState = SequenceState.Idle;
+
+        private bool _hasUnsavedChanges = false;
+        private string _currentLayoutPath = null;
+
         public FrmPartViewer()
         {
             InitializeComponent();
+            InitalizeSequenceTimer();
+        }
+
+        private void InitalizeSequenceTimer()
+        {
+            _sequenceTimer = new Timer();
+            _sequenceTimer.Tick += SequenceTimer_Tick;
+        }
+
+        private void SequenceTimer_Tick(object sender, EventArgs e)
+        {
+            ProcessNextSequence();
         }
 
         public bool ToggleEditMode()
@@ -46,6 +69,7 @@ namespace XisCoreSensors
 
         public void LoadNewImage()
         {
+            if (!CheckForUnsavedChanges()) return;
             // Asegúrate de que tu OpenFileDialog se llame 'openFileDialog' en el diseñador del FrmPartViewer
             openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -60,22 +84,38 @@ namespace XisCoreSensors
                 _sensors.Clear(); // Limpia la lista de sensores
                 _relativeSensorLocations.Clear(); // Limpia el diccionario de posiciones
                 _nextSensorNumber = 1; // Reinicia el contador de IDs
-
+                _currentLayoutPath = null; // Resetea la ruta del layout actual
+                _hasUnsavedChanges = true;
                 // Forzamos un redibujado
                 picCanvas.Invalidate();
             }
         }
 
-        public void SaveLayout()
+        public bool SaveLayout()
         {
-            if (picCanvas.Image == null)
+            // Si no tenemos una ruta, esto es un "Guardar Como".
+            if (string.IsNullOrEmpty(_currentLayoutPath))
             {
-                MessageBox.Show("There is no image loaded to save.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                return SaveLayoutAs();
             }
+            else
+            {
+                // Si ya tenemos una ruta, simplemente sobrescribimos.
+                return PerformSave(_currentLayoutPath);
+            }
+        }
 
+        public bool SaveLayoutAs()
+        {
             saveFileDialog.Filter = "Layout Files|*.json";
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                return PerformSave(saveFileDialog.FileName);     
+            return false;
+        }
+
+        private bool PerformSave(string path)
+        {
+            try
             {
                 var layoutData = new LayoutData
                 {
@@ -95,15 +135,23 @@ namespace XisCoreSensors
                 }
 
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(layoutData, Newtonsoft.Json.Formatting.Indented);
-                System.IO.File.WriteAllText(saveFileDialog.FileName, json);
-                Properties.Settings.Default.LastLayoutPath = saveFileDialog.FileName;
+                System.IO.File.WriteAllText(path, json);
+                _currentLayoutPath = path;         // <-- Actualiza la ruta actual
+                _hasUnsavedChanges = false;        // <-- Resetea la bandera de cambios
+                Properties.Settings.Default.LastLayoutPath = path;
                 Properties.Settings.Default.Save();
-                MessageBox.Show("Layout saved.", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return true; 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving layout: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false; 
             }
         }
 
         public void LoadLayout()
         {
+            if (!CheckForUnsavedChanges()) return;
             openFileDialog.Filter = "Layout Files|*.json";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -115,6 +163,9 @@ namespace XisCoreSensors
         {
             string json = System.IO.File.ReadAllText(path);
             var layoutData = Newtonsoft.Json.JsonConvert.DeserializeObject<LayoutData>(json);
+
+            _currentLayoutPath = path;
+            
 
             // Limpiamos el estado actual.
             picCanvas.Controls.Clear();
@@ -138,6 +189,7 @@ namespace XisCoreSensors
             }
             RepositionAllSensors();
             _nextSensorNumber = _sensors.Count + 1; // Actualizamos el contador.
+            Text = _currentLayoutPath; // Actualizamos el título del formulario.
         }
 
         private void CreateSensor(string id, PointF relativePos, SensorControl.SensorStatus status = SensorControl.SensorStatus.Ok)
@@ -184,7 +236,7 @@ namespace XisCoreSensors
 
         private void ZoomToSensor(SensorControl sensorToFocus)
         {
-            if (_isZoomed) return;
+            //if (_isZoomed) return;
             _isZoomed = true;
 
             // Factor de zoom más moderado para una transición menos brusca
@@ -272,26 +324,29 @@ namespace XisCoreSensors
             var sensor = sender as SensorControl;
             if (sensor == null) return;
 
-            if (sensor.Status == SensorControl.SensorStatus.Fail)
+            lock(_failedSensorsList)
             {
-                // Aplicamos un pequeño delay virtual para que el cambio de estado se vea primero
-                sensor.Refresh();
-                Application.DoEvents();
-
-                // Ahora hacemos el zoom suavizado
-                ZoomToSensor(sensor);
-
-                var message = $"¡Alerta! Falla detectada en el sensor: {sensor.SensorId}";
-                OnSensorFailed?.Invoke(message);
-            }
-            else
-            {
-                // Si no hay otros sensores con falla, reseteamos el zoom
-                if (!_sensors.Any(s => s.SensorId != sensor.SensorId && s.Status == SensorControl.SensorStatus.Fail))
+                if (sensor.Status == SensorControl.SensorStatus.Fail && !_failedSensorsList.Contains(sensor))
                 {
-                    ResetZoom();
+                    if(!_failedSensorsList.Contains(sensor))
+                    {
+                        _failedSensorsList.Add(sensor);
+                    }
+                }
+                else if(sensor.Status == SensorControl.SensorStatus.Ok)
+                {
+                    _failedSensorsList.Remove(sensor);
                 }
             }
+
+            if (_failedSensorsList.Count > 0 && !_sequenceTimer.Enabled)
+            {
+                StartSequence();
+            }
+            else if(_failedSensorsList.Count == 0 && _sequenceTimer.Enabled)
+            {
+                StopSequence();
+            }            
         }
 
         private void FrmPartViewer_KeyDown(object sender, KeyEventArgs e)
@@ -417,7 +472,7 @@ namespace XisCoreSensors
 
                 var sensorId = _sensors.First(s => s == _draggedSensor).SensorId;
                 _relativeSensorLocations[sensorId] = new PointF(relativeX, relativeY);
-
+                _hasUnsavedChanges = true;
                 _draggedSensor = null;
             }
         }
@@ -459,6 +514,7 @@ namespace XisCoreSensors
             float relativeX = (sensor.Left - imageRect.Left) / imageRect.Width;
             float relativeY = (sensor.Top - imageRect.Top) / imageRect.Height;
             _relativeSensorLocations[newId] = new PointF(relativeX, relativeY);
+            _hasUnsavedChanges = true;
         }
 
         private void RepositionAllSensors()
@@ -512,6 +568,7 @@ namespace XisCoreSensors
 
                 // 5. Liberamos sus recursos.
                 sensorToDelete.Dispose();
+                _hasUnsavedChanges = true;
             }
         }
 
@@ -558,8 +615,95 @@ namespace XisCoreSensors
                         // Actualizamos el ID en el propio control del sensor.
                         sensorToRename.SensorId = newId;
                         sensorToRename.Tag = newId; // También actualizamos el Tag por consistencia.
+                        _hasUnsavedChanges = true;
                     }
                 }
+            }
+        }
+
+        private void ProcessNextSequence()
+        {
+            _sequenceTimer.Stop();
+
+            if(_failedSensorsList.Count == 0)
+            {
+                StopSequence();
+                return;
+            }
+            
+            switch(_currentSequenceState)
+            {
+                case SequenceState.Idle:
+                    _sequenceIndex++;
+                    if(_sequenceIndex >= _failedSensorsList.Count)
+                    {
+                        _sequenceIndex = 0; // Reiniciamos el índice
+                    }
+                    var sensorToFocus = _failedSensorsList[_sequenceIndex];
+                    ZoomToSensor(sensorToFocus);
+                    OnSensorFailed?.Invoke($"¡Falla Detectada! Sensor: {sensorToFocus.SensorId}");
+                    _currentSequenceState = SequenceState.ZoomedIn;
+                    _sequenceTimer.Interval = 5000; // Tiempo en zoom
+                    _sequenceTimer.Start();
+                    break;
+                case SequenceState.ZoomedIn:
+                    ResetZoom();
+                    _currentSequenceState = SequenceState.PausedBetweenSensors;
+                    _sequenceTimer.Interval = 2000; // Pausa entre sensores
+                    _sequenceTimer.Start();
+                    break;
+                case SequenceState.PausedBetweenSensors:
+                    _currentSequenceState = SequenceState.Idle;
+                    _sequenceTimer.Interval = 10; // Transición rápida
+                    _sequenceTimer.Start();
+                    break;
+            }
+        }
+        private void StartSequence()
+        {
+            _currentSequenceState = SequenceState.Idle;
+            _sequenceIndex = -1; // Para que empiece en el primer sensor (índice 0)
+            _sequenceTimer.Interval = 10; // Iniciar inmediatamente
+            _sequenceTimer.Start();
+        }
+        private void StopSequence()
+        {
+            _sequenceTimer.Stop();
+            _currentSequenceState = SequenceState.Idle;
+            ResetZoom();
+        }
+
+        private bool CheckForUnsavedChanges()
+        {
+            if (!_hasUnsavedChanges)
+            {
+                return true; // No hay cambios, se puede proceder.
+            }
+
+            var result = MessageBox.Show(
+                "You have unsaved changes. Do you want to save them?",
+                "Unsaved Changes",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Yes)
+            {
+                return SaveLayout(); // Intenta guardar. Si el usuario cancela, SaveLayout devolverá false.
+            }
+            if (result == DialogResult.No)
+            {
+                return true; // Descartar cambios y proceder.
+            }
+
+            // Si es Cancel, no hagas nada.
+            return false; // Cancelar la acción original (cerrar, cargar, etc.).
+        }
+
+        private void FrmPartViewer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!CheckForUnsavedChanges())
+            {
+                e.Cancel = true; // Cancela el cierre del formulario
             }
         }
     }

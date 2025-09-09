@@ -30,19 +30,19 @@
         {
             this.components = new System.ComponentModel.Container();
             this.pnlViewport = new System.Windows.Forms.Panel();
+            this.picCanvas = new System.Windows.Forms.PictureBox();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.agregarSensorToolTipMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.contextMenuSensor = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.eliminarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.picCanvas = new System.Windows.Forms.PictureBox();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.renombrarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.eliminarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlViewport.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.contextMenuSensor.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlViewport
@@ -55,6 +55,16 @@
             this.pnlViewport.Name = "pnlViewport";
             this.pnlViewport.Size = new System.Drawing.Size(1824, 1002);
             this.pnlViewport.TabIndex = 0;
+            // 
+            // picCanvas
+            // 
+            this.picCanvas.ContextMenuStrip = this.contextMenu;
+            this.picCanvas.Location = new System.Drawing.Point(0, 0);
+            this.picCanvas.Name = "picCanvas";
+            this.picCanvas.Size = new System.Drawing.Size(165, 105);
+            this.picCanvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picCanvas.TabIndex = 0;
+            this.picCanvas.TabStop = false;
             // 
             // contextMenu
             // 
@@ -77,36 +87,26 @@
             this.toolStripMenuItem1,
             this.eliminarSensorToolStripMenuItem});
             this.contextMenuSensor.Name = "contextMenuSensor";
-            this.contextMenuSensor.Size = new System.Drawing.Size(181, 76);
-            // 
-            // eliminarSensorToolStripMenuItem
-            // 
-            this.eliminarSensorToolStripMenuItem.Name = "eliminarSensorToolStripMenuItem";
-            this.eliminarSensorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.eliminarSensorToolStripMenuItem.Text = "Delete Sensor";
-            this.eliminarSensorToolStripMenuItem.Click += new System.EventHandler(this.eliminarSensorToolStripMenuItem_Click);
-            // 
-            // picCanvas
-            // 
-            this.picCanvas.ContextMenuStrip = this.contextMenu;
-            this.picCanvas.Location = new System.Drawing.Point(0, 0);
-            this.picCanvas.Name = "picCanvas";
-            this.picCanvas.Size = new System.Drawing.Size(165, 105);
-            this.picCanvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.picCanvas.TabIndex = 0;
-            this.picCanvas.TabStop = false;
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            this.contextMenuSensor.Size = new System.Drawing.Size(146, 54);
             // 
             // renombrarSensorToolStripMenuItem
             // 
             this.renombrarSensorToolStripMenuItem.Name = "renombrarSensorToolStripMenuItem";
-            this.renombrarSensorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.renombrarSensorToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.renombrarSensorToolStripMenuItem.Text = "Edit ID...";
             this.renombrarSensorToolStripMenuItem.Click += new System.EventHandler(this.renombrarSensorToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(142, 6);
+            // 
+            // eliminarSensorToolStripMenuItem
+            // 
+            this.eliminarSensorToolStripMenuItem.Name = "eliminarSensorToolStripMenuItem";
+            this.eliminarSensorToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.eliminarSensorToolStripMenuItem.Text = "Delete Sensor";
+            this.eliminarSensorToolStripMenuItem.Click += new System.EventHandler(this.eliminarSensorToolStripMenuItem_Click);
             // 
             // FrmPartViewer
             // 
@@ -118,13 +118,14 @@
             this.Name = "FrmPartViewer";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Model";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmPartViewer_FormClosing);
             this.Load += new System.EventHandler(this.FrmPartViewer_Load);
             this.Shown += new System.EventHandler(this.FrmPartViewer_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmPartViewer_KeyDown);
             this.pnlViewport.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).EndInit();
             this.contextMenu.ResumeLayout(false);
             this.contextMenuSensor.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).EndInit();
             this.ResumeLayout(false);
 
         }
