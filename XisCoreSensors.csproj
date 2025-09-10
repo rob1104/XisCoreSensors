@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\libplctag.NativeImport.2.0.0-alpha.5\build\libplctag.NativeImport.props" Condition="Exists('packages\libplctag.NativeImport.2.0.0-alpha.5\build\libplctag.NativeImport.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,6 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -39,6 +42,12 @@
     <StartupObject>XisCoreSensors.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="libplctag, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\libplctag.1.6.0-alpha.5\lib\net48\libplctag.dll</HintPath>
+    </Reference>
+    <Reference Include="libplctag.NativeImport, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\libplctag.NativeImport.2.0.0-alpha.5\lib\net48\libplctag.NativeImport.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.4-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -73,6 +82,12 @@
     <Compile Include="FrmAbout.Designer.cs">
       <DependentUpon>FrmAbout.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmConfigPLC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConfigPLC.Designer.cs">
+      <DependentUpon>FrmConfigPLC.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmMainMDI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -97,6 +112,7 @@
     <Compile Include="FrmRenameSensor.Designer.cs">
       <DependentUpon>FrmRenameSensor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Plc\PlcServices.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityHelper.cs" />
@@ -105,6 +121,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmAbout.resx">
       <DependentUpon>FrmAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmConfigPLC.resx">
+      <DependentUpon>FrmConfigPLC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmMainMDI.resx">
       <DependentUpon>FrmMainMDI.cs</DependentUpon>
@@ -148,5 +167,14 @@
   <ItemGroup>
     <Content Include="Gakuseisean-Ivista-2-Alarm-Info.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\libplctag.NativeImport.2.0.0-alpha.5\build\libplctag.NativeImport.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libplctag.NativeImport.2.0.0-alpha.5\build\libplctag.NativeImport.props'))" />
+    <Error Condition="!Exists('packages\libplctag.NativeImport.2.0.0-alpha.5\build\libplctag.NativeImport.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libplctag.NativeImport.2.0.0-alpha.5\build\libplctag.NativeImport.targets'))" />
+  </Target>
+  <Import Project="packages\libplctag.NativeImport.2.0.0-alpha.5\build\libplctag.NativeImport.targets" Condition="Exists('packages\libplctag.NativeImport.2.0.0-alpha.5\build\libplctag.NativeImport.targets')" />
 </Project>

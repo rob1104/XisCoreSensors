@@ -46,5 +46,77 @@ namespace XisCoreSensors.Properties {
                 this["EditModePasswordHash"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PLC_IP {
+            get {
+                return ((string)(this["PLC_IP"]));
+            }
+            set {
+                this["PLC_IP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PLC_Path {
+            get {
+                return ((string)(this["PLC_Path"]));
+            }
+            set {
+                this["PLC_Path"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int PLC_Protocol {
+            get {
+                return ((int)(this["PLC_Protocol"]));
+            }
+            set {
+                this["PLC_Protocol"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int PLC_Timeout {
+            get {
+                return ((int)(this["PLC_Timeout"]));
+            }
+            set {
+                this["PLC_Timeout"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int PLC_Type {
+            get {
+                return ((int)(this["PLC_Type"]));
+            }
+            set {
+                this["PLC_Type"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int Pulse_Time {
+            get {
+                return ((int)(this["Pulse_Time"]));
+            }
+            set {
+                this["Pulse_Time"] = value;
+            }
+        }
     }
 }

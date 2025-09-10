@@ -247,5 +247,10 @@ namespace XisCoreSensors
                 activeChild.SaveLayout();
             }
         }
+
+        private void pLCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new FrmConfigPLC().ShowDialog();
+        }
     }
 }
