@@ -131,8 +131,14 @@ namespace XisCoreSensors
                         Id = sensor.SensorId,
                         RelativeX = _relativeSensorLocations[sensor.SensorId].X,
                         RelativeY = _relativeSensorLocations[sensor.SensorId].Y,
+                        PlcTag = sensor.PlcTag,
                         Status = sensor.Status
                     });
+                }
+
+                if(MdiParent is FrmMainMDI mainForm && mainForm.TagMapper != null)
+                {
+                    layoutData.TagMappings.AddRange(mainForm.TagMapper.GetAllMappings());
                 }
 
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(layoutData, Newtonsoft.Json.Formatting.Indented);
@@ -174,11 +180,21 @@ namespace XisCoreSensors
             _sensors.Clear();
             _relativeSensorLocations.Clear();
 
+            if (this.MdiParent is FrmMainMDI mainForm && mainForm.TagMapper != null && layoutData.TagMappings != null)
+            {
+                mainForm.TagMapper.LoadMappings(layoutData.TagMappings);
+            }
+
             // Creamos los sensores desde los datos cargados.
             // Nota: NO cargamos la imagen todavía.
             foreach (var sensorData in layoutData.Sensors)
             {
                 CreateSensor(sensorData.Id, new PointF(sensorData.RelativeX, sensorData.RelativeY), sensorData.Status);
+                var sensor = _sensors.LastOrDefault();
+                if (sensor != null && !string.IsNullOrEmpty(sensorData.PlcTag))
+                {
+                    sensor.PlcTag = sensorData.PlcTag; 
+                }
             }
 
             // Cargamos la imagen AHORA. Esto disparará automáticamente el evento 'Resize' del panel.
@@ -191,7 +207,7 @@ namespace XisCoreSensors
             }
             RepositionAllSensors();
             _nextSensorNumber = _sensors.Count + 1; // Actualizamos el contador.
-            Text = _currentLayoutPath; // Actualizamos el título del formulario.
+            Text = System.IO.Path.GetFileName(_currentLayoutPath); // Actualizamos el título del formulario.
         }
 
         private void CreateSensor(string id, PointF relativePos, SensorControl.SensorStatus status = SensorControl.SensorStatus.Ok)
@@ -712,21 +728,27 @@ namespace XisCoreSensors
                 e.Cancel = true; // Cancela el cierre del formulario
             }
         }
+
+        public List<SensorControl> GetSensors()
+        {
+            return _sensors?.ToList() ?? new List<SensorControl>();
+        }
+
+        public void MarkAsModified()
+        {
+            if(!_hasUnsavedChanges)
+            {
+                _hasUnsavedChanges = true;
+                if(!Text.Contains(" Modfied"))
+                {
+                    Text += " Modfied";
+                }
+            }
+            
+        }
     }
 
-    public class LayoutData
-    {
-        public string ImagePath { get; set; }
-        public List<SensorData> Sensors { get; set; } = new List<SensorData>();
-    }
-
-    public class SensorData
-    {
-        public String Id { get; set; }
-        public float RelativeX { get; set; } // Posición X relativa (0 a 1)
-        public float RelativeY { get; set; } // Posición Y relativa (0 a 1)
-        public SensorControl.SensorStatus Status { get; set; } = SensorControl.SensorStatus.Ok;
-    }
+    
 
     public class EditModeChangedEventArgs : EventArgs
     {

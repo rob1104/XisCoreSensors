@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using XisCoreSensors.Controls;
+using XisCoreSensors.Mapping;
+using static XisCoreSensors.Mapping.SensorTagMapping;
 
 namespace XisCoreSensors
 {
@@ -11,6 +16,10 @@ namespace XisCoreSensors
         private FormWindowState _previousWindowState;
         private FormBorderStyle _previousBorderStyle;
         //-----------------------------
+
+        private TagMapper _tagMapper = new SensorTagMapping.TagMapper();
+
+        public TagMapper TagMapper => _tagMapper;
 
         public FrmMainMDI()
         {
@@ -251,6 +260,47 @@ namespace XisCoreSensors
         private void pLCToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new FrmConfigPLC().ShowDialog();
+        }
+
+        private void tagMapperToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(!(this.ActiveMdiChild is FrmPartViewer activeViewer))
+            {
+                MessageBox.Show("Please open a model before open Tag Mapper.", "No active model viewer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var sensors = activeViewer.GetSensors();
+
+            if(sensors == null || !sensors.Any())
+            {
+                MessageBox.Show("No sensors found in the current model. Please add sensors before opening Tag Mapper.", "No sensors", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (var tagMapperForm = new FrmTagMapper(sensors, _tagMapper))
+            {
+                if (tagMapperForm.ShowDialog() == DialogResult.OK)
+                {
+                    ApplyMappingsToSensors(sensors);
+                    activeViewer.MarkAsModified();
+                    MessageBox.Show("Tag mappings have been updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+        
+        private void ApplyMappingsToSensors(List<SensorControl> sensors)
+        {
+            foreach (var sensor in sensors)
+            {
+                var mappedTag = _tagMapper.GetTagForSensor(sensor.SensorId);
+                sensor.PlcTag = mappedTag;
+
+                if(sensor.Status != SensorControl.SensorStatus.Fail)
+                {
+                    sensor.Status = string.IsNullOrEmpty(mappedTag) ? SensorControl.SensorStatus.Unmapped : SensorControl.SensorStatus.Ok;
+                }
+            }
         }
     }
 }

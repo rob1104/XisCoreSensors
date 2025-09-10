@@ -8,8 +8,10 @@ namespace XisCoreSensors.Controls
     public partial class SensorControl : UserControl
     {
         private string _sensorId;
-        public enum SensorStatus { Ok, Fail }
-        private SensorStatus _status = SensorStatus.Ok;
+        private string _plcTag;
+
+        public enum SensorStatus { Ok, Fail, Unmapped }
+        private SensorStatus _status = SensorStatus.Unmapped;
 
         // --- INICIO: CÓDIGO NUEVO PARA PARPADEO ---
         private Timer _flashTimer;
@@ -28,11 +30,28 @@ namespace XisCoreSensors.Controls
             }
         }
 
+        public string PlcTag
+        {
+            get => _plcTag;
+            set
+            {
+                _plcTag = value;
+                if (!string.IsNullOrEmpty(value) && _status == SensorStatus.Unmapped)
+                {
+                    Status = SensorStatus.Ok; // Cambia el estado a OK si se asigna una etiqueta PLC
+                }
+                else if (string.IsNullOrEmpty(value) && _status != SensorStatus.Fail)
+                {
+                    Status = SensorStatus.Unmapped;
+                }
+            }
+        }
+
         public event EventHandler StatusChanged;
 
         public SensorStatus Status
         {
-            get { return _status; }
+            get => _status;
             set
             {
                 if (_status != value)
@@ -101,14 +120,19 @@ namespace XisCoreSensors.Controls
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             Color baseColor;
-            // Si el sensor está en falla, usa el color rojo con la intensidad variable.
-            if (_status == SensorStatus.Fail)
+            switch (_status)
             {
-                baseColor = Color.FromArgb(_flashAlpha, Color.Red);
-            }
-            else // Si está OK, usa el verde lima sólido.
-            {
-                baseColor = Color.LimeGreen;
+                case SensorStatus.Ok:
+                    baseColor = Color.LimeGreen; // Verde
+                    break;
+                case SensorStatus.Fail:
+                    // Usa el valor de _flashAlpha para el canal alfa, creando el efecto de parpadeo
+                    baseColor = Color.FromArgb(_flashAlpha, Color.Red); // Rojo con intensidad variable
+                    break;
+                case SensorStatus.Unmapped:
+                default:
+                    baseColor = Color.DimGray; // Gris Oscuro
+                    break;
             }
 
             Color highlightColor = Color.FromArgb(200, Color.White);
@@ -146,7 +170,25 @@ namespace XisCoreSensors.Controls
                         e.Graphics.DrawString(this.SensorId, font, Brushes.White, this.ClientRectangle, stringFormat);
                     }
                 }
+
+                if(_status == SensorStatus.Unmapped)
+                {
+                    int indicatorSize = 8;
+                    int x = Width - indicatorSize - 4;
+                    int y = 4;
+                    using (var brush = new SolidBrush(Color.Red))
+                    {
+                        e.Graphics.FillEllipse(brush, x, y, indicatorSize, indicatorSize);
+                    }
+                    using(var pen = new Pen(Color.White, 2))
+                    {
+                        e.Graphics.DrawEllipse(pen, x, y, indicatorSize, indicatorSize);
+                    }
+                }
+               
             }
         }
+
+        public bool IsMapped => !string.IsNullOrEmpty(_plcTag);
     }
 }

@@ -38,13 +38,14 @@
             this.loadLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuChkEditMode = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblEditModeStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tagMapperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -125,6 +126,22 @@
             this.mnuChkEditMode.Text = "Edit mode";
             this.mnuChkEditMode.Click += new System.EventHandler(this.mnuChkEditMode_Click);
             // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pLCToolStripMenuItem,
+            this.tagMapperToolStripMenuItem});
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            // 
+            // pLCToolStripMenuItem
+            // 
+            this.pLCToolStripMenuItem.Name = "pLCToolStripMenuItem";
+            this.pLCToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.pLCToolStripMenuItem.Text = "PLC...";
+            this.pLCToolStripMenuItem.Click += new System.EventHandler(this.pLCToolStripMenuItem_Click);
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -169,20 +186,12 @@
             this.notificationBar1.TabIndex = 5;
             this.notificationBar1.Visible = false;
             // 
-            // settingsToolStripMenuItem
+            // tagMapperToolStripMenuItem
             // 
-            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pLCToolStripMenuItem});
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.settingsToolStripMenuItem.Text = "Settings";
-            // 
-            // pLCToolStripMenuItem
-            // 
-            this.pLCToolStripMenuItem.Name = "pLCToolStripMenuItem";
-            this.pLCToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.pLCToolStripMenuItem.Text = "PLC...";
-            this.pLCToolStripMenuItem.Click += new System.EventHandler(this.pLCToolStripMenuItem_Click);
+            this.tagMapperToolStripMenuItem.Name = "tagMapperToolStripMenuItem";
+            this.tagMapperToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tagMapperToolStripMenuItem.Text = "Tag Mapper...";
+            this.tagMapperToolStripMenuItem.Click += new System.EventHandler(this.tagMapperToolStripMenuItem_Click);
             // 
             // FrmMainMDI
             // 
@@ -229,6 +238,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveLayoutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pLCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tagMapperToolStripMenuItem;
     }
 }
 
