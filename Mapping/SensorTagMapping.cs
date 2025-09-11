@@ -11,10 +11,16 @@ namespace XisCoreSensors.Mapping
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool IsActive { get; set; } = true;
 
+
         public class TagMapper
         {
             private Dictionary<string, SensorTagMapping> _mappings = new Dictionary<string, SensorTagMapping>();
             public event EventHandler<MappingChangedEventArgs> MappingChanged;
+
+            public bool IsTagMapped(string plcTag)
+            {
+                return _mappings.Any(m => m.Value.PlcTag.Equals(plcTag, StringComparison.OrdinalIgnoreCase));
+            }
 
             //Obtiene todas las asignaciones activas
             public IEnumerable<SensorTagMapping> GetAllMappings()
@@ -35,10 +41,7 @@ namespace XisCoreSensors.Mapping
             //Obtiene el sensor asignado a un tag especifico
             public string GetSensorForTag(string plcTag)
             {
-                var mapping = _mappings.Values.FirstOrDefault(m =>
-                    m.IsActive &&
-                    string.Equals(m.PlcTag, plcTag, StringComparison.OrdinalIgnoreCase));
-
+                var mapping = _mappings.Values.FirstOrDefault(m => m.PlcTag.Equals(plcTag, StringComparison.OrdinalIgnoreCase));
                 return mapping?.SensorId;
             }
 

@@ -82,11 +82,23 @@
     <Compile Include="FrmAbout.Designer.cs">
       <DependentUpon>FrmAbout.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmAddRange.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmAddRange.Designer.cs">
+      <DependentUpon>FrmAddRange.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmConfigPLC.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FrmConfigPLC.Designer.cs">
       <DependentUpon>FrmConfigPLC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmInputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmInputBox.Designer.cs">
+      <DependentUpon>FrmInputBox.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmMainMDI.cs">
       <SubType>Form</SubType>
@@ -118,20 +130,28 @@
     <Compile Include="FrmTagMapper.Designer.cs">
       <DependentUpon>FrmTagMapper.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plc\PlcServices.cs" />
+    <Compile Include="Plc\PlcController.cs" />
+    <Compile Include="Plc\PlcService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityHelper.cs" />
     <Compile Include="Mapping\SensorTagMapping.cs" />
     <Compile Include="SensorData.cs" />
+    <Compile Include="TagCatalogManager.cs" />
     <EmbeddedResource Include="Controls\SensorControl.resx">
       <DependentUpon>SensorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmAbout.resx">
       <DependentUpon>FrmAbout.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FrmAddRange.resx">
+      <DependentUpon>FrmAddRange.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmConfigPLC.resx">
       <DependentUpon>FrmConfigPLC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmInputBox.resx">
+      <DependentUpon>FrmInputBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmMainMDI.resx">
       <DependentUpon>FrmMainMDI.cs</DependentUpon>
@@ -144,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmRenameSensor.resx">
       <DependentUpon>FrmRenameSensor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmTagMapper.resx">
+      <DependentUpon>FrmTagMapper.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

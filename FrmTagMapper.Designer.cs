@@ -28,16 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.lstSensors = new System.Windows.Forms.ListBox();
-            this.lblSensorStats = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.lstPlcTags = new System.Windows.Forms.ListBox();
-            this.btnRefreshTags = new System.Windows.Forms.Button();
+            this.btnAddTag = new System.Windows.Forms.Button();
             this.lblPlcStatus = new System.Windows.Forms.Label();
+            this.lstPlcTags = new System.Windows.Forms.ListBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblSensorStats = new System.Windows.Forms.Label();
+            this.lstSensors = new System.Windows.Forms.ListBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.dgvMappings = new System.Windows.Forms.DataGridView();
+            this.SensorId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PlcTag = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CreatedAt = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnMapSelected = new System.Windows.Forms.Button();
             this.btnUnmapSelected = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
@@ -45,15 +51,14 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.SensorId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PlcTag = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CreatedAt = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnAddRange = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMappings)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -62,8 +67,8 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.splitContainer1.Location = new System.Drawing.Point(12, 12);
             this.splitContainer1.Name = "splitContainer1";
@@ -80,9 +85,75 @@
             this.splitContainer1.SplitterDistance = 420;
             this.splitContainer1.TabIndex = 0;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.btnAddRange);
+            this.groupBox2.Controls.Add(this.btnAddTag);
+            this.groupBox2.Controls.Add(this.lblPlcStatus);
+            this.groupBox2.Controls.Add(this.lstPlcTags);
+            this.groupBox2.Location = new System.Drawing.Point(209, 3);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(208, 444);
+            this.groupBox2.TabIndex = 1;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "PLC Tags";
+            // 
+            // btnAddTag
+            // 
+            this.btnAddTag.Location = new System.Drawing.Point(9, 19);
+            this.btnAddTag.Name = "btnAddTag";
+            this.btnAddTag.Size = new System.Drawing.Size(75, 23);
+            this.btnAddTag.TabIndex = 3;
+            this.btnAddTag.Text = "Add....";
+            this.btnAddTag.UseVisualStyleBackColor = true;
+            this.btnAddTag.Click += new System.EventHandler(this.btnAddTag_Click);
+            // 
+            // lblPlcStatus
+            // 
+            this.lblPlcStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblPlcStatus.AutoSize = true;
+            this.lblPlcStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPlcStatus.ForeColor = System.Drawing.Color.Red;
+            this.lblPlcStatus.Location = new System.Drawing.Point(6, 423);
+            this.lblPlcStatus.Name = "lblPlcStatus";
+            this.lblPlcStatus.Size = new System.Drawing.Size(85, 13);
+            this.lblPlcStatus.TabIndex = 2;
+            this.lblPlcStatus.Text = "Disconnected";
+            // 
+            // lstPlcTags
+            // 
+            this.lstPlcTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstPlcTags.ContextMenuStrip = this.contextMenuStrip1;
+            this.lstPlcTags.FormattingEnabled = true;
+            this.lstPlcTags.Location = new System.Drawing.Point(6, 48);
+            this.lstPlcTags.Name = "lstPlcTags";
+            this.lstPlcTags.Size = new System.Drawing.Size(196, 368);
+            this.lstPlcTags.TabIndex = 0;
+            this.lstPlcTags.SelectedIndexChanged += new System.EventHandler(this.lstPlcTags_SelectedIndexChanged);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(108, 26);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox1.Controls.Add(this.lblSensorStats);
             this.groupBox1.Controls.Add(this.lstSensors);
@@ -93,10 +164,21 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Sensors";
             // 
+            // lblSensorStats
+            // 
+            this.lblSensorStats.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblSensorStats.AutoSize = true;
+            this.lblSensorStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSensorStats.Location = new System.Drawing.Point(6, 423);
+            this.lblSensorStats.Name = "lblSensorStats";
+            this.lblSensorStats.Size = new System.Drawing.Size(93, 13);
+            this.lblSensorStats.TabIndex = 1;
+            this.lblSensorStats.Text = "Mapped: 0 of 0";
+            // 
             // lstSensors
             // 
-            this.lstSensors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.lstSensors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstSensors.FormattingEnabled = true;
             this.lstSensors.Location = new System.Drawing.Point(6, 19);
@@ -105,67 +187,6 @@
             this.lstSensors.Size = new System.Drawing.Size(188, 394);
             this.lstSensors.TabIndex = 0;
             this.lstSensors.SelectedIndexChanged += new System.EventHandler(this.lstSensors_SelectedIndexChanged);
-            // 
-            // lblSensorStats
-            // 
-            this.lblSensorStats.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblSensorStats.AutoSize = true;
-            this.lblSensorStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSensorStats.Location = new System.Drawing.Point(6, 423);
-            this.lblSensorStats.Name = "lblSensorStats";
-            this.lblSensorStats.Size = new System.Drawing.Size(95, 13);
-            this.lblSensorStats.TabIndex = 1;
-            this.lblSensorStats.Text = "Mapped: 0 of 0";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.lblPlcStatus);
-            this.groupBox2.Controls.Add(this.btnRefreshTags);
-            this.groupBox2.Controls.Add(this.lstPlcTags);
-            this.groupBox2.Location = new System.Drawing.Point(209, 3);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(208, 444);
-            this.groupBox2.TabIndex = 1;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "PLC Tags";
-            // 
-            // lstPlcTags
-            // 
-            this.lstPlcTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lstPlcTags.FormattingEnabled = true;
-            this.lstPlcTags.Location = new System.Drawing.Point(6, 48);
-            this.lstPlcTags.Name = "lstPlcTags";
-            this.lstPlcTags.SelectionMode = System.Windows.Forms.SelectionMode.One;
-            this.lstPlcTags.Size = new System.Drawing.Size(196, 368);
-            this.lstPlcTags.TabIndex = 0;
-            this.lstPlcTags.SelectedIndexChanged += new System.EventHandler(this.lstPlcTags_SelectedIndexChanged);
-            // 
-            // btnRefreshTags
-            // 
-            this.btnRefreshTags.Location = new System.Drawing.Point(6, 19);
-            this.btnRefreshTags.Name = "btnRefreshTags";
-            this.btnRefreshTags.Size = new System.Drawing.Size(75, 23);
-            this.btnRefreshTags.TabIndex = 1;
-            this.btnRefreshTags.Text = "Refresh";
-            this.btnRefreshTags.UseVisualStyleBackColor = true;
-            this.btnRefreshTags.Click += new System.EventHandler(this.btnRefreshTags_Click);
-            // 
-            // lblPlcStatus
-            // 
-            this.lblPlcStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblPlcStatus.AutoSize = true;
-            this.lblPlcStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPlcStatus.ForeColor = System.Drawing.Color.Red;
-            this.lblPlcStatus.Location = new System.Drawing.Point(6, 423);
-            this.lblPlcStatus.Name = "lblPlcStatus";
-            this.lblPlcStatus.Size = new System.Drawing.Size(96, 13);
-            this.lblPlcStatus.TabIndex = 2;
-            this.lblPlcStatus.Text = "Disconnected";
             // 
             // groupBox3
             // 
@@ -195,6 +216,27 @@
             this.dgvMappings.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvMappings.Size = new System.Drawing.Size(430, 431);
             this.dgvMappings.TabIndex = 0;
+            // 
+            // SensorId
+            // 
+            this.SensorId.DataPropertyName = "SensorId";
+            this.SensorId.HeaderText = "Sensor ID";
+            this.SensorId.Name = "SensorId";
+            this.SensorId.ReadOnly = true;
+            // 
+            // PlcTag
+            // 
+            this.PlcTag.DataPropertyName = "PlcTag";
+            this.PlcTag.HeaderText = "PLC Tag";
+            this.PlcTag.Name = "PlcTag";
+            this.PlcTag.ReadOnly = true;
+            // 
+            // CreatedAt
+            // 
+            this.CreatedAt.DataPropertyName = "CreatedAt";
+            this.CreatedAt.HeaderText = "Created At";
+            this.CreatedAt.Name = "CreatedAt";
+            this.CreatedAt.ReadOnly = true;
             // 
             // btnMapSelected
             // 
@@ -237,7 +279,7 @@
             this.btnCancel.TabIndex = 4;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click_1);
             // 
             // statusStrip1
             // 
@@ -267,26 +309,15 @@
             this.panel1.Size = new System.Drawing.Size(884, 54);
             this.panel1.TabIndex = 3;
             // 
-            // SensorId
+            // btnAddRange
             // 
-            this.SensorId.DataPropertyName = "SensorId";
-            this.SensorId.HeaderText = "Sensor ID";
-            this.SensorId.Name = "SensorId";
-            this.SensorId.ReadOnly = true;
-            // 
-            // PlcTag
-            // 
-            this.PlcTag.DataPropertyName = "PlcTag";
-            this.PlcTag.HeaderText = "PLC Tag";
-            this.PlcTag.Name = "PlcTag";
-            this.PlcTag.ReadOnly = true;
-            // 
-            // CreatedAt
-            // 
-            this.CreatedAt.DataPropertyName = "CreatedAt";
-            this.CreatedAt.HeaderText = "Created At";
-            this.CreatedAt.Name = "CreatedAt";
-            this.CreatedAt.ReadOnly = true;
+            this.btnAddRange.Location = new System.Drawing.Point(127, 19);
+            this.btnAddRange.Name = "btnAddRange";
+            this.btnAddRange.Size = new System.Drawing.Size(75, 23);
+            this.btnAddRange.TabIndex = 4;
+            this.btnAddRange.Text = "Range...";
+            this.btnAddRange.UseVisualStyleBackColor = true;
+            this.btnAddRange.Click += new System.EventHandler(this.btnAddRange_Click);
             // 
             // FrmTagMapper
             // 
@@ -307,10 +338,11 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvMappings)).EndInit();
             this.statusStrip1.ResumeLayout(false);
@@ -329,7 +361,6 @@
         private System.Windows.Forms.Label lblSensorStats;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label lblPlcStatus;
-        private System.Windows.Forms.Button btnRefreshTags;
         private System.Windows.Forms.ListBox lstPlcTags;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.DataGridView dgvMappings;
@@ -343,5 +374,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn SensorId;
         private System.Windows.Forms.DataGridViewTextBoxColumn PlcTag;
         private System.Windows.Forms.DataGridViewTextBoxColumn CreatedAt;
+        private System.Windows.Forms.Button btnAddTag;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.Button btnAddRange;
     }
 }

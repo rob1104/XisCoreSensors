@@ -40,12 +40,13 @@
             this.mnuChkEditMode = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tagMapperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblEditModeStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblPlcStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
-            this.tagMapperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -138,9 +139,16 @@
             // pLCToolStripMenuItem
             // 
             this.pLCToolStripMenuItem.Name = "pLCToolStripMenuItem";
-            this.pLCToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.pLCToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.pLCToolStripMenuItem.Text = "PLC...";
             this.pLCToolStripMenuItem.Click += new System.EventHandler(this.pLCToolStripMenuItem_Click);
+            // 
+            // tagMapperToolStripMenuItem
+            // 
+            this.tagMapperToolStripMenuItem.Name = "tagMapperToolStripMenuItem";
+            this.tagMapperToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.tagMapperToolStripMenuItem.Text = "Tag Mapper...";
+            this.tagMapperToolStripMenuItem.Click += new System.EventHandler(this.tagMapperToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -160,7 +168,8 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblEditModeStatus});
+            this.lblEditModeStatus,
+            this.lblPlcStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 583);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(991, 22);
@@ -174,6 +183,12 @@
             this.lblEditModeStatus.Size = new System.Drawing.Size(91, 17);
             this.lblEditModeStatus.Text = "MODE: LOCKED";
             // 
+            // lblPlcStatus
+            // 
+            this.lblPlcStatus.Name = "lblPlcStatus";
+            this.lblPlcStatus.Size = new System.Drawing.Size(118, 17);
+            this.lblPlcStatus.Text = "toolStripStatusLabel1";
+            // 
             // notificationBar1
             // 
             this.notificationBar1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -185,13 +200,6 @@
             this.notificationBar1.Size = new System.Drawing.Size(991, 100);
             this.notificationBar1.TabIndex = 5;
             this.notificationBar1.Visible = false;
-            // 
-            // tagMapperToolStripMenuItem
-            // 
-            this.tagMapperToolStripMenuItem.Name = "tagMapperToolStripMenuItem";
-            this.tagMapperToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.tagMapperToolStripMenuItem.Text = "Tag Mapper...";
-            this.tagMapperToolStripMenuItem.Click += new System.EventHandler(this.tagMapperToolStripMenuItem_Click);
             // 
             // FrmMainMDI
             // 
@@ -207,8 +215,9 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Xis Sensors 0.1.3";
+            this.Text = "Xis Sensors 0.1.4";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmMainMDI_KeyDown);
             this.menuStrip1.ResumeLayout(false);
@@ -239,6 +248,7 @@
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pLCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tagMapperToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel lblPlcStatus;
     }
 }
 

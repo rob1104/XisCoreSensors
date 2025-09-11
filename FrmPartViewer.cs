@@ -208,6 +208,18 @@ namespace XisCoreSensors
             RepositionAllSensors();
             _nextSensorNumber = _sensors.Count + 1; // Actualizamos el contador.
             Text = System.IO.Path.GetFileName(_currentLayoutPath); // Actualizamos el título del formulario.
+
+            var boolTags = layoutData.Sensors
+                .Select(s => s.PlcTag)
+                .Where(t => !string.IsNullOrEmpty(t))
+                .Distinct()
+                .ToList();
+
+            if (MdiParent is FrmMainMDI parentForm)
+            {
+                parentForm.StartMonitoringForLayout(boolTags);
+            }
+
         }
 
         private void CreateSensor(string id, PointF relativePos, SensorControl.SensorStatus status = SensorControl.SensorStatus.Ok)
@@ -369,7 +381,7 @@ namespace XisCoreSensors
 
         private void FrmPartViewer_KeyDown(object sender, KeyEventArgs e)
         {
-            int sensorIndex = -1;
+           /* int sensorIndex = -1;
 
             // Convertimos la tecla presionada a un número.
             // D0-D9 son las teclas de la fila superior, NumPad0-NumPad9 son las del teclado numérico.
@@ -399,7 +411,7 @@ namespace XisCoreSensors
 
                 e.Handled = true;
                 e.SuppressKeyPress = true;
-            }
+            }*/
         }
 
         private RectangleF CalculateImageRectangle(PictureBox panel)
@@ -745,6 +757,18 @@ namespace XisCoreSensors
                 }
             }
             
+        }
+
+        public void UpdateSensorState(string sensorId, bool isFailed)
+        {
+            // Busca el control del sensor en nuestra lista interna.
+            var sensorControl = _sensors.FirstOrDefault(s => s.SensorId.Equals(sensorId, StringComparison.OrdinalIgnoreCase));
+
+            if (sensorControl != null)
+            {
+                // Actualiza la propiedad 'Status', lo que cambiará su color y comportamiento.
+                sensorControl.Status = isFailed ? SensorControl.SensorStatus.Fail : SensorControl.SensorStatus.Ok;
+            }
         }
     }
 
