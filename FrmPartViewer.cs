@@ -229,7 +229,7 @@ namespace XisCoreSensors
             sensor.MouseMove += Sensor_MouseMove;
             sensor.MouseUp += Sensor_MouseUp;
             sensor.StatusChanged += Sensor_StatusChanged;
-            sensor.ContextMenuStrip = this.contextMenuSensor;
+            sensor.ContextMenuStrip = contextMenuSensor;
             _sensors.Add(sensor);
             picCanvas.Controls.Add(sensor);
             _relativeSensorLocations[id] = relativePos;
@@ -531,6 +531,8 @@ namespace XisCoreSensors
                 Location = clickPosition
             };
 
+            sensor.ContextMenuStrip = contextMenuSensor;
+
             // IMPORTANTE: Conectamos los eventos para que sea arrastrable.
             sensor.MouseDown += Sensor_MouseDown;
             sensor.MouseMove += Sensor_MouseMove;
@@ -591,6 +593,15 @@ namespace XisCoreSensors
             // 'SourceControl' nos dice qué control abrió el menú contextual.
             if (contextMenuSensor.SourceControl is SensorControl sensorToDelete)
             {
+
+                var result = MessageBox.Show(
+                    $"Are you sure you want to delete sensor '{sensorToDelete.SensorId}'?", 
+                    "Confirm Deletion",                                                  
+                    MessageBoxButtons.YesNo,                                             
+                    MessageBoxIcon.Warning);
+
+                if (result == DialogResult.No) return;
+
                 // 3. Eliminamos el sensor de todas nuestras colecciones.
                 _sensors.Remove(sensorToDelete);
                 _relativeSensorLocations.Remove(sensorToDelete.SensorId);

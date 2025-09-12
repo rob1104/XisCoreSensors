@@ -45,8 +45,9 @@ namespace XisCoreSensors
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            GuardaConfig();
-            Dispose();
+            GuardaConfig(); 
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

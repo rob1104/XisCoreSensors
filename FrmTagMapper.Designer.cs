@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnAddRange = new System.Windows.Forms.Button();
             this.btnAddTag = new System.Windows.Forms.Button();
             this.lblPlcStatus = new System.Windows.Forms.Label();
             this.lstPlcTags = new System.Windows.Forms.ListBox();
@@ -51,7 +52,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btnAddRange = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -100,6 +100,16 @@
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "PLC Tags";
+            // 
+            // btnAddRange
+            // 
+            this.btnAddRange.Location = new System.Drawing.Point(127, 19);
+            this.btnAddRange.Name = "btnAddRange";
+            this.btnAddRange.Size = new System.Drawing.Size(75, 23);
+            this.btnAddRange.TabIndex = 4;
+            this.btnAddRange.Text = "Range...";
+            this.btnAddRange.UseVisualStyleBackColor = true;
+            this.btnAddRange.Click += new System.EventHandler(this.btnAddRange_Click);
             // 
             // btnAddTag
             // 
@@ -309,16 +319,6 @@
             this.panel1.Size = new System.Drawing.Size(884, 54);
             this.panel1.TabIndex = 3;
             // 
-            // btnAddRange
-            // 
-            this.btnAddRange.Location = new System.Drawing.Point(127, 19);
-            this.btnAddRange.Name = "btnAddRange";
-            this.btnAddRange.Size = new System.Drawing.Size(75, 23);
-            this.btnAddRange.TabIndex = 4;
-            this.btnAddRange.Text = "Range...";
-            this.btnAddRange.UseVisualStyleBackColor = true;
-            this.btnAddRange.Click += new System.EventHandler(this.btnAddRange_Click);
-            // 
             // FrmTagMapper
             // 
             this.AcceptButton = this.btnSave;
@@ -329,6 +329,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.splitContainer1);
+            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FrmTagMapper";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

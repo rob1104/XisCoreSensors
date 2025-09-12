@@ -22,22 +22,35 @@ namespace XisCoreSensors
         private FormBorderStyle _previousBorderStyle;
         //-----------------------------
 
-        private TagMapper _tagMapper = new TagMapper();
-
-        public TagMapper TagMapper => _tagMapper;
-
-
         private PlcService _plcService;
         private PlcController _plcController;
+        private System.Windows.Forms.Timer _monitoringIndicatorTimer;
+        private bool _indicatorVisible = false;
+
+        public TagMapper TagMapper { get; } = new TagMapper();
 
         public FrmMainMDI()
         {
             InitializeComponent();
             ConfigureNotificationBar();
-            InitializePLC();
+            ConfigureMonitoringTimer();
+            
         }
 
-        private async void InitializePLC()
+        private void ConfigureMonitoringTimer()
+        {
+            _monitoringIndicatorTimer = new System.Windows.Forms.Timer();
+            _monitoringIndicatorTimer.Interval = 750;
+            _monitoringIndicatorTimer.Tick += MonitoringIndicatorTimer_Tick;
+        }
+
+        private void MonitoringIndicatorTimer_Tick(object sender, EventArgs e)
+        {
+            lblPlcStatus.Text = _indicatorVisible ? "PLC Monitoring" : "PLC: Monitoring ●";
+            _indicatorVisible = !_indicatorVisible;
+        }
+
+        private async Task InitializePLC()
         {
             try
             {
@@ -47,23 +60,37 @@ namespace XisCoreSensors
                     (PlcType)Settings.Default.PLC_Type,
                     (Protocol)Settings.Default.PLC_Protocol,
                     TimeSpan.FromSeconds(Settings.Default.PLC_Timeout));
-                _plcController = new PlcController(_plcService, _tagMapper);
+                _plcController = new PlcController(_plcService, TagMapper);
                 _plcController.SensorStateUpdateRequested += PlcController_SensorStateUpdateRequested;
                 _plcService.MonitoringError += PlcService_MonitoringError;
-                lblPlcStatus.Text = "PLC: Cargando catálogo...";
+                lblPlcStatus.Text = "PLC: Loading Tags...";
                 var catalogManager = new TagCatalogManager();
                 List<string> knownBoolTags = catalogManager.Load();
                 if (knownBoolTags.Any())
                 {
                     _plcService.InitializeBoolTags(knownBoolTags);
                 }
-
-
-                await TestInitialConnectionAsync();
+                lblPlcStatus.Text = "PLC: Verifying...";
+                statusStrip1.Refresh(); 
+                _monitoringIndicatorTimer.Stop(); 
+                try
+                {                    
+                    await _plcService.TestConnectionAsync(new CancellationTokenSource(5000).Token);
+                    lblPlcStatus.Text = "PLC: Connected";
+                    lblPlcStatus.ForeColor = Color.Green;
+                    _plcService.StartMonitoring();
+                    _monitoringIndicatorTimer.Start();
+                }
+                catch (Exception connEx)
+                {                   
+                    lblPlcStatus.Text = "PLC: Disconnected";
+                    lblPlcStatus.ForeColor = Color.Red;                   
+                }
             }
             catch (Exception e)
             {
                 lblPlcStatus.Text = "PLC: CONFIG ERROR";
+                lblPlcStatus.ForeColor = Color.Red;
                 MessageBox.Show($"Error initializing PLC Service." +
                     $" Please check your PLC settings.\n\nError: {e.Message}", "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
@@ -79,26 +106,43 @@ namespace XisCoreSensors
             }
 
             // Actualizamos la barra de estado para que el error sea visible.
-            lblPlcStatus.Text = "PLC: ERROR de Monitoreo";
+            lblPlcStatus.Text = "PLC: Monitoring ERROR";
             lblPlcStatus.ToolTipText = errorMessage; // Muestra el detalle del error al pasar el ratón
             lblPlcStatus.ForeColor = Color.Red;
 
             // Detenemos el monitoreo para no seguir generando errores.
             _plcService.StopMonitoring();
+            _monitoringIndicatorTimer.Stop(); // Detiene el parpadeo cuando hay un error
+            lblPlcStatus.Text = "PLC: Monitoring ERROR"; // Asegura que el texto sea estático        
         }
 
         private async Task TestInitialConnectionAsync()
         {
             lblPlcStatus.Text = "PLC: Verifying...";
+            _monitoringIndicatorTimer.Stop(); // Asegúrate de que el parpadeo esté detenido
+
             try
-            {                
-                await _plcService.TestConnectionAsync(new CancellationTokenSource(5000).Token);
-                lblPlcStatus.Text = "PLC: Ready";
+            {
+                await _plcService.TestConnectionAsync(new CancellationTokenSource(5000).Token); // Tu método de prueba
+
+                // --- LÓGICA DE CONEXIÓN SEGURA ---
+                lblPlcStatus.Text = "PLC: Connected";
+                lblPlcStatus.ForeColor = Color.Green;
+
+                // ¡IMPORTANTE! Solo si la conexión es exitosa, iniciamos el monitoreo.
+                _plcService.StartMonitoring();
+                _monitoringIndicatorTimer.Start(); // Inicia el parpadeo visual
             }
             catch (Exception e)
             {
-                lblPlcStatus.Text = "PLC: Connection Failed";
-                MessageBox.Show(e.Message);
+                // Si la conexión falla, NO iniciamos el monitoreo.
+                lblPlcStatus.Text = "PLC: Disconnected: " + e.Message;
+                lblPlcStatus.ForeColor = Color.Red;
+                var r = MessageBox.Show("Connection to PLC failed, do you want to open configuration to check PLC parameters?", "PLC", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                if (r == DialogResult.Yes)
+                {
+                    new FrmConfigPLC().ShowDialog();
+                }
             }
 
         }
@@ -107,18 +151,18 @@ namespace XisCoreSensors
         {
             if (_plcService == null) return;
 
-            // Detiene cualquier monitoreo anterior.
             _plcService.StopMonitoring();
+            _monitoringIndicatorTimer.Stop(); // Detiene el parpadeo
             _plcService.ClearTags();
 
-            // Inicializa el servicio con los tags del nuevo layout.
             _plcService.InitializeBoolTags(boolTags);
-            // ... Llama a InitializeDintTags, etc., si los tienes ...
 
-            // Inicia el monitoreo en segundo plano.
             _plcService.StartMonitoring();
+            _monitoringIndicatorTimer.Start(); // Reinicia el parpadeo para el nuevo layout
 
-            lblPlcStatus.Text = "PLC: Monitoring...";
+            // El texto base se establece aquí, el timer se encargará del parpadeo
+            lblPlcStatus.Text = "PLC: Monitoring";
+            lblPlcStatus.ForeColor = Color.Green;
         }
 
         private void PlcController_SensorStateUpdateRequested(string sensorId, bool isFailed)
@@ -279,18 +323,28 @@ namespace XisCoreSensors
             }
         }
 
-        private void FrmMainMDI_Load(object sender, EventArgs e)
+        private async void FrmMainMDI_Load(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.LastLayoutPath != string.Empty)
+            try
             {
-                LoadModel();
+                if (Settings.Default.LastLayoutPath != string.Empty)
+                {
+                    LoadModel();
+                }
+                await ReinitializePlcAsync();
+                await TestInitialConnectionAsync();
+
             }
+            catch (Exception exception)
+            {
+                lblPlcStatus.Text = "PLC:Config ERROR.";
+                MessageBox.Show($"Error: {exception.Message}", "Config ERROR", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }            
         }
 
         private void LoadModel()
         {
-            var existingViewer = this.ActiveMdiChild as FrmPartViewer;
-            if (existingViewer != null)
+            if (ActiveMdiChild is FrmPartViewer existingViewer)
             {
                 existingViewer.Focus();
             }
@@ -349,7 +403,6 @@ namespace XisCoreSensors
                 _isFullScreen = false;
             }
         }
-
         
         private void ViewerForm_OnSensorFailed(string message)
         {
@@ -375,12 +428,25 @@ namespace XisCoreSensors
             }
         }
 
-        private void pLCToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void pLCToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new FrmConfigPLC().ShowDialog();
+            try
+            {
+                using (var configForm = new FrmConfigPLC())                
+                {                   
+                    var result = configForm.ShowDialog();
+                    if (result != DialogResult.OK) return;
+                    MessageBox.Show("PLC configuration saved. Attempting to reconnect with the new settings....", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await ReinitializePlcAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error saving new config: " + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
         }
 
-        private void tagMapperToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void tagMapperToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(!(this.ActiveMdiChild is FrmPartViewer activeViewer))
             {
@@ -395,15 +461,15 @@ namespace XisCoreSensors
                 MessageBox.Show("No sensors found in the current model. Please add sensors before opening Tag Mapper.", "No sensors", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
-            using (var tagMapperForm = new FrmTagMapper(sensors, _tagMapper))
+            
+            using (var tagMapperForm = new FrmTagMapper(sensors, TagMapper))
             {
-                if (tagMapperForm.ShowDialog() == DialogResult.OK)
-                {
-                    ApplyMappingsToSensors(sensors);
-                    activeViewer.MarkAsModified();
-                    MessageBox.Show("Tag mappings have been updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                var result = tagMapperForm.ShowDialog();
+
+                if (result != DialogResult.OK) return;
+                ApplyMappingsToSensors(sensors);                   
+                await ReinitializePlcAsync();
+                MessageBox.Show("Tag mappings have been updated and the PLC connection has been refreshed.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         
@@ -411,7 +477,7 @@ namespace XisCoreSensors
         {
             foreach (var sensor in sensors)
             {
-                var mappedTag = _tagMapper.GetTagForSensor(sensor.SensorId);
+                var mappedTag = TagMapper.GetTagForSensor(sensor.SensorId);
                 sensor.PlcTag = mappedTag;
 
                 if(sensor.Status != SensorControl.SensorStatus.Fail)
@@ -426,6 +492,18 @@ namespace XisCoreSensors
             _plcService?.StopMonitoring();
             _plcService?.Dispose();
             _plcController?.Unsubscribe();
+        }
+
+        private async Task ReinitializePlcAsync()
+        {           
+            _plcService?.StopMonitoring();
+            _plcService?.Dispose();
+            _plcController?.Unsubscribe();
+
+            lblPlcStatus.Text = "PLC: Applying new config...";
+            statusStrip1.Refresh();
+
+            await InitializePLC();
         }
     }
 }
