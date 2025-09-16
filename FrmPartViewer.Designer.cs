@@ -71,12 +71,12 @@
             this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.agregarSensorToolTipMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(135, 26);
+            this.contextMenu.Size = new System.Drawing.Size(181, 48);
             // 
             // agregarSensorToolTipMenuItem
             // 
             this.agregarSensorToolTipMenuItem.Name = "agregarSensorToolTipMenuItem";
-            this.agregarSensorToolTipMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.agregarSensorToolTipMenuItem.Size = new System.Drawing.Size(180, 22);
             this.agregarSensorToolTipMenuItem.Text = "Add Sensor";
             this.agregarSensorToolTipMenuItem.Click += new System.EventHandler(this.agregarSensorToolTipMenuItem_Click);
             // 
@@ -99,7 +99,7 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(142, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(182, 6);
             // 
             // eliminarSensorToolStripMenuItem
             // 

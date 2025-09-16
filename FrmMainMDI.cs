@@ -198,10 +198,24 @@ namespace XisCoreSensors
         {
             var menuItem = sender as ToolStripMenuItem;
 
+            // 1. Obtenemos una referencia al formulario hijo que está activo.
+            var activeChild = ActiveMdiChild;
+
+            // 2. Verificamos que exista un hijo activo y que sea del tipo FrmPartViewer.
+            if (activeChild is FrmPartViewer viewer)
+            {
+               
+            }
+            else
+            {                
+                MessageBox.Show("Please open a model before enter in edit mode..", "No active model viewer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             // Si ya estamos en modo edición, simplemente salimos sin pedir contraseña.
             if (menuItem.Checked)
             {
-                if (this.ActiveMdiChild is FrmPartViewer activeViewer)
+                if (ActiveMdiChild is FrmPartViewer activeViewer)
                 {
                     activeViewer.ToggleEditMode();
                     menuItem.Checked = false;
@@ -334,6 +348,11 @@ namespace XisCoreSensors
                 await ReinitializePlcAsync();
                 await TestInitialConnectionAsync();
 
+                if (ActiveMdiChild is FrmPartViewer activeViewer)
+                {
+                    activeViewer.ToggleEditMode();
+                    activeViewer.ToggleEditMode();
+                }
             }
             catch (Exception exception)
             {
@@ -363,6 +382,14 @@ namespace XisCoreSensors
         {
             lblEditModeStatus.Text = e.StatusMessage;
             lblEditModeStatus.BackColor = e.IsInEditMode ? Color.Yellow : Color.Lime;
+            mnuChkEditMode.Checked = e.IsInEditMode;
+
+            pLCToolStripMenuItem.Enabled = e.IsInEditMode;
+            tagMapperToolStripMenuItem.Enabled = e.IsInEditMode;
+            saveLayoutToolStripMenuItem.Enabled = e.IsInEditMode;
+            loadLayoutToolStripMenuItem.Enabled = e.IsInEditMode;
+            saveLayoutToolStripMenuItem1.Enabled = e.IsInEditMode;
+            loadImageToolStripMenuItem.Enabled = e.IsInEditMode;
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -448,7 +475,7 @@ namespace XisCoreSensors
 
         private async void tagMapperToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(!(this.ActiveMdiChild is FrmPartViewer activeViewer))
+            if(!(ActiveMdiChild is FrmPartViewer activeViewer))
             {
                 MessageBox.Show("Please open a model before open Tag Mapper.", "No active model viewer", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -462,14 +489,14 @@ namespace XisCoreSensors
                 return;
             }
             
-            using (var tagMapperForm = new FrmTagMapper(sensors, TagMapper))
+            using (var tagMapperForm = new FrmTagMapper(activeViewer, sensors, TagMapper))
             {
                 var result = tagMapperForm.ShowDialog();
 
                 if (result != DialogResult.OK) return;
                 ApplyMappingsToSensors(sensors);                   
                 await ReinitializePlcAsync();
-                MessageBox.Show("Tag mappings have been updated and the PLC connection has been refreshed.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Tag mappings and layout have been updated and the PLC connection has been refreshed.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         
@@ -504,6 +531,24 @@ namespace XisCoreSensors
             statusStrip1.Refresh();
 
             await InitializePLC();
+        }
+
+        public void PausePlcMonitoring()
+        {
+            if (_plcService == null) return;
+            _plcService.StopMonitoring();
+            _monitoringIndicatorTimer.Stop();
+            lblPlcStatus.Text = "PLC: Paused (Edit Mode)";
+            lblPlcStatus.ForeColor = Color.Purple;
+        }
+
+        public void ResumePlcMonitoring()
+        {
+            if (_plcService == null) return;
+            _plcService.StartMonitoring();
+            _monitoringIndicatorTimer.Start();
+            lblPlcStatus.Text = "PLC: Monitoring";
+            lblPlcStatus.ForeColor = Color.Green;
         }
     }
 }

@@ -1,14 +1,11 @@
 ﻿using libplctag;
-using libplctag.NativeImport;
+using libplctag.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using XisCoreSensors.Controls;
 using XisCoreSensors.Mapping;
@@ -25,16 +22,20 @@ namespace XisCoreSensors
         public TagMapper TagMapper => _tagMapper;
 
         private readonly TagCatalogManager _catalogManager;
+
         private readonly List<string> _manualTags;
 
-        public FrmTagMapper(List<SensorControl> sensors, TagMapper tagMapper)
+        private readonly FrmPartViewer _ownerPartViewer;
+
+        public FrmTagMapper(FrmPartViewer ownerPartViewer, List<SensorControl> sensors, TagMapper tagMapper)
         {
             InitializeComponent();
             _sensors = sensors ?? throw new ArgumentNullException(nameof(sensors));
             _tagMapper = tagMapper ?? throw new ArgumentNullException(nameof(tagMapper));
+            _ownerPartViewer = ownerPartViewer ?? throw new ArgumentNullException(nameof(ownerPartViewer));
 
             lstSensors.DrawMode = DrawMode.OwnerDrawFixed;
-            //lstPlcTags.DrawMode = DrawMode.OwnerDrawFixed;
+            lstPlcTags.DrawMode = DrawMode.OwnerDrawFixed;
 
             lstSensors.DrawItem += ListBox_DrawItem;
             lstPlcTags.DrawItem += ListBox_DrawItem;
@@ -63,8 +64,8 @@ namespace XisCoreSensors
             }
 
             string icon = isMapped ? "✓" : "○";
-            Brush textBrush = isMapped ? Brushes.Gray : Brushes.Black;
-            Font textFont = isMapped ? new Font(e.Font, FontStyle.Italic) : e.Font;
+            Brush textBrush = isMapped ? Brushes.LimeGreen : Brushes.Purple;
+            Font textFont = isMapped ? new Font(e.Font, FontStyle.Bold) : e.Font;
             e.Graphics.DrawString($"{icon} {displayText}", textFont, textBrush, e.Bounds);
             e.DrawFocusRectangle();
         }
@@ -91,13 +92,13 @@ namespace XisCoreSensors
 
         private void FrmTagMapper_Load(object sender, EventArgs e)
         {
+            _tagMapper.MappingChanged += TagMapper_MappingChanged;
             LoadSensors();
             RefreshTagList();
             RefreshMappings();
             UpdateStatistics();
             UpdateButtonStates();
-            _tagMapper.MappingChanged += TagMapper_MappingChanged;
-            
+            lstPlcTags.ClearSelected();
         }
 
         private void RefreshTagList()
@@ -138,8 +139,6 @@ namespace XisCoreSensors
             UpdateListsVisualState(); // <-- Llamada clave
         }
 
-        
-
         private void RefreshMappings()
         {
             var mappings = _tagMapper.GetAllMappings().ToList();
@@ -176,13 +175,20 @@ namespace XisCoreSensors
         }
 
         private void UpdateButtonStates()
-        {            
-            var selectedSensorItem = lstSensors.SelectedItem as SensorListItem;
+        {
+            var selectedSensorItems = lstSensors.SelectedItems.Cast<SensorListItem>().ToList();
             var selectedTagItem = lstPlcTags.SelectedItem as PlcTagListItem;
 
-            btnMapSelected.Enabled = selectedSensorItem != null && selectedTagItem != null;
+            // El botón "Map" ahora solo se activa si se selecciona EXACTAMENTE un sensor
+            // y un tag que no estén ya en uso.
+            bool canMap = selectedSensorItems.Count == 1 &&
+                          selectedTagItem != null &&
+                          !selectedSensorItems.First().IsMapped &&
+                          !selectedTagItem.IsMapped;
+            btnMapSelected.Enabled = canMap;
 
-            btnUnmapSelected.Enabled = selectedSensorItem != null && _tagMapper.IsSensorMapped(selectedSensorItem.Sensor.SensorId);
+            // El botón "Unmap" se activa si CUALQUIERA de los sensores seleccionados está mapeado.
+            btnUnmapSelected.Enabled = selectedSensorItems.Any(s => s.IsMapped);
         }
 
         private void lstSensors_SelectedIndexChanged(object sender, EventArgs e)
@@ -193,18 +199,6 @@ namespace XisCoreSensors
         private void lstPlcTags_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateButtonStates();
-        }
-
-        private void btnRefreshTags_Click(object sender, EventArgs e)
-        {
-            lblStatus.Text = "Refreshing PLC tags...";
-            Application.DoEvents();
-
-            // Aquí iría la lógica real de lectura del PLC
-            // Por ahora solo recargamos los tags mock
-            RefreshTagList();
-
-            lblStatus.Text = $"Refreshed - Found {_manualTags.Count} tags";
         }
 
         private void btnMapSelected_Click(object sender, EventArgs e)
@@ -243,41 +237,50 @@ namespace XisCoreSensors
 
         private void btnUnmapSelected_Click(object sender, EventArgs e)
         {
-            // Obtiene el sensor seleccionado (asumiendo que solo se puede desmapear uno a la vez).
-            var selectedSensorItem = lstSensors.SelectedItem as SensorListItem;
+            var selectedSensorsToUnmap = lstSensors.SelectedItems
+                .Cast<SensorListItem>()
+                .Where(s => s.IsMapped)
+                .ToList();
 
-            if (selectedSensorItem == null || !selectedSensorItem.IsMapped)
+            if (!selectedSensorsToUnmap.Any())
             {
-                MessageBox.Show("Please select a mapped sensor to unmap.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Please select at least one mapped sensor to unmap.", "No Mapped Sensors Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
+            // 2. Muestra un mensaje de confirmación con la cantidad correcta.
             var result = MessageBox.Show(
-                $"Are you sure you want to unmap sensor '{selectedSensorItem.Sensor.SensorId}'?",
+                $"Are you sure you want to unmap {selectedSensorsToUnmap.Count} sensor(s)?",
                 "Confirm Unmap",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
             if (result == DialogResult.Yes)
             {
-                // 1. Llama a tu lógica para desmapear el sensor.
-                // Esto debería disparar el evento 'MappingChanged' si está configurado.
-                _tagMapper.UnmapSensor(selectedSensorItem.Sensor.SensorId);
+                // 3. Itera sobre la lista y desmapea cada uno.
+                foreach (var sensorItem in selectedSensorsToUnmap)
+                {
+                    // Llama a la lógica central de desmapeo.
+                    _tagMapper.UnmapSensor(sensorItem.Sensor.SensorId);
 
-                // 2. --- LA CORRECCIÓN CLAVE ---
-                // Llamamos explícitamente a nuestro método de actualización visual.
-                // Esto garantiza que AMBAS listas se redibujen con su nuevo estado,
-                // incluso si el evento no se dispara por alguna razón.
-                UpdateListsVisualState();
+                    // Actualiza el objeto SensorControl original.
+                    sensorItem.Sensor.PlcTag = null;
+                }
 
-                lblStatus.Text = $"Unmapped sensor {selectedSensorItem.Sensor.SensorId}";
+                // El evento 'MappingChanged' se habrá disparado por cada sensor,
+                // actualizando la UI automáticamente.
+                lblStatus.Text = $"{selectedSensorsToUnmap.Count} sensor(s) unmapped.";
             }
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.OK;
-            Close();
+            bool saveSuccess = _ownerPartViewer.SaveLayout();
+            if (saveSuccess)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }           
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -317,7 +320,6 @@ namespace XisCoreSensors
                     _manualTags.Sort();                  
                     _catalogManager.Save(_manualTags);
                     RefreshTagList();                   
-                    lstPlcTags.SelectedItem = newTag;
                     break;
                 }
             }         
@@ -431,6 +433,141 @@ namespace XisCoreSensors
                         MessageBox.Show("No new tags were added. They may already exist in the catalog.", "No Changes", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
+            }
+        }
+
+        private void btnAutoMap_Click(object sender, EventArgs e)
+        {
+            // 1-Obtener lista de sensores y tagos que no están mapeados
+            var unmappedSensors = lstSensors.Items.OfType<SensorListItem>()
+                .Where(s => !s.IsMapped)
+                .ToList();
+
+            var unmappedTags = lstPlcTags.Items.OfType<PlcTagListItem>()
+                .Where(t => !t.IsMapped)
+                .ToList();
+
+            if(!unmappedSensors.Any() || !unmappedTags.Any())
+            {
+                MessageBox.Show("There are no unmapped sensors or tags available for auto-mapping.", 
+                    "Auto-Map", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var mappingsMade = 0;
+
+            // 2. Iterar sobre cada sensor sin mapear.
+            foreach(var sensorItem in unmappedSensors)
+            {
+                // 3. Buscar un tag sin mapear que termine con el mismo número.
+                var sensorNumberMatch = Regex.Match(sensorItem.Sensor.SensorId, @"\d+$");
+                if (!sensorNumberMatch.Success) continue;
+                var sensorNumber = sensorNumberMatch.Value;
+                var matchingTagItem = unmappedTags.FirstOrDefault(tagItem =>
+                {
+                    var tagNumberMatch = Regex.Match(tagItem.TagName, @"\d+$");
+                    return tagNumberMatch.Success && tagNumberMatch.Value == sensorNumber;
+                });
+                // 4. Si se encuentra una coincidencia, realiza el mapeo.
+                if(matchingTagItem != null)
+                {
+                    _tagMapper.MapSensorToTag(sensorItem.Sensor.SensorId, matchingTagItem.TagName);
+                    sensorItem.Sensor.PlcTag = matchingTagItem.TagName;
+                    mappingsMade++;
+                }
+            }
+            // 5. Muestra un resumen de la operación.
+            if (mappingsMade > 0)
+            {
+                MessageBox.Show($"{mappingsMade} new mappings were created automatically.", 
+                    "Auto-Map Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("No matching sensors and tags were found to auto-map.", "" +
+                    "Auto-Map", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void lstSensors_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(lstSensors.SelectedItem != null)
+                lstSensors.DoDragDrop(lstSensors.SelectedItem, DragDropEffects.Move);
+        }
+
+        private void lstPlcTags_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = e.Data.GetDataPresent(typeof(SensorListItem)) ? DragDropEffects.Move : DragDropEffects.None;
+        }
+
+        private void lstPlcTags_DragDrop(object sender, DragEventArgs e)
+        {
+            var dropPoint = lstPlcTags.PointToClient(new Point(e.X, e.Y));
+            var index = lstPlcTags.IndexFromPoint(dropPoint);
+            if (index == ListBox.NoMatches) return;
+            var sensorItem = e.Data.GetData(typeof(SensorListItem)) as SensorListItem;
+            var tagItem = lstPlcTags.Items[index] as PlcTagListItem;
+            if (sensorItem != null && tagItem != null && !sensorItem.IsMapped && !tagItem.IsMapped)
+                _tagMapper.MapSensorToTag(sensorItem.Sensor.SensorId, tagItem.TagName);
+        }
+
+        private async void btnGetFromPLC_Click(object sender, EventArgs e)
+        {
+            lblStatus.Text = "Reading tags from PLC... Please wait.";
+            this.Enabled = false; // Deshabilita el formulario para evitar clics accidentales
+
+            try
+            {
+                // 1. Crea el tag especial "@tags" para listar todos los demás.
+                var listTagsCommand = new Tag<TagInfoPlcMapper, TagInfo[]>()
+                {
+                    Gateway = Properties.Settings.Default.PLC_IP,
+                    Path = Properties.Settings.Default.PLC_Path,
+                    PlcType = (PlcType)Properties.Settings.Default.PLC_Type,
+                    Protocol = (Protocol)Properties.Settings.Default.PLC_Protocol, // Corregido: Usaba PLC_Type por error
+                    Timeout = TimeSpan.FromSeconds(Properties.Settings.Default.PLC_Timeout),
+                    Name = "@tags"
+                };
+
+                // 2. Lee los tags de forma asíncrona para no congelar la aplicación.
+                await listTagsCommand.ReadAsync();
+              
+                // 3. Filtra el resultado para obtener solo los tags que cumplen AMBAS condiciones:
+                //    - Son de tipo BOOL.
+                //    - NO están ya en nuestra lista de tags manuales.
+                var newBoolTags = listTagsCommand.Value
+                    .Where(tag => !_manualTags.Contains(tag.Name, StringComparer.OrdinalIgnoreCase))
+                    .Select(tag => tag.Name)
+                    .ToList();
+
+                // 4. Si encontramos nuevos tags, los añadimos al catálogo y guardamos.
+                if (newBoolTags.Any())
+                {
+                    _manualTags.AddRange(newBoolTags);
+                    _manualTags.Sort();
+                    _catalogManager.Save(_manualTags); // Guarda los nuevos tags en el archivo JSON
+
+                    MessageBox.Show($"{newBoolTags.Count} new BOOL tags were found and added to the catalog.",
+                                    "PLC Tags Imported", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("No new BOOL tags were found on the PLC.",
+                                    "PLC Tags", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                // 5. Refresca toda la interfaz gráfica con la lista actualizada.
+                RefreshTagList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to read tags from PLC: {ex.Message}", "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                // 6. Pase lo que pase, vuelve a habilitar el formulario.
+                lblStatus.Text = "Ready.";
+                this.Enabled = true;
             }
         }
     }

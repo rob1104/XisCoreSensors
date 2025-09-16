@@ -197,6 +197,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gakuseisean-Ivista-2-Alarm-Info.ico" />
+    <None Include="Resources\play-icon.png" />
+    <None Include="Resources\Images-icon.png" />
+    <None Include="Resources\Folder-Open-icon.png" />
+    <None Include="Resources\saves.png" />
+    <None Include="Resources\save-icon.png" />
+    <None Include="Resources\tags-icon.png" />
+    <None Include="Resources\plc.png" />
+    <None Include="Resources\hastag.png" />
+    <None Include="Resources\tag.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

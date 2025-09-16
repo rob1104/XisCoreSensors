@@ -52,6 +52,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnAutoMap = new System.Windows.Forms.Button();
+            this.btnGetFromPLC = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -90,6 +92,7 @@
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.btnGetFromPLC);
             this.groupBox2.Controls.Add(this.btnAddRange);
             this.groupBox2.Controls.Add(this.btnAddTag);
             this.groupBox2.Controls.Add(this.lblPlcStatus);
@@ -135,6 +138,7 @@
             // 
             // lstPlcTags
             // 
+            this.lstPlcTags.AllowDrop = true;
             this.lstPlcTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -145,6 +149,8 @@
             this.lstPlcTags.Size = new System.Drawing.Size(196, 368);
             this.lstPlcTags.TabIndex = 0;
             this.lstPlcTags.SelectedIndexChanged += new System.EventHandler(this.lstPlcTags_SelectedIndexChanged);
+            this.lstPlcTags.DragDrop += new System.Windows.Forms.DragEventHandler(this.lstPlcTags_DragDrop);
+            this.lstPlcTags.DragEnter += new System.Windows.Forms.DragEventHandler(this.lstPlcTags_DragEnter);
             // 
             // contextMenuStrip1
             // 
@@ -197,6 +203,7 @@
             this.lstSensors.Size = new System.Drawing.Size(188, 394);
             this.lstSensors.TabIndex = 0;
             this.lstSensors.SelectedIndexChanged += new System.EventHandler(this.lstSensors_SelectedIndexChanged);
+            this.lstSensors.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lstSensors_MouseDown);
             // 
             // groupBox3
             // 
@@ -309,6 +316,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnAutoMap);
             this.panel1.Controls.Add(this.btnMapSelected);
             this.panel1.Controls.Add(this.btnCancel);
             this.panel1.Controls.Add(this.btnUnmapSelected);
@@ -318,6 +326,26 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(884, 54);
             this.panel1.TabIndex = 3;
+            // 
+            // btnAutoMap
+            // 
+            this.btnAutoMap.Location = new System.Drawing.Point(323, 12);
+            this.btnAutoMap.Name = "btnAutoMap";
+            this.btnAutoMap.Size = new System.Drawing.Size(100, 30);
+            this.btnAutoMap.TabIndex = 5;
+            this.btnAutoMap.Text = "Auto Map";
+            this.btnAutoMap.UseVisualStyleBackColor = true;
+            this.btnAutoMap.Click += new System.EventHandler(this.btnAutoMap_Click);
+            // 
+            // btnGetFromPLC
+            // 
+            this.btnGetFromPLC.Location = new System.Drawing.Point(102, 420);
+            this.btnGetFromPLC.Name = "btnGetFromPLC";
+            this.btnGetFromPLC.Size = new System.Drawing.Size(100, 23);
+            this.btnGetFromPLC.TabIndex = 5;
+            this.btnGetFromPLC.Text = "Get from PLC";
+            this.btnGetFromPLC.UseVisualStyleBackColor = true;
+            this.btnGetFromPLC.Click += new System.EventHandler(this.btnGetFromPLC_Click);
             // 
             // FrmTagMapper
             // 
@@ -379,5 +407,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.Button btnAddRange;
+        private System.Windows.Forms.Button btnAutoMap;
+        private System.Windows.Forms.Button btnGetFromPLC;
     }
 }

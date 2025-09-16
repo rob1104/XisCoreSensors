@@ -31,21 +31,21 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMainMDI));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.model1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveLayoutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuChkEditMode = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tagMapperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblEditModeStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblPlcStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.model1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveLayoutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tagMapperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -62,7 +62,7 @@
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(991, 24);
             this.menuStrip1.TabIndex = 1;
-            this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.Text = "Main Menu";
             // 
             // fileToolStripMenuItem
             // 
@@ -75,41 +75,6 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
-            // 
-            // model1ToolStripMenuItem
-            // 
-            this.model1ToolStripMenuItem.Name = "model1ToolStripMenuItem";
-            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.model1ToolStripMenuItem.Text = "View";
-            this.model1ToolStripMenuItem.Click += new System.EventHandler(this.model1ToolStripMenuItem_Click);
-            // 
-            // loadImageToolStripMenuItem
-            // 
-            this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.loadImageToolStripMenuItem.Text = "Change image...";
-            this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
-            // 
-            // saveLayoutToolStripMenuItem
-            // 
-            this.saveLayoutToolStripMenuItem.Name = "saveLayoutToolStripMenuItem";
-            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.saveLayoutToolStripMenuItem.Text = "Save Layout As...";
-            this.saveLayoutToolStripMenuItem.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem_Click);
-            // 
-            // saveLayoutToolStripMenuItem1
-            // 
-            this.saveLayoutToolStripMenuItem1.Name = "saveLayoutToolStripMenuItem1";
-            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
-            this.saveLayoutToolStripMenuItem1.Text = "Save Layout";
-            this.saveLayoutToolStripMenuItem1.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem1_Click);
-            // 
-            // loadLayoutToolStripMenuItem
-            // 
-            this.loadLayoutToolStripMenuItem.Name = "loadLayoutToolStripMenuItem";
-            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.loadLayoutToolStripMenuItem.Text = "Load Layout...";
-            this.loadLayoutToolStripMenuItem.Click += new System.EventHandler(this.loadLayoutToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -135,20 +100,6 @@
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
-            // 
-            // pLCToolStripMenuItem
-            // 
-            this.pLCToolStripMenuItem.Name = "pLCToolStripMenuItem";
-            this.pLCToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.pLCToolStripMenuItem.Text = "PLC...";
-            this.pLCToolStripMenuItem.Click += new System.EventHandler(this.pLCToolStripMenuItem_Click);
-            // 
-            // tagMapperToolStripMenuItem
-            // 
-            this.tagMapperToolStripMenuItem.Name = "tagMapperToolStripMenuItem";
-            this.tagMapperToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.tagMapperToolStripMenuItem.Text = "Tag Mapper...";
-            this.tagMapperToolStripMenuItem.Click += new System.EventHandler(this.tagMapperToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -189,6 +140,62 @@
             this.lblPlcStatus.Size = new System.Drawing.Size(118, 17);
             this.lblPlcStatus.Text = "toolStripStatusLabel1";
             // 
+            // model1ToolStripMenuItem
+            // 
+            this.model1ToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.play_icon;
+            this.model1ToolStripMenuItem.Name = "model1ToolStripMenuItem";
+            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.model1ToolStripMenuItem.Text = "View";
+            this.model1ToolStripMenuItem.Click += new System.EventHandler(this.model1ToolStripMenuItem_Click);
+            // 
+            // loadImageToolStripMenuItem
+            // 
+            this.loadImageToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Images_icon;
+            this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.loadImageToolStripMenuItem.Text = "Change image...";
+            this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
+            // 
+            // saveLayoutToolStripMenuItem
+            // 
+            this.saveLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.saves;
+            this.saveLayoutToolStripMenuItem.Name = "saveLayoutToolStripMenuItem";
+            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.saveLayoutToolStripMenuItem.Text = "Save Layout As...";
+            this.saveLayoutToolStripMenuItem.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem_Click);
+            // 
+            // saveLayoutToolStripMenuItem1
+            // 
+            this.saveLayoutToolStripMenuItem1.Image = global::XisCoreSensors.Properties.Resources.save_icon;
+            this.saveLayoutToolStripMenuItem1.Name = "saveLayoutToolStripMenuItem1";
+            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
+            this.saveLayoutToolStripMenuItem1.Text = "Save Layout";
+            this.saveLayoutToolStripMenuItem1.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem1_Click);
+            // 
+            // loadLayoutToolStripMenuItem
+            // 
+            this.loadLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Folder_Open_icon;
+            this.loadLayoutToolStripMenuItem.Name = "loadLayoutToolStripMenuItem";
+            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.loadLayoutToolStripMenuItem.Text = "Load Layout...";
+            this.loadLayoutToolStripMenuItem.Click += new System.EventHandler(this.loadLayoutToolStripMenuItem_Click);
+            // 
+            // pLCToolStripMenuItem
+            // 
+            this.pLCToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.plc;
+            this.pLCToolStripMenuItem.Name = "pLCToolStripMenuItem";
+            this.pLCToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.pLCToolStripMenuItem.Text = "PLC...";
+            this.pLCToolStripMenuItem.Click += new System.EventHandler(this.pLCToolStripMenuItem_Click);
+            // 
+            // tagMapperToolStripMenuItem
+            // 
+            this.tagMapperToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.tags_icon;
+            this.tagMapperToolStripMenuItem.Name = "tagMapperToolStripMenuItem";
+            this.tagMapperToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.tagMapperToolStripMenuItem.Text = "Tag Mapper...";
+            this.tagMapperToolStripMenuItem.Click += new System.EventHandler(this.tagMapperToolStripMenuItem_Click);
+            // 
             // notificationBar1
             // 
             this.notificationBar1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -215,7 +222,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Xis Sensors 0.1.4";
+            this.Text = "Xis Sensors 0.1.5";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);

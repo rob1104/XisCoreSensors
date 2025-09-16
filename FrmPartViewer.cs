@@ -64,6 +64,13 @@ namespace XisCoreSensors
                 StatusMessage = message,
                 IsInEditMode = _isEditMode
             });
+
+            if(MdiParent is FrmMainMDI parentForm)
+            {
+                if (_isEditMode) parentForm.PausePlcMonitoring();
+                else parentForm.ResumePlcMonitoring();
+            }
+
             return _isEditMode;
         }
 
@@ -381,37 +388,59 @@ namespace XisCoreSensors
 
         private void FrmPartViewer_KeyDown(object sender, KeyEventArgs e)
         {
-           /* int sensorIndex = -1;
+            /* int sensorIndex = -1;
 
-            // Convertimos la tecla presionada a un número.
-            // D0-D9 son las teclas de la fila superior, NumPad0-NumPad9 son las del teclado numérico.
-            if (e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9)
+             // Convertimos la tecla presionada a un número.
+             // D0-D9 son las teclas de la fila superior, NumPad0-NumPad9 son las del teclado numérico.
+             if (e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9)
+             {
+                 sensorIndex = e.KeyCode - Keys.D0; // D1 - D0 = 1, D2 - D0 = 2, etc.
+             }
+             else if (e.KeyCode >= Keys.NumPad0 && e.KeyCode <= Keys.NumPad9)
+             {
+                 sensorIndex = e.KeyCode - Keys.NumPad0; // NumPad1 - NumPad0 = 1, etc.
+             }
+
+             // El índice 0 corresponde a la tecla '0', para acceder al décimo sensor (si existe).
+             if (sensorIndex == 0) sensorIndex = 10;
+
+             // Verificamos si el índice está dentro del rango de nuestra lista de sensores.
+             // Restamos 1 porque las listas se basan en 0 (índice 0 es el primer elemento).
+             if (sensorIndex > 0 && sensorIndex <= _sensors.Count)
+             {
+                 // Accedemos al sensor por su posición en la lista.
+                 var sensor = _sensors[sensorIndex - 1];
+
+                 // Intercalamos su estado (OK <-> Fail).
+                 sensor.Status = (sensor.Status == SensorControl.SensorStatus.Ok)
+                     ? SensorControl.SensorStatus.Fail
+                     : SensorControl.SensorStatus.Ok;
+
+                 e.Handled = true;
+                 e.SuppressKeyPress = true;
+             }*/
+            // --- LÓGICA PARA EL ATAJO DE TECLADO ---
+            if (e.Control && e.KeyCode == Keys.A)
             {
-                sensorIndex = e.KeyCode - Keys.D0; // D1 - D0 = 1, D2 - D0 = 2, etc.
-            }
-            else if (e.KeyCode >= Keys.NumPad0 && e.KeyCode <= Keys.NumPad9)
-            {
-                sensorIndex = e.KeyCode - Keys.NumPad0; // NumPad1 - NumPad0 = 1, etc.
-            }
-
-            // El índice 0 corresponde a la tecla '0', para acceder al décimo sensor (si existe).
-            if (sensorIndex == 0) sensorIndex = 10;
-
-            // Verificamos si el índice está dentro del rango de nuestra lista de sensores.
-            // Restamos 1 porque las listas se basan en 0 (índice 0 es el primer elemento).
-            if (sensorIndex > 0 && sensorIndex <= _sensors.Count)
-            {
-                // Accedemos al sensor por su posición en la lista.
-                var sensor = _sensors[sensorIndex - 1];
-
-                // Intercalamos su estado (OK <-> Fail).
-                sensor.Status = (sensor.Status == SensorControl.SensorStatus.Ok)
-                    ? SensorControl.SensorStatus.Fail
-                    : SensorControl.SensorStatus.Ok;
-
-                e.Handled = true;
+                // Suprime el sonido "ding" de Windows y evita que el evento se propague.
                 e.SuppressKeyPress = true;
-            }*/
+                e.Handled = true;
+
+                // Calcula una posición por defecto: el centro de la vista actual.
+                Point centerOfView = new Point(
+                    pnlViewport.ClientSize.Width / 2,
+                    pnlViewport.ClientSize.Height / 2
+                );
+
+                // Convierte las coordenadas del panel a las del lienzo, teniendo en cuenta el scroll.
+                Point defaultLocation = new Point(
+                    centerOfView.X - pnlViewport.AutoScrollPosition.X,
+                    centerOfView.Y - pnlViewport.AutoScrollPosition.Y
+                );
+
+                // Llama a nuestro método central con la posición por defecto.
+                AddSensorAtLocation(defaultLocation);
+            }
         }
 
         private RectangleF CalculateImageRectangle(PictureBox panel)
@@ -510,45 +539,49 @@ namespace XisCoreSensors
 
         private void agregarSensorToolTipMenuItem_Click(object sender, EventArgs e)
         {
-            if(!_isEditMode)
+            Point clickPosition = picCanvas.PointToClient(contextMenu.SourceControl.PointToScreen(contextMenu.Bounds.Location));
+            AddSensorAtLocation(clickPosition);
+        }
+
+        private void AddSensorAtLocation(Point location)
+        {
+            if (!_isEditMode)
             {
-                MessageBox.Show("You must be in edit mode to add sensors.", "Edit Mode Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("You must be in Edit Mode to add sensors.", "Edit Mode Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            // Obtenemos la posición donde se hizo clic derecho.
-            Point clickPosition = picCanvas.PointToClient(contextMenu.SourceControl.PointToScreen(contextMenu.Bounds.Location));
-
-            // Generamos un ID único.
             string newId = $"S{_nextSensorNumber:D2}";
             _nextSensorNumber++;
 
-            // Creamos y configuramos el nuevo sensor.
             var sensor = new SensorControl
             {
-                SensorId = newId, // Usamos string para el ID ahora
+                SensorId = newId,
                 Tag = newId,
-                Location = clickPosition
+                Location = location // Usa la ubicación proporcionada
             };
 
-            sensor.ContextMenuStrip = contextMenuSensor;
-
-            // IMPORTANTE: Conectamos los eventos para que sea arrastrable.
+            // Asigna los eventos y el menú contextual
+            sensor.ContextMenuStrip = this.contextMenuSensor;
             sensor.MouseDown += Sensor_MouseDown;
             sensor.MouseMove += Sensor_MouseMove;
             sensor.MouseUp += Sensor_MouseUp;
+            sensor.StatusChanged += Sensor_StatusChanged;
 
-            // Lo añadimos a las colecciones.
+            // Añade el sensor a las colecciones y a la pantalla
             _sensors.Add(sensor);
             picCanvas.Controls.Add(sensor);
 
-            // Calculamos y guardamos su posición relativa inicial.
+            // Calcula y guarda su posición relativa
             RectangleF imageRect = CalculateImageRectangle(picCanvas);
-            float relativeX = (sensor.Left - imageRect.Left) / imageRect.Width;
-            float relativeY = (sensor.Top - imageRect.Top) / imageRect.Height;
-            _relativeSensorLocations[newId] = new PointF(relativeX, relativeY);
-            _hasUnsavedChanges = true;
-            Text += " Modfied";
+            if (imageRect.Width > 0 && imageRect.Height > 0)
+            {
+                float relativeX = (sensor.Left - imageRect.Left) / imageRect.Width;
+                float relativeY = (sensor.Top - imageRect.Top) / imageRect.Height;
+                _relativeSensorLocations[newId] = new PointF(relativeX, relativeY);
+            }
+
+            MarkAsModified(); // Marca que hay cambios sin guardar
         }
 
         private void RepositionAllSensors()
@@ -746,6 +779,17 @@ namespace XisCoreSensors
 
         private void FrmPartViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if(_isEditMode)
+            {
+                var message = "Modo: LOCKED";
+                EditModeChanged?.Invoke(this, new EditModeChangedEventArgs
+                {
+                    StatusMessage = message,
+                    IsInEditMode = !_isEditMode
+                });
+            }
+
+
             if (!CheckForUnsavedChanges())
             {
                 e.Cancel = true; // Cancela el cierre del formulario
@@ -777,6 +821,10 @@ namespace XisCoreSensors
 
             if (sensorControl != null)
             {
+                if(string.IsNullOrEmpty(sensorControl.PlcTag))
+                {
+                    sensorControl.Status = SensorControl.SensorStatus.Unmapped;
+                }
                 // Actualiza la propiedad 'Status', lo que cambiará su color y comportamiento.
                 sensorControl.Status = isFailed ? SensorControl.SensorStatus.Fail : SensorControl.SensorStatus.Ok;
             }
