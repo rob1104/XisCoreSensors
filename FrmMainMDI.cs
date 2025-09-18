@@ -1,5 +1,4 @@
-﻿using libplctag;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -27,7 +26,14 @@ namespace XisCoreSensors
         private System.Windows.Forms.Timer _monitoringIndicatorTimer;
         private bool _indicatorVisible = false;
 
+        private System.Windows.Forms.Timer _reconnectTimer;
+
         public TagMapper TagMapper { get; } = new TagMapper();
+
+        private enum PlcUiState { Disconnected, Connected, Monitoring, Paused, Error, Idle, Reconnecting }
+
+        private CancellationTokenSource _monitoringCts;
+        private Task _monitoringTask;
 
         public FrmMainMDI()
         {
@@ -42,127 +48,40 @@ namespace XisCoreSensors
             _monitoringIndicatorTimer = new System.Windows.Forms.Timer();
             _monitoringIndicatorTimer.Interval = 750;
             _monitoringIndicatorTimer.Tick += MonitoringIndicatorTimer_Tick;
+
+            _reconnectTimer = new System.Windows.Forms.Timer();
+            _reconnectTimer.Interval = 5000;
+            _reconnectTimer.Tick += ReconnectTimer_Tick;
         }
 
         private void MonitoringIndicatorTimer_Tick(object sender, EventArgs e)
         {
             lblPlcStatus.Text = _indicatorVisible ? "PLC Monitoring" : "PLC: Monitoring ●";
             _indicatorVisible = !_indicatorVisible;
-        }
-
-        private async Task InitializePLC()
-        {
-            try
-            {
-                _plcService = new PlcService(
-                    Settings.Default.PLC_IP,
-                    Settings.Default.PLC_Path,
-                    (PlcType)Settings.Default.PLC_Type,
-                    (Protocol)Settings.Default.PLC_Protocol,
-                    TimeSpan.FromSeconds(Settings.Default.PLC_Timeout));
-                _plcController = new PlcController(_plcService, TagMapper);
-                _plcController.SensorStateUpdateRequested += PlcController_SensorStateUpdateRequested;
-                _plcService.MonitoringError += PlcService_MonitoringError;
-                lblPlcStatus.Text = "PLC: Loading Tags...";
-                var catalogManager = new TagCatalogManager();
-                List<string> knownBoolTags = catalogManager.Load();
-                if (knownBoolTags.Any())
-                {
-                    _plcService.InitializeBoolTags(knownBoolTags);
-                }
-                lblPlcStatus.Text = "PLC: Verifying...";
-                statusStrip1.Refresh(); 
-                _monitoringIndicatorTimer.Stop(); 
-                try
-                {                    
-                    await _plcService.TestConnectionAsync(new CancellationTokenSource(5000).Token);
-                    lblPlcStatus.Text = "PLC: Connected";
-                    lblPlcStatus.ForeColor = Color.Green;
-                    _plcService.StartMonitoring();
-                    _monitoringIndicatorTimer.Start();
-                }
-                catch (Exception connEx)
-                {                   
-                    lblPlcStatus.Text = "PLC: Disconnected";
-                    lblPlcStatus.ForeColor = Color.Red;                   
-                }
-            }
-            catch (Exception e)
-            {
-                lblPlcStatus.Text = "PLC: CONFIG ERROR";
-                lblPlcStatus.ForeColor = Color.Red;
-                MessageBox.Show($"Error initializing PLC Service." +
-                    $" Please check your PLC settings.\n\nError: {e.Message}", "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-            }
-        }
+        }     
 
         private void PlcService_MonitoringError(string errorMessage)
         {
             // Aseguramos que se ejecute en el hilo de la UI
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new Action(() => PlcService_MonitoringError(errorMessage)));
+                Invoke(new Action(() => PlcService_MonitoringError(errorMessage)));
                 return;
             }
-
-            // Actualizamos la barra de estado para que el error sea visible.
-            lblPlcStatus.Text = "PLC: Monitoring ERROR";
-            lblPlcStatus.ToolTipText = errorMessage; // Muestra el detalle del error al pasar el ratón
-            lblPlcStatus.ForeColor = Color.Red;
-
-            // Detenemos el monitoreo para no seguir generando errores.
-            _plcService.StopMonitoring();
-            _monitoringIndicatorTimer.Stop(); // Detiene el parpadeo cuando hay un error
-            lblPlcStatus.Text = "PLC: Monitoring ERROR"; // Asegura que el texto sea estático        
+            UpdatePlcStatus(PlcUiState.Reconnecting, errorMessage);
         }
 
-        private async Task TestInitialConnectionAsync()
-        {
-            lblPlcStatus.Text = "PLC: Verifying...";
-            _monitoringIndicatorTimer.Stop(); // Asegúrate de que el parpadeo esté detenido
-
-            try
-            {
-                await _plcService.TestConnectionAsync(new CancellationTokenSource(5000).Token); // Tu método de prueba
-
-                // --- LÓGICA DE CONEXIÓN SEGURA ---
-                lblPlcStatus.Text = "PLC: Connected";
-                lblPlcStatus.ForeColor = Color.Green;
-
-                // ¡IMPORTANTE! Solo si la conexión es exitosa, iniciamos el monitoreo.
-                _plcService.StartMonitoring();
-                _monitoringIndicatorTimer.Start(); // Inicia el parpadeo visual
-            }
-            catch (Exception e)
-            {
-                // Si la conexión falla, NO iniciamos el monitoreo.
-                lblPlcStatus.Text = "PLC: Disconnected: " + e.Message;
-                lblPlcStatus.ForeColor = Color.Red;
-                var r = MessageBox.Show("Connection to PLC failed, do you want to open configuration to check PLC parameters?", "PLC", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-                if (r == DialogResult.Yes)
-                {
-                    new FrmConfigPLC().ShowDialog();
-                }
-            }
-
-        }
+      
 
         public void StartMonitoringForLayout(List<string> boolTags)
         {
             if (_plcService == null) return;
-
             _plcService.StopMonitoring();
-            _monitoringIndicatorTimer.Stop(); // Detiene el parpadeo
+            _monitoringIndicatorTimer.Stop();
             _plcService.ClearTags();
-
             _plcService.InitializeBoolTags(boolTags);
-
-            _plcService.StartMonitoring();
-            _monitoringIndicatorTimer.Start(); // Reinicia el parpadeo para el nuevo layout
-
-            // El texto base se establece aquí, el timer se encargará del parpadeo
-            lblPlcStatus.Text = "PLC: Monitoring";
-            lblPlcStatus.ForeColor = Color.Green;
+            _plcService.StartMonitoring();            
+            UpdatePlcStatus(PlcUiState.Monitoring);
         }
 
         private void PlcController_SensorStateUpdateRequested(string sensorId, bool isFailed)
@@ -345,14 +264,9 @@ namespace XisCoreSensors
                 {
                     LoadModel();
                 }
-                await ReinitializePlcAsync();
-                await TestInitialConnectionAsync();
+                await ReinitializePlcAsync();               
 
-                if (ActiveMdiChild is FrmPartViewer activeViewer)
-                {
-                    activeViewer.ToggleEditMode();
-                    activeViewer.ToggleEditMode();
-                }
+               
             }
             catch (Exception exception)
             {
@@ -374,6 +288,7 @@ namespace XisCoreSensors
                 partViewer.WindowState = FormWindowState.Maximized;
                 partViewer.EditModeChanged += Viewer_EditModeChanged;
                 partViewer.OnSensorFailed += ViewerForm_OnSensorFailed;
+                partViewer.FormClosed += Viewer_FormClosed;
                 partViewer.Show();
             }
         }
@@ -522,33 +437,150 @@ namespace XisCoreSensors
         }
 
         private async Task ReinitializePlcAsync()
-        {           
+        {
+            // 1. Detiene todo lo anterior (sin cambios)
             _plcService?.StopMonitoring();
             _plcService?.Dispose();
             _plcController?.Unsubscribe();
 
-            lblPlcStatus.Text = "PLC: Applying new config...";
-            statusStrip1.Refresh();
+            UpdatePlcStatus(PlcUiState.Idle, "Applying new config...");
 
-            await InitializePLC();
+            // 2. Crea nuevas instancias (sin cambios)
+            _plcService = new PlcService();
+            _plcController = new PlcController(_plcService, TagMapper);
+            _plcService.MonitoringError += PlcService_MonitoringError;
+            _plcService.TagReadError += PlcService_TagReadError;
+            _plcController.SensorStateUpdateRequested += PlcController_SensorStateUpdateRequested;
+
+            // 3. Carga los tags del catálogo (sin cambios)
+            var catalogManager = new TagCatalogManager();
+            var knownBoolTags = catalogManager.Load();
+            if (knownBoolTags.Any())
+            {
+                _plcService.InitializeBoolTags(knownBoolTags);
+            }
+
+            // 4. --- LÓGICA DE CONEXIÓN CORREGIDA ---
+            if (await _plcService.TestConnectionAsync(knownBoolTags.FirstOrDefault()))
+            {
+                // Si la conexión es exitosa, actualiza el estado...
+                UpdatePlcStatus(PlcUiState.Connected);
+
+
+                
+
+                // ...e INICIA EL MONITOREO INCONDICIONALMENTE.
+                // El servicio estará activo y listo para cuando se cargue un layout.
+                _plcService.StartMonitoring();
+                UpdatePlcStatus(PlcUiState.Monitoring);
+            }
+            else
+            {
+                // Si la conexión falla, entra en el ciclo de reconexión (sin cambios)
+                UpdatePlcStatus(PlcUiState.Reconnecting, "PLC offline. Reintentando...");
+            }
         }
 
         public void PausePlcMonitoring()
         {
             if (_plcService == null) return;
             _plcService.StopMonitoring();
-            _monitoringIndicatorTimer.Stop();
-            lblPlcStatus.Text = "PLC: Paused (Edit Mode)";
-            lblPlcStatus.ForeColor = Color.Purple;
+            UpdatePlcStatus(PlcUiState.Paused);
         }
 
         public void ResumePlcMonitoring()
         {
             if (_plcService == null) return;
-            _plcService.StartMonitoring();
-            _monitoringIndicatorTimer.Start();
-            lblPlcStatus.Text = "PLC: Monitoring";
-            lblPlcStatus.ForeColor = Color.Green;
+            if(!lblPlcStatus.Text.Contains("Idle"))
+            {
+                _plcService.StartMonitoring();
+                UpdatePlcStatus(PlcUiState.Monitoring);
+            }
+                
+        }
+
+        private void UpdatePlcStatus(PlcUiState state, string details = "")
+        {
+            _monitoringIndicatorTimer.Stop();
+            lblPlcStatus.Text = details;
+            lblPlcStatus.ForeColor = Color.White;
+            switch(state)
+            {
+                case PlcUiState.Disconnected:
+                    lblPlcStatus.Text = "PLC: Disconnected";
+                    lblPlcStatus.BackColor = Color.Orange;
+                    break;
+                case PlcUiState.Connected:
+                    lblPlcStatus.Text = "PLC: Connected";
+                    lblPlcStatus.BackColor = Color.Green;
+                    break;
+                case PlcUiState.Monitoring:
+                    if (_plcService != null && _plcService.IsMonitoring)
+                    {
+                        lblPlcStatus.BackColor = Color.Green;
+                        _monitoringIndicatorTimer.Start();
+                    }
+                    else
+                    {
+                        lblPlcStatus.Text = "PLC: Monitoring Error: " + details;
+                        lblPlcStatus.BackColor = Color.Red;
+                    }
+                    break;
+                case PlcUiState.Paused:
+                    lblPlcStatus.Text = "PLC: Paused (Edit Mode)";
+                    lblPlcStatus.BackColor = Color.Purple;
+                    break;
+                case PlcUiState.Error:
+                    lblPlcStatus.Text = "PLC: ERROR:" + details;
+                    lblPlcStatus.BackColor = Color.Red;
+                    _plcService?.StopMonitoring();
+                    break;
+                case PlcUiState.Idle:
+                    lblPlcStatus.Text = "PLC: Idle";
+                    lblPlcStatus.BackColor = Color.SlateGray;
+                    _plcService?.StopMonitoring();
+                    break;
+                case PlcUiState.Reconnecting:
+                    lblPlcStatus.Text = "PLC: Lost connection. Reconeccting...";
+                    lblPlcStatus.BackColor = Color.Red;
+                    _plcService?.StopMonitoring();
+                    _reconnectTimer.Start();
+                    break;
+            }
+        }
+
+        private void UpdateMonitoringState()
+        {     
+            _plcService?.StopMonitoring();
+            UpdatePlcStatus(PlcUiState.Idle);            
+        }
+
+
+        private void Viewer_FormClosed(object sender, FormClosedEventArgs e)
+        {            
+            UpdateMonitoringState();
+        }
+        private async void ReconnectTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                _reconnectTimer.Stop(); 
+                await ReinitializePlcAsync();
+            }
+            catch (Exception exception)
+            {
+                UpdatePlcStatus(PlcUiState.Error, exception.Message);
+            }
+            
+        }
+
+        private void PlcService_TagReadError(string tagName, string message)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => PlcService_TagReadError(tagName, message)));
+                //return;
+            }            
         }
     }
 }

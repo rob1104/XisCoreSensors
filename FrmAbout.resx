@@ -9703,4 +9703,7 @@
         QOmLVLsQq226XXs/9Zy0bQCgAYDquMQ5NgDQAEADAI0wwohvX/z/ADUrVa0XIHKsAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="textBoxDescription.Text" xml:space="preserve">
+    <value>XisSensors is an industrial monitoring and visualization application designed to monitor the status of sensors in real time through direct communication with programmable logic controllers (PLCs). This tool allows operators and maintenance personnel to create visual layouts of their production areas, map physical sensors to PLC tags, and react quickly to failures to minimize downtime.     This software was developed using the following open source libraries: libplctag.NET for PLC comunication, Newtonsoft.Json for data serialization.</value>
+  </data>
 </root>

@@ -31,21 +31,21 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMainMDI));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuChkEditMode = new System.Windows.Forms.ToolStripMenuItem();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.lblEditModeStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lblPlcStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.model1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveLayoutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuChkEditMode = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tagMapperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.lblEditModeStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblPlcStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -75,70 +75,6 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuChkEditMode});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // mnuChkEditMode
-            // 
-            this.mnuChkEditMode.Name = "mnuChkEditMode";
-            this.mnuChkEditMode.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.mnuChkEditMode.Size = new System.Drawing.Size(147, 22);
-            this.mnuChkEditMode.Text = "Edit mode";
-            this.mnuChkEditMode.Click += new System.EventHandler(this.mnuChkEditMode_Click);
-            // 
-            // settingsToolStripMenuItem
-            // 
-            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pLCToolStripMenuItem,
-            this.tagMapperToolStripMenuItem});
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.settingsToolStripMenuItem.Text = "Settings";
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
-            this.aboutToolStripMenuItem.Text = "About...";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblEditModeStatus,
-            this.lblPlcStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 583);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(991, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // lblEditModeStatus
-            // 
-            this.lblEditModeStatus.BackColor = System.Drawing.Color.Lime;
-            this.lblEditModeStatus.Name = "lblEditModeStatus";
-            this.lblEditModeStatus.Size = new System.Drawing.Size(91, 17);
-            this.lblEditModeStatus.Text = "MODE: LOCKED";
-            // 
-            // lblPlcStatus
-            // 
-            this.lblPlcStatus.Name = "lblPlcStatus";
-            this.lblPlcStatus.Size = new System.Drawing.Size(118, 17);
-            this.lblPlcStatus.Text = "toolStripStatusLabel1";
             // 
             // model1ToolStripMenuItem
             // 
@@ -180,6 +116,31 @@
             this.loadLayoutToolStripMenuItem.Text = "Load Layout...";
             this.loadLayoutToolStripMenuItem.Click += new System.EventHandler(this.loadLayoutToolStripMenuItem_Click);
             // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuChkEditMode});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // mnuChkEditMode
+            // 
+            this.mnuChkEditMode.Name = "mnuChkEditMode";
+            this.mnuChkEditMode.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.mnuChkEditMode.Size = new System.Drawing.Size(147, 22);
+            this.mnuChkEditMode.Text = "Edit mode";
+            this.mnuChkEditMode.Click += new System.EventHandler(this.mnuChkEditMode_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pLCToolStripMenuItem,
+            this.tagMapperToolStripMenuItem});
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            // 
             // pLCToolStripMenuItem
             // 
             this.pLCToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.plc;
@@ -195,6 +156,45 @@
             this.tagMapperToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.tagMapperToolStripMenuItem.Text = "Tag Mapper...";
             this.tagMapperToolStripMenuItem.Click += new System.EventHandler(this.tagMapperToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.aboutToolStripMenuItem.Text = "About...";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lblEditModeStatus,
+            this.lblPlcStatus});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 583);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(991, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // lblEditModeStatus
+            // 
+            this.lblEditModeStatus.BackColor = System.Drawing.Color.Lime;
+            this.lblEditModeStatus.Name = "lblEditModeStatus";
+            this.lblEditModeStatus.Size = new System.Drawing.Size(91, 17);
+            this.lblEditModeStatus.Text = "MODE: LOCKED";
+            // 
+            // lblPlcStatus
+            // 
+            this.lblPlcStatus.Name = "lblPlcStatus";
+            this.lblPlcStatus.Size = new System.Drawing.Size(118, 17);
+            this.lblPlcStatus.Text = "toolStripStatusLabel1";
             // 
             // notificationBar1
             // 
@@ -222,7 +222,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Xis Sensors 0.1.5";
+            this.Text = "Xis Sensors 0.1.6";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);

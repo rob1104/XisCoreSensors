@@ -37,6 +37,8 @@ namespace XisCoreSensors
         private bool _hasUnsavedChanges = false;
         private string _currentLayoutPath = null;
 
+        public bool IsInEditMode => _isEditMode;
+
         public FrmPartViewer()
         {
             InitializeComponent();

@@ -80,25 +80,27 @@
             // labelProductName
             // 
             this.labelProductName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelProductName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelProductName.Location = new System.Drawing.Point(245, 0);
             this.labelProductName.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelProductName.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelProductName.Name = "labelProductName";
             this.labelProductName.Size = new System.Drawing.Size(477, 17);
             this.labelProductName.TabIndex = 19;
-            this.labelProductName.Text = "Xis Sensor Detect";
+            this.labelProductName.Text = "XisSensors";
             this.labelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelVersion
             // 
             this.labelVersion.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelVersion.ForeColor = System.Drawing.Color.Blue;
             this.labelVersion.Location = new System.Drawing.Point(245, 26);
             this.labelVersion.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelVersion.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(477, 17);
             this.labelVersion.TabIndex = 0;
-            this.labelVersion.Text = "Versión 0.1.5";
+            this.labelVersion.Text = "Version 0.1.6";
             this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelCopyright
@@ -116,13 +118,15 @@
             // labelCompanyName
             // 
             this.labelCompanyName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCompanyName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelCompanyName.ForeColor = System.Drawing.Color.Fuchsia;
             this.labelCompanyName.Location = new System.Drawing.Point(245, 78);
             this.labelCompanyName.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelCompanyName.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelCompanyName.Name = "labelCompanyName";
             this.labelCompanyName.Size = new System.Drawing.Size(477, 17);
             this.labelCompanyName.TabIndex = 22;
-            this.labelCompanyName.Text = "Xis Desarrollos";
+            this.labelCompanyName.Text = "Developed By XIS Desarrollos";
             this.labelCompanyName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // textBoxDescription
@@ -137,8 +141,7 @@
             this.textBoxDescription.Size = new System.Drawing.Size(477, 125);
             this.textBoxDescription.TabIndex = 23;
             this.textBoxDescription.TabStop = false;
-            this.textBoxDescription.Text = "Todos los derechos reservados. La licencia de este producto se autoriza al usuari" +
-    "o final.  Solo es válida una licencia por equipo.";
+            this.textBoxDescription.Text = resources.GetString("textBoxDescription.Text");
             // 
             // okButton
             // 
@@ -148,7 +151,7 @@
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 22);
             this.okButton.TabIndex = 24;
-            this.okButton.Text = "&Aceptar";
+            this.okButton.Text = "&Ok";
             // 
             // FrmAbout
             // 
