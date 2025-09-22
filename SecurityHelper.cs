@@ -1,5 +1,6 @@
-﻿using System.Text;
+﻿using System;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace XisCoreSensors
 {
@@ -19,6 +20,12 @@ namespace XisCoreSensors
                 }
                 return builder.ToString();
             }
+        }
+
+        public static bool VerifyPassword(string password, string hashedPassword)
+        {
+            string hashOfInput = HashPassword(password);
+            return StringComparer.OrdinalIgnoreCase.Compare(hashOfInput, hashedPassword) == 0;
         }
     }
 }

@@ -41,6 +41,7 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tagMapperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeEditModePasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -86,6 +87,7 @@
             // 
             // loadImageToolStripMenuItem
             // 
+            this.loadImageToolStripMenuItem.Enabled = false;
             this.loadImageToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Images_icon;
             this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
             this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
@@ -94,6 +96,7 @@
             // 
             // saveLayoutToolStripMenuItem
             // 
+            this.saveLayoutToolStripMenuItem.Enabled = false;
             this.saveLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.saves;
             this.saveLayoutToolStripMenuItem.Name = "saveLayoutToolStripMenuItem";
             this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
@@ -102,6 +105,7 @@
             // 
             // saveLayoutToolStripMenuItem1
             // 
+            this.saveLayoutToolStripMenuItem1.Enabled = false;
             this.saveLayoutToolStripMenuItem1.Image = global::XisCoreSensors.Properties.Resources.save_icon;
             this.saveLayoutToolStripMenuItem1.Name = "saveLayoutToolStripMenuItem1";
             this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
@@ -110,6 +114,7 @@
             // 
             // loadLayoutToolStripMenuItem
             // 
+            this.loadLayoutToolStripMenuItem.Enabled = false;
             this.loadLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Folder_Open_icon;
             this.loadLayoutToolStripMenuItem.Name = "loadLayoutToolStripMenuItem";
             this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
@@ -136,26 +141,36 @@
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pLCToolStripMenuItem,
-            this.tagMapperToolStripMenuItem});
+            this.tagMapperToolStripMenuItem,
+            this.changeEditModePasswordToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
             // 
             // pLCToolStripMenuItem
             // 
+            this.pLCToolStripMenuItem.Enabled = false;
             this.pLCToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.plc;
             this.pLCToolStripMenuItem.Name = "pLCToolStripMenuItem";
-            this.pLCToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.pLCToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
             this.pLCToolStripMenuItem.Text = "PLC...";
             this.pLCToolStripMenuItem.Click += new System.EventHandler(this.pLCToolStripMenuItem_Click);
             // 
             // tagMapperToolStripMenuItem
             // 
+            this.tagMapperToolStripMenuItem.Enabled = false;
             this.tagMapperToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.tags_icon;
             this.tagMapperToolStripMenuItem.Name = "tagMapperToolStripMenuItem";
-            this.tagMapperToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.tagMapperToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
             this.tagMapperToolStripMenuItem.Text = "Tag Mapper...";
             this.tagMapperToolStripMenuItem.Click += new System.EventHandler(this.tagMapperToolStripMenuItem_Click);
+            // 
+            // changeEditModePasswordToolStripMenuItem
+            // 
+            this.changeEditModePasswordToolStripMenuItem.Name = "changeEditModePasswordToolStripMenuItem";
+            this.changeEditModePasswordToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.changeEditModePasswordToolStripMenuItem.Text = "Change edit mode password...";
+            this.changeEditModePasswordToolStripMenuItem.Click += new System.EventHandler(this.changeEditModePasswordToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -222,7 +237,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Xis Sensors 0.1.6";
+            this.Text = "Xis Sensors 0.1.7";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);
@@ -256,6 +271,7 @@
         private System.Windows.Forms.ToolStripMenuItem pLCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tagMapperToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel lblPlcStatus;
+        private System.Windows.Forms.ToolStripMenuItem changeEditModePasswordToolStripMenuItem;
     }
 }
 

@@ -88,6 +88,12 @@
     <Compile Include="FrmAddRange.Designer.cs">
       <DependentUpon>FrmAddRange.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmChangePassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmChangePassword.Designer.cs">
+      <DependentUpon>FrmChangePassword.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmConfigPLC.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,6 +152,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmAddRange.resx">
       <DependentUpon>FrmAddRange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmChangePassword.resx">
+      <DependentUpon>FrmChangePassword.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmConfigPLC.resx">
       <DependentUpon>FrmConfigPLC.cs</DependentUpon>

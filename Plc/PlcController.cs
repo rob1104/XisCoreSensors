@@ -11,6 +11,9 @@ namespace XisCoreSensors.PLC
         private readonly TagMapper _tagMapper;
 
         public event Action<string, bool> SensorStateUpdateRequested;
+        public event Action<int> SecuenceStepChanged;
+
+        public event Action<bool> BoolMonitoringPausedStateChanged;
 
         public PlcController(PlcService plcService, TagMapper tagMapper)
         {
@@ -19,6 +22,26 @@ namespace XisCoreSensors.PLC
 
             // Nos suscribimos a los eventos de cambio de tag del servicio.
             _plcService.TagBoolChanged += OnTagBoolChanged;
+            _plcService.TagDintChanged += OnTagDintChanged;
+        }
+
+        // Este metodo se llamará cada vez que un tag de tipo DINT cambie su estado.
+        private void OnTagDintChanged(string tagName, int newValue)
+        {
+            string secuenceTagName = Properties.Settings.Default.SequenceTagName;
+            if(tagName.Equals(secuenceTagName, StringComparison.OrdinalIgnoreCase))
+            {
+                // 1. Pausa o reanuda el monitoreo de los sensores booleanos
+                //    (Esta lógica ya la tenías y es correcta).
+                var isPaused = (newValue == 0);
+                _plcService.PauseBoolMonitoring(isPaused);
+
+                BoolMonitoringPausedStateChanged?.Invoke(isPaused);
+
+                // 2. Notifica a la UI sobre el nuevo paso de la secuencia.
+                //    El FrmMainMDI se encargará de la lógica visual.
+                SecuenceStepChanged?.Invoke(newValue);
+            }
         }
 
         // Este método se llamará cada vez que un tag cambie su estado.
@@ -43,10 +66,10 @@ namespace XisCoreSensors.PLC
             }
         }
 
-
         public void Unsubscribe()
         {
             _plcService.TagBoolChanged -= OnTagBoolChanged;
+            _plcService.TagDintChanged -= OnTagDintChanged;
         }
 
        

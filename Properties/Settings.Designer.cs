@@ -118,5 +118,17 @@ namespace XisCoreSensors.Properties {
                 this["Pulse_Time"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("SEQ")]
+        public string SequenceTagName {
+            get {
+                return ((string)(this["SequenceTagName"]));
+            }
+            set {
+                this["SequenceTagName"] = value;
+            }
+        }
     }
 }

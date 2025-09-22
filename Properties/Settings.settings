@@ -26,5 +26,8 @@
     <Setting Name="Pulse_Time" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="SequenceTagName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SEQ</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

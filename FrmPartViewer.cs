@@ -831,6 +831,65 @@ namespace XisCoreSensors
                 sensorControl.Status = isFailed ? SensorControl.SensorStatus.Fail : SensorControl.SensorStatus.Ok;
             }
         }
+
+        public void UpdateSequenceStep(int step)
+        {
+            var message = "";
+
+            switch (step)
+            {
+                case 0:
+                    message = "WAITING FOR OPERATOR TO LOAD PART";
+                    break;
+                case 1:
+                    message = "";
+                    break;
+                case 2:
+                    message = $"CUSTOM MESSAGE {step}";
+                    break;
+                case 3:
+                    message = $"CUSTOM MESSAGE NEW {step}";
+                    break;
+                default:
+                    message = "";
+                    break;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                lblStepMessage.Text = message;
+                lblStepMessage.Visible = true;
+            }
+            else
+            {
+                lblStepMessage.Visible = false;
+            }
+        }
+
+        public void SetSensorsPausedVisualState(bool isPaused)
+        {
+            foreach (var sensor in _sensors)
+            {
+                if (isPaused)
+                {
+                    // Si pausamos, todos los sensores se ponen en amarillo.
+                    sensor.Status = SensorControl.SensorStatus.Paused;
+                }
+                else
+                {
+                    // Si reanudamos, los sensores vuelven a su estado 'Unmapped' o 'Ok'
+                    // y el PlcService se encargará de ponerlos en rojo/verde en el siguiente ciclo.
+                    if (string.IsNullOrEmpty(sensor.PlcTag))
+                    {
+                        sensor.Status = SensorControl.SensorStatus.Unmapped;
+                    }
+                    else
+                    {
+                        sensor.Status = SensorControl.SensorStatus.Ok;
+                    }
+                }
+            }
+        }
     }
 
     

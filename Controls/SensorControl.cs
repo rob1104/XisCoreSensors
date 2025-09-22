@@ -10,7 +10,7 @@ namespace XisCoreSensors.Controls
         private string _sensorId;
         private string _plcTag;
 
-        public enum SensorStatus { Ok, Fail, Unmapped }
+        public enum SensorStatus { Ok, Fail, Unmapped, Paused }
         private SensorStatus _status = SensorStatus.Unmapped;
 
         // --- INICIO: CÓDIGO NUEVO PARA PARPADEO ---
@@ -128,6 +128,9 @@ namespace XisCoreSensors.Controls
                     break;
                 case SensorStatus.Fail:
                     baseColor = Color.FromArgb(_flashAlpha, Color.Red);
+                    break;
+                case SensorStatus.Paused:
+                    baseColor = Color.FromArgb(_flashAlpha, Color.Yellow);
                     break;
                 case SensorStatus.Unmapped:
                 default:

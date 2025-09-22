@@ -30,7 +30,7 @@ namespace XisCoreSensors
 
         public TagMapper TagMapper { get; } = new TagMapper();
 
-        private enum PlcUiState { Disconnected, Connected, Monitoring, Paused, Error, Idle, Reconnecting }
+        private enum PlcUiState { Disconnected, Connected, Monitoring, Paused, Error, Idle, Reconnecting, SequencePaused }
 
         private CancellationTokenSource _monitoringCts;
         private Task _monitoringTask;
@@ -39,8 +39,7 @@ namespace XisCoreSensors
         {
             InitializeComponent();
             ConfigureNotificationBar();
-            ConfigureMonitoringTimer();
-            
+            ConfigureMonitoringTimer();            
         }
 
         private void ConfigureMonitoringTimer()
@@ -167,8 +166,8 @@ namespace XisCoreSensors
                 if (newPassword == confirmPassword && !string.IsNullOrEmpty(newPassword))
                 {
                     // Las contraseñas coinciden, guardamos el hash.
-                    Properties.Settings.Default.EditModePasswordHash = SecurityHelper.HashPassword(newPassword);
-                    Properties.Settings.Default.Save();
+                    Settings.Default.EditModePasswordHash = SecurityHelper.HashPassword(newPassword);
+                    Settings.Default.Save();
                     MessageBox.Show("Password created successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
@@ -270,8 +269,7 @@ namespace XisCoreSensors
             }
             catch (Exception exception)
             {
-                lblPlcStatus.Text = "PLC:Config ERROR.";
-                MessageBox.Show($"Error: {exception.Message}", "Config ERROR", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                lblPlcStatus.Text = $"PLC:Config ERROR. {exception}";
             }            
         }
 
@@ -438,7 +436,7 @@ namespace XisCoreSensors
 
         private async Task ReinitializePlcAsync()
         {
-            // 1. Detiene todo lo anterior (sin cambios)
+            // 1. Detiene lo anterior (sin cambios)
             _plcService?.StopMonitoring();
             _plcService?.Dispose();
             _plcController?.Unsubscribe();
@@ -451,6 +449,8 @@ namespace XisCoreSensors
             _plcService.MonitoringError += PlcService_MonitoringError;
             _plcService.TagReadError += PlcService_TagReadError;
             _plcController.SensorStateUpdateRequested += PlcController_SensorStateUpdateRequested;
+
+            _plcController.BoolMonitoringPausedStateChanged += PlcController_BoolMonitoringPausedStateChanged;
 
             // 3. Carga los tags del catálogo (sin cambios)
             var catalogManager = new TagCatalogManager();
@@ -465,10 +465,6 @@ namespace XisCoreSensors
             {
                 // Si la conexión es exitosa, actualiza el estado...
                 UpdatePlcStatus(PlcUiState.Connected);
-
-
-                
-
                 // ...e INICIA EL MONITOREO INCONDICIONALMENTE.
                 // El servicio estará activo y listo para cuando se cargue un layout.
                 _plcService.StartMonitoring();
@@ -477,7 +473,61 @@ namespace XisCoreSensors
             else
             {
                 // Si la conexión falla, entra en el ciclo de reconexión (sin cambios)
-                UpdatePlcStatus(PlcUiState.Reconnecting, "PLC offline. Reintentando...");
+                UpdatePlcStatus(PlcUiState.Error, "Connection Error.");
+                var r = MessageBox.Show("A connection to the PLC could not be established. Do you want to open the configuration?", "PLC ERROR", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                if(r == DialogResult.Yes)
+                {
+                    new FrmConfigPLC().ShowDialog();
+                }
+                   
+            }
+
+            _plcController.SecuenceStepChanged += PlcController_SequenceStepChanged;
+            string sequenceTag = Properties.Settings.Default.SequenceTagName;
+            if (!string.IsNullOrEmpty(sequenceTag))
+            {
+                _plcService.InitializeDintTags(new[] { sequenceTag });
+            }
+        }
+
+        private void PlcController_BoolMonitoringPausedStateChanged(bool isPaused)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => PlcController_BoolMonitoringPausedStateChanged(isPaused)));
+                return;
+            }
+
+            // Pasa la orden de actualizar el estado visual a todos los visores abiertos.
+            foreach (var viewer in this.MdiChildren.OfType<FrmPartViewer>())
+            {
+                viewer.SetSensorsPausedVisualState(isPaused);
+            }
+        }
+
+        private void PlcController_SequenceStepChanged(int newStep)
+        {
+            if(InvokeRequired)
+            {
+                Invoke(new Action(() => PlcController_SequenceStepChanged(newStep)));
+                return;
+            }        
+            
+            if(newStep == 0)
+            {
+                PausePlcMonitoring();
+                UpdatePlcStatus(PlcUiState.SequencePaused);
+            }
+            else
+            {
+                ResumePlcMonitoring();               
+            }
+
+            
+
+            foreach (var viewer in MdiChildren.OfType<FrmPartViewer>())
+            {
+                viewer.UpdateSequenceStep(newStep);
             }
         }
 
@@ -546,6 +596,12 @@ namespace XisCoreSensors
                     _plcService?.StopMonitoring();
                     _reconnectTimer.Start();
                     break;
+                case PlcUiState.SequencePaused:
+                    lblPlcStatus.Text = "PLC: Paused by Sequence (Step 0)";
+                    lblPlcStatus.BackColor = Color.Gold;
+                    lblPlcStatus.ForeColor = Color.Black;
+                    _plcService?.StopMonitoring();
+                    break;
             }
         }
 
@@ -581,6 +637,14 @@ namespace XisCoreSensors
                 Invoke(new Action(() => PlcService_TagReadError(tagName, message)));
                 //return;
             }            
+        }
+
+        private void changeEditModePasswordToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var changePasswordForm = new FrmChangePassword())
+            {
+                changePasswordForm.ShowDialog(this);
+            }
         }
     }
 }

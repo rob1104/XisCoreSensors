@@ -39,6 +39,7 @@
             this.renombrarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.eliminarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblStepMessage = new System.Windows.Forms.Label();
             this.pnlViewport.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.contextMenu.SuspendLayout();
@@ -49,6 +50,7 @@
             // 
             this.pnlViewport.AutoScroll = true;
             this.pnlViewport.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlViewport.Controls.Add(this.lblStepMessage);
             this.pnlViewport.Controls.Add(this.picCanvas);
             this.pnlViewport.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlViewport.Location = new System.Drawing.Point(0, 0);
@@ -71,12 +73,12 @@
             this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.agregarSensorToolTipMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(181, 48);
+            this.contextMenu.Size = new System.Drawing.Size(135, 26);
             // 
             // agregarSensorToolTipMenuItem
             // 
             this.agregarSensorToolTipMenuItem.Name = "agregarSensorToolTipMenuItem";
-            this.agregarSensorToolTipMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.agregarSensorToolTipMenuItem.Size = new System.Drawing.Size(134, 22);
             this.agregarSensorToolTipMenuItem.Text = "Add Sensor";
             this.agregarSensorToolTipMenuItem.Click += new System.EventHandler(this.agregarSensorToolTipMenuItem_Click);
             // 
@@ -99,7 +101,7 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(182, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(142, 6);
             // 
             // eliminarSensorToolStripMenuItem
             // 
@@ -107,6 +109,18 @@
             this.eliminarSensorToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.eliminarSensorToolStripMenuItem.Text = "Delete Sensor";
             this.eliminarSensorToolStripMenuItem.Click += new System.EventHandler(this.eliminarSensorToolStripMenuItem_Click);
+            // 
+            // lblStepMessage
+            // 
+            this.lblStepMessage.BackColor = System.Drawing.Color.Purple;
+            this.lblStepMessage.Font = new System.Drawing.Font("Segoe UI", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStepMessage.ForeColor = System.Drawing.Color.White;
+            this.lblStepMessage.Location = new System.Drawing.Point(228, 219);
+            this.lblStepMessage.Name = "lblStepMessage";
+            this.lblStepMessage.Size = new System.Drawing.Size(514, 198);
+            this.lblStepMessage.TabIndex = 1;
+            this.lblStepMessage.Text = "label1";
+            this.lblStepMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // FrmPartViewer
             // 
@@ -142,5 +156,6 @@
         private System.Windows.Forms.ToolStripMenuItem renombrarSensorToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem eliminarSensorToolStripMenuItem;
+        private System.Windows.Forms.Label lblStepMessage;
     }
 }
