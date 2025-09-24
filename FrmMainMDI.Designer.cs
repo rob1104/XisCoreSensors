@@ -42,13 +42,17 @@
             this.pLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tagMapperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeEditModePasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.forcePLCReconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblEditModeStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblPlcStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
+            this.toolStripStatusSpacer = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblConnectionHealth = new System.Windows.Forms.ToolStripStatusLabel();
             this.sequenceNotificationBar = new XisCoreSensors.Controls.NotificationBar();
+            this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
+            this.showDiagnosticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -82,7 +86,7 @@
             // 
             this.model1ToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.play_icon;
             this.model1ToolStripMenuItem.Name = "model1ToolStripMenuItem";
-            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.model1ToolStripMenuItem.Text = "View";
             this.model1ToolStripMenuItem.Click += new System.EventHandler(this.model1ToolStripMenuItem_Click);
             // 
@@ -91,7 +95,7 @@
             this.loadImageToolStripMenuItem.Enabled = false;
             this.loadImageToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Images_icon;
             this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadImageToolStripMenuItem.Text = "Change image...";
             this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
             // 
@@ -100,7 +104,7 @@
             this.saveLayoutToolStripMenuItem.Enabled = false;
             this.saveLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.saves;
             this.saveLayoutToolStripMenuItem.Name = "saveLayoutToolStripMenuItem";
-            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveLayoutToolStripMenuItem.Text = "Save Layout As...";
             this.saveLayoutToolStripMenuItem.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem_Click);
             // 
@@ -109,7 +113,7 @@
             this.saveLayoutToolStripMenuItem1.Enabled = false;
             this.saveLayoutToolStripMenuItem1.Image = global::XisCoreSensors.Properties.Resources.save_icon;
             this.saveLayoutToolStripMenuItem1.Name = "saveLayoutToolStripMenuItem1";
-            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
+            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.saveLayoutToolStripMenuItem1.Text = "Save Layout";
             this.saveLayoutToolStripMenuItem1.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem1_Click);
             // 
@@ -118,7 +122,7 @@
             this.loadLayoutToolStripMenuItem.Enabled = false;
             this.loadLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Folder_Open_icon;
             this.loadLayoutToolStripMenuItem.Name = "loadLayoutToolStripMenuItem";
-            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadLayoutToolStripMenuItem.Text = "Load Layout...";
             this.loadLayoutToolStripMenuItem.Click += new System.EventHandler(this.loadLayoutToolStripMenuItem_Click);
             // 
@@ -134,7 +138,7 @@
             // 
             this.mnuChkEditMode.Name = "mnuChkEditMode";
             this.mnuChkEditMode.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.mnuChkEditMode.Size = new System.Drawing.Size(147, 22);
+            this.mnuChkEditMode.Size = new System.Drawing.Size(180, 22);
             this.mnuChkEditMode.Text = "Edit mode";
             this.mnuChkEditMode.Click += new System.EventHandler(this.mnuChkEditMode_Click);
             // 
@@ -143,7 +147,9 @@
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pLCToolStripMenuItem,
             this.tagMapperToolStripMenuItem,
-            this.changeEditModePasswordToolStripMenuItem});
+            this.changeEditModePasswordToolStripMenuItem,
+            this.forcePLCReconnectToolStripMenuItem,
+            this.showDiagnosticsToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -173,6 +179,14 @@
             this.changeEditModePasswordToolStripMenuItem.Text = "Change edit mode password...";
             this.changeEditModePasswordToolStripMenuItem.Click += new System.EventHandler(this.changeEditModePasswordToolStripMenuItem_Click);
             // 
+            // forcePLCReconnectToolStripMenuItem
+            // 
+            this.forcePLCReconnectToolStripMenuItem.Name = "forcePLCReconnectToolStripMenuItem";
+            this.forcePLCReconnectToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
+            this.forcePLCReconnectToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.forcePLCReconnectToolStripMenuItem.Text = "Force PLC Reconnect";
+            this.forcePLCReconnectToolStripMenuItem.Click += new System.EventHandler(this.forcePLCReconnectToolStripMenuItem_Click);
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -192,7 +206,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblEditModeStatus,
-            this.lblPlcStatus});
+            this.lblPlcStatus,
+            this.toolStripStatusSpacer,
+            this.lblConnectionHealth});
             this.statusStrip1.Location = new System.Drawing.Point(0, 583);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(991, 22);
@@ -212,6 +228,32 @@
             this.lblPlcStatus.Size = new System.Drawing.Size(118, 17);
             this.lblPlcStatus.Text = "toolStripStatusLabel1";
             // 
+            // toolStripStatusSpacer
+            // 
+            this.toolStripStatusSpacer.Name = "toolStripStatusSpacer";
+            this.toolStripStatusSpacer.Size = new System.Drawing.Size(668, 17);
+            this.toolStripStatusSpacer.Spring = true;
+            // 
+            // lblConnectionHealth
+            // 
+            this.lblConnectionHealth.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.lblConnectionHealth.BackColor = System.Drawing.Color.Gray;
+            this.lblConnectionHealth.Name = "lblConnectionHealth";
+            this.lblConnectionHealth.Size = new System.Drawing.Size(99, 17);
+            this.lblConnectionHealth.Text = "CONN: Unknown";
+            this.lblConnectionHealth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblConnectionHealth.ToolTipText = "Connection health status";
+            // 
+            // sequenceNotificationBar
+            // 
+            this.sequenceNotificationBar.BackColor = System.Drawing.Color.DodgerBlue;
+            this.sequenceNotificationBar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.sequenceNotificationBar.Location = new System.Drawing.Point(0, 124);
+            this.sequenceNotificationBar.Name = "sequenceNotificationBar";
+            this.sequenceNotificationBar.Size = new System.Drawing.Size(991, 120);
+            this.sequenceNotificationBar.TabIndex = 7;
+            this.sequenceNotificationBar.Visible = false;
+            // 
             // notificationBar1
             // 
             this.notificationBar1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -224,14 +266,13 @@
             this.notificationBar1.TabIndex = 5;
             this.notificationBar1.Visible = false;
             // 
-            // sequenceNotificationBar
+            // showDiagnosticsToolStripMenuItem
             // 
-            this.sequenceNotificationBar.BackColor = System.Drawing.Color.DodgerBlue;
-            this.sequenceNotificationBar.Dock = System.Windows.Forms.DockStyle.Top;
-            this.sequenceNotificationBar.Location = new System.Drawing.Point(0, 124);
-            this.sequenceNotificationBar.Name = "sequenceNotificationBar";
-            this.sequenceNotificationBar.Size = new System.Drawing.Size(991, 120);
-            this.sequenceNotificationBar.TabIndex = 7;
+            this.showDiagnosticsToolStripMenuItem.Name = "showDiagnosticsToolStripMenuItem";
+            this.showDiagnosticsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.showDiagnosticsToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.showDiagnosticsToolStripMenuItem.Text = "Show diagnostics";
+            this.showDiagnosticsToolStripMenuItem.Click += new System.EventHandler(this.showDiagnosticsToolStripMenuItem_Click);
             // 
             // FrmMainMDI
             // 
@@ -248,7 +289,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Xis Sensors 0.1.7";
+            this.Text = "Xis Sensors 0.2.1";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);
@@ -284,6 +325,10 @@
         private System.Windows.Forms.ToolStripStatusLabel lblPlcStatus;
         private System.Windows.Forms.ToolStripMenuItem changeEditModePasswordToolStripMenuItem;
         private Controls.NotificationBar sequenceNotificationBar;
+        private System.Windows.Forms.ToolStripMenuItem forcePLCReconnectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel lblConnectionHealth;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusSpacer;
+        private System.Windows.Forms.ToolStripMenuItem showDiagnosticsToolStripMenuItem;
     }
 }
 

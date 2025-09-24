@@ -32,14 +32,43 @@ namespace XisCoreSensors
 
         private enum PlcUiState { Disconnected, Connected, Monitoring, Paused, Error, Idle, Reconnecting, SequencePaused }
 
-        private CancellationTokenSource _monitoringCts;
-        private Task _monitoringTask;
+        private bool _isInRecoveryMode = false;
+        private System.Windows.Forms.Timer _recoveryAttemptTimer;
+        private System.Windows.Forms.Timer _healthDisplayTimer;
 
         public FrmMainMDI()
         {
             InitializeComponent();
+            ConfigureStatusStrip();
             ConfigureNotificationBar();
-            ConfigureMonitoringTimer();            
+            ConfigureMonitoringTimer();
+            UpdateConnectionHealthDisplay();
+        }
+
+        private bool ValidateMonitoringState()
+        {
+            if(_plcService == null) return false;
+
+            var monitoringState = _plcService.GetMonitoringState();
+            var shouldBe = (bool)monitoringState["ShouldBeMonitoring"];
+            var actuallyIs = (bool)monitoringState["IsActuallyMonitoring"];
+            var timerEnabled = (bool)monitoringState["TimerEnabled"];
+            var hasTags = (bool)monitoringState["HasTags"];
+
+            // Si debería estar monitoreando pero no lo está realmente
+            if (shouldBe && !actuallyIs && hasTags)
+            {
+                // Hay un problema - el estado no es consistente
+                return false;
+            }
+
+            // Si no hay tags, no puede monitorear
+            if (shouldBe && !hasTags)
+            {
+                return false;
+            }
+
+            return actuallyIs;
         }
 
         private void ConfigureMonitoringTimer()
@@ -51,11 +80,137 @@ namespace XisCoreSensors
             _reconnectTimer = new System.Windows.Forms.Timer();
             _reconnectTimer.Interval = 5000;
             _reconnectTimer.Tick += ReconnectTimer_Tick;
+
+            _recoveryAttemptTimer = new System.Windows.Forms.Timer();
+            _recoveryAttemptTimer.Interval = 15000;
+            _recoveryAttemptTimer.Tick += RecoveryAttemptTimer_Tick;
+
+            _healthDisplayTimer = new System.Windows.Forms.Timer();
+            _healthDisplayTimer.Interval = 5000; // Actualizar cada 5 segundos
+            _healthDisplayTimer.Tick += (s, e) => UpdateConnectionHealthDisplay();
+            _healthDisplayTimer.Start();
+        }
+
+        private void PlcService_ConnectionStateChanged(bool isHealty)
+        {
+            if(InvokeRequired)
+            {
+                Invoke(new Action(() => PlcService_ConnectionStateChanged(isHealty)));
+                return; 
+            }
+
+            if(isHealty)
+            {
+                if(_isInRecoveryMode)
+                {
+                    UpdatePlcStatus(PlcUiState.Connected, "Connection recovered.");
+                    _isInRecoveryMode = false;
+                    _recoveryAttemptTimer.Stop();
+
+                    if(_plcService != null && !_plcService.IsMonitoring)
+                    {
+                        _plcService.StartMonitoring();
+                        UpdatePlcStatus(PlcUiState.Monitoring);
+                    }
+                    else if(_plcService != null && _plcService.IsMonitoring)
+                    {
+                        UpdatePlcStatus(PlcUiState.Monitoring, "Connection healthy");
+                    }
+                }
+            }
+            else
+            {
+                if(_plcService != null && _plcService.IsMonitoring)
+                {
+                    UpdatePlcStatus(PlcUiState.Monitoring, "Connection issues detected");
+                }
+                else
+                {
+                    UpdatePlcStatus(PlcUiState.Error, "Connection health issues detected.");
+                }
+                    
+                if(!_isInRecoveryMode)
+                {
+                    _isInRecoveryMode = true;
+                    _recoveryAttemptTimer.Start();
+                }
+            }
+            UpdateConnectionHealthDisplay();
+        }
+
+        private void PlcService_ConnectionRecovered(string message)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => PlcService_ConnectionRecovered(message)));
+                return;
+            }
+            UpdatePlcStatus(PlcUiState.Connected, message);
+            UpdateConnectionHealthDisplay();
+        }
+
+        private async void RecoveryAttemptTimer_Tick(object sender, EventArgs e)
+        {
+            if (!_isInRecoveryMode)
+            {
+                _recoveryAttemptTimer.Stop();
+                return;
+            }
+
+            UpdatePlcStatus(PlcUiState.Reconnecting, "Attempting automatic recovery...");
+
+            try
+            {
+                // Intentar reconectar
+                var catalogManager = new TagCatalogManager();
+                var knownBoolTags = catalogManager.Load();
+                var testTag = knownBoolTags.FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(testTag) && await _plcService.TestConnectionAsync(testTag))
+                {
+                    _isInRecoveryMode = false;
+                    _recoveryAttemptTimer.Stop();
+                    UpdatePlcStatus(PlcUiState.Connected, "Connection recovered automatically");
+
+                    // Reiniciar monitoreo si es necesario
+                    if (!_plcService.IsMonitoring)
+                    {
+                        _plcService.StartMonitoring();
+                        UpdatePlcStatus(PlcUiState.Monitoring);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdatePlcStatus(PlcUiState.Error, $"Recovery failed: {ex.Message}");
+            }
         }
 
         private void MonitoringIndicatorTimer_Tick(object sender, EventArgs e)
         {
-            lblPlcStatus.Text = _indicatorVisible ? "PLC Monitoring" : "PLC: Monitoring ●";
+            if (_plcService != null && ValidateMonitoringState())
+            {
+                if (_plcService.IsConnectionHealthy)
+                {
+                    lblPlcStatus.Text = _indicatorVisible ? "PLC: Monitoring" : "PLC: Monitoring ●";
+                    lblPlcStatus.BackColor = Color.Green;
+                    lblPlcStatus.ForeColor = Color.White;
+                }
+                else
+                {
+                    lblPlcStatus.Text = _indicatorVisible ? "PLC: Monitoring (Issues)" : "PLC: Monitoring (Issues) ⚠";
+                    lblPlcStatus.BackColor = Color.Orange;
+                    lblPlcStatus.ForeColor = Color.Black;
+                }
+            }
+            else if (_plcService != null && _plcService.ShouldBeMonitoring)
+            {
+                // Debería estar monitoreando pero no lo está
+                lblPlcStatus.Text = _indicatorVisible ? "PLC: Monitor Failed" : "PLC: Monitor Failed ✖";
+                lblPlcStatus.BackColor = Color.Red;
+                lblPlcStatus.ForeColor = Color.White;
+            }
+
             _indicatorVisible = !_indicatorVisible;
         }     
 
@@ -427,6 +582,10 @@ namespace XisCoreSensors
 
         private void FrmMainMDI_FormClosing(object sender, FormClosingEventArgs e)
         {
+            _recoveryAttemptTimer?.Stop();
+            _reconnectTimer?.Dispose();
+            _healthDisplayTimer?.Stop();
+            _healthDisplayTimer?.Dispose();
             _plcService?.StopMonitoring();
             _plcService?.Dispose();
             _plcController?.Unsubscribe();
@@ -434,23 +593,29 @@ namespace XisCoreSensors
 
         private async Task ReinitializePlcAsync()
         {
-            // 1. Detiene lo anterior (sin cambios)
+            // 1. Detiene lo anterior
             _plcService?.StopMonitoring();
             _plcService?.Dispose();
             _plcController?.Unsubscribe();
+            _recoveryAttemptTimer.Stop();
+            _isInRecoveryMode = false;
 
             UpdatePlcStatus(PlcUiState.Idle, "Applying new config...");
 
-            // 2. Crea nuevas instancias (sin cambios)
+            // 2. Crea nuevas instancias
             _plcService = new PlcService();
             _plcController = new PlcController(_plcService, TagMapper);
+
+            // 2.5 Suscribirse a eventos
             _plcService.MonitoringError += PlcService_MonitoringError;
             _plcService.TagReadError += PlcService_TagReadError;
+            _plcService.ConnectionStateChanged += PlcService_ConnectionStateChanged;
+            _plcService.ConnectionRecovered += PlcService_ConnectionRecovered;
             _plcController.SensorStateUpdateRequested += PlcController_SensorStateUpdateRequested;
-
             _plcController.BoolMonitoringPausedStateChanged += PlcController_BoolMonitoringPausedStateChanged;
+            _plcController.SecuenceStepChanged += PlcController_SequenceStepChanged;
 
-            // 3. Carga los tags del catálogo (sin cambios)
+            // 3. Carga los tags del catálogo
             var catalogManager = new TagCatalogManager();
             var knownBoolTags = catalogManager.Load();
             if (knownBoolTags.Any())
@@ -458,7 +623,7 @@ namespace XisCoreSensors
                 _plcService.InitializeBoolTags(knownBoolTags);
             }
 
-            // 4. --- LÓGICA DE CONEXIÓN CORREGIDA ---
+            
             if (await _plcService.TestConnectionAsync(knownBoolTags.FirstOrDefault()))
             {
                 // Si la conexión es exitosa, actualiza el estado...
@@ -471,17 +636,15 @@ namespace XisCoreSensors
             else
             {
                 // Si la conexión falla, entra en el ciclo de reconexión (sin cambios)
-                UpdatePlcStatus(PlcUiState.Error, "Connection Error.");
+                UpdatePlcStatus(PlcUiState.Error, "Initial connection failed.");
                 var r = MessageBox.Show("A connection to the PLC could not be established. Do you want to open the configuration?", "PLC ERROR", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
                 if(r == DialogResult.Yes)
                 {
                     new FrmConfigPLC().ShowDialog();
-                }
-                   
+                }                   
             }
-
-            _plcController.SecuenceStepChanged += PlcController_SequenceStepChanged;
-            string sequenceTag = Properties.Settings.Default.SequenceTagName;
+            
+            var sequenceTag = Settings.Default.SequenceTagName;
             if (!string.IsNullOrEmpty(sequenceTag))
             {
                 _plcService.InitializeDintTags(new[] { sequenceTag });
@@ -542,8 +705,9 @@ namespace XisCoreSensors
         private void UpdatePlcStatus(PlcUiState state, string details = "")
         {
             _monitoringIndicatorTimer.Stop();
-            lblPlcStatus.Text = details;
+            lblPlcStatus.Text = string.IsNullOrEmpty(details) ? "" : details;
             lblPlcStatus.ForeColor = Color.White;
+
             switch(state)
             {
                 case PlcUiState.Disconnected:
@@ -551,14 +715,38 @@ namespace XisCoreSensors
                     lblPlcStatus.BackColor = Color.Orange;
                     break;
                 case PlcUiState.Connected:
-                    lblPlcStatus.Text = "PLC: Connected";
+                    lblPlcStatus.Text = string.IsNullOrEmpty(details) ? "PLC: Connected" : $"PLC: {details}";
                     lblPlcStatus.BackColor = Color.Green;
                     break;
                 case PlcUiState.Monitoring:
-                    if (_plcService != null && _plcService.IsMonitoring)
+                    bool isActuallyMonitoring = ValidateMonitoringState();
+                    if (isActuallyMonitoring && _plcService != null)
                     {
-                        lblPlcStatus.BackColor = Color.Green;
-                        _monitoringIndicatorTimer.Start();
+                        if (!string.IsNullOrEmpty(details) && details.ToLower().Contains("issue"))
+                        {
+                            lblPlcStatus.Text = $"PLC: {details}";
+                            lblPlcStatus.BackColor = Color.Orange;
+                            lblPlcStatus.ForeColor = Color.Black;
+                            _monitoringIndicatorTimer.Start();
+                        }
+                        else if (_plcService.IsConnectionHealthy)
+                        {
+                            lblPlcStatus.BackColor = Color.Green;
+                            _monitoringIndicatorTimer.Start();
+                        }
+                        else
+                        {
+                            lblPlcStatus.Text = "PLC: Monitoring (Connection Issues)";
+                            lblPlcStatus.BackColor = Color.Orange;
+                            lblPlcStatus.ForeColor = Color.Black;
+                            _monitoringIndicatorTimer.Start();
+                        }
+                    }
+                    else if (_plcService != null && _plcService.ShouldBeMonitoring)
+                    {
+                        // Debería estar monitoreando pero no lo está - problema
+                        lblPlcStatus.Text = "PLC: Monitoring Failed";
+                        lblPlcStatus.BackColor = Color.Red;
                     }
                     else
                     {
@@ -568,29 +756,25 @@ namespace XisCoreSensors
                     break;
                 case PlcUiState.Paused:
                     lblPlcStatus.Text = "PLC: Paused (Edit Mode)";
-                    lblPlcStatus.BackColor = Color.Purple;
+                    lblPlcStatus.BackColor = Color.Yellow;
                     break;
                 case PlcUiState.Error:
-                    lblPlcStatus.Text = "PLC: ERROR:" + details;
+                    lblPlcStatus.Text = string.IsNullOrEmpty(details) ? "PLC: ERROR" : $"PLC: ERROR - {details}";
                     lblPlcStatus.BackColor = Color.Red;
-                    _plcService?.StopMonitoring();
                     break;
                 case PlcUiState.Idle:
-                    lblPlcStatus.Text = "PLC: Idle";
+                    lblPlcStatus.Text = string.IsNullOrEmpty(details) ? "PLC: Idle" : $"PLC: {details}";
                     lblPlcStatus.BackColor = Color.SlateGray;
                     _plcService?.StopMonitoring();
                     break;
                 case PlcUiState.Reconnecting:
-                    lblPlcStatus.Text = "PLC: Lost connection. Reconeccting...";
-                    lblPlcStatus.BackColor = Color.Red;
-                    _plcService?.StopMonitoring();
-                    _reconnectTimer.Start();
+                    lblPlcStatus.Text = string.IsNullOrEmpty(details) ? "PLC: Reconnecting..." : $"PLC: {details}";
+                    lblPlcStatus.BackColor = Color.Orange;                  
                     break;
                 case PlcUiState.SequencePaused:
                     lblPlcStatus.Text = "PLC: Paused by Sequence (Step 0)";
                     lblPlcStatus.BackColor = Color.Gold;
-                    lblPlcStatus.ForeColor = Color.Black;
-                    _plcService?.StopMonitoring();
+                    lblPlcStatus.ForeColor = Color.Black;                    
                     break;
             }
         }
@@ -600,7 +784,6 @@ namespace XisCoreSensors
             _plcService?.StopMonitoring();
             UpdatePlcStatus(PlcUiState.Idle);            
         }
-
 
         private void Viewer_FormClosed(object sender, FormClosedEventArgs e)
         {            
@@ -635,6 +818,137 @@ namespace XisCoreSensors
             {
                 changePasswordForm.ShowDialog(this);
             }
+        }
+
+        public Dictionary<string, object> GetPlcHealthStatistics()
+        {
+            return _plcService?.GetHealthStatistics() ?? new Dictionary<string, object>();
+        }
+
+        public async void ForceConnectionRecovery()
+        {
+            if (_plcService == null) return;
+
+            UpdatePlcStatus(PlcUiState.Reconnecting, "Manual recovery attempt...");
+
+            try
+            {
+                await ReinitializePlcAsync();
+            }
+            catch (Exception ex)
+            {
+                UpdatePlcStatus(PlcUiState.Error, $"Manual recovery failed: {ex.Message}");
+            }
+        }
+
+        private void UpdateConnectionHealthDisplay()
+        {
+            if(_plcService == null)
+            {
+                lblConnectionHealth.Text = "CONN: No service";
+                lblConnectionHealth.BackColor = Color.Gray;
+                return;
+            }
+
+            var stats = GetPlcHealthStatistics();
+            var isHealthy = (bool)stats["IsConnectionHealthy"];
+            var totalBoolTags = (int)stats["TotalBoolTags"];
+            var totalDintTags = (int)stats["TotalDintTags"];
+            var tagsWithErrors = (int)stats["TagsWithErrors"];
+            var consecutiveGlobalErrors = (int)stats["ConsecutiveGlobalErrors"];
+
+            if (isHealthy && tagsWithErrors == 0)
+            {
+                lblConnectionHealth.Text = $"CONN: Healthy ({totalBoolTags + totalDintTags} tags)";
+                lblConnectionHealth.BackColor = Color.Green;
+                lblConnectionHealth.ForeColor = Color.White;
+            }
+            else if (isHealthy && tagsWithErrors > 0)
+            {
+                lblConnectionHealth.Text = $"CONN: Partial ({tagsWithErrors} issues)";
+                lblConnectionHealth.BackColor = Color.Orange;
+                lblConnectionHealth.ForeColor = Color.Black;
+            }
+            else if (_isInRecoveryMode)
+            {
+                lblConnectionHealth.Text = "CONN: Recovering...";
+                lblConnectionHealth.BackColor = Color.Yellow;
+                lblConnectionHealth.ForeColor = Color.Black;
+            }
+            else
+            {
+                lblConnectionHealth.Text = $"CONN: Error ({consecutiveGlobalErrors})";
+                lblConnectionHealth.BackColor = Color.Red;
+                lblConnectionHealth.ForeColor = Color.White;
+            }
+
+            lblConnectionHealth.ToolTipText = $"Connection Health Status\n" +
+                                              $"Healthy: {isHealthy}\n" +
+                                              $"Bool Tags: {totalBoolTags}\n" +
+                                              $"DINT Tags: {totalDintTags}\n" +
+                                              $"Tags with errors: {tagsWithErrors}\n" +
+                                              $"Global errors: {consecutiveGlobalErrors}\n" +
+                                              $"Recovery mode: {_isInRecoveryMode}";
+
+        }
+
+        private void forcePLCReconnectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //var r = MessageBox.Show(
+            //    "This will force a reconnection to the PLC. Current monitoring will be stopped temporarily.\\n\\nDo you want to continue?", 
+            //    "Confirm Reconnect", 
+            //    MessageBoxButtons.YesNo, 
+            //    MessageBoxIcon.Question);
+
+            //if (r == DialogResult.Yes)
+            ForceConnectionRecovery();
+        }
+
+        private void ConfigureStatusStrip()
+        {
+            // Hacer que lblPlcStatus se expanda para empujar lblConnectionHealth a la derecha
+            lblPlcStatus.Spring = true;
+            lblPlcStatus.TextAlign = ContentAlignment.MiddleLeft;
+
+            // Configurar lblConnectionHealth para que se mantenga a la derecha
+            lblConnectionHealth.TextAlign = ContentAlignment.MiddleRight;
+            lblConnectionHealth.AutoSize = false;
+            lblConnectionHealth.Width = 150; // Ancho fijo para el label de conexión
+        }
+
+        private void ShowMonitoringDiagnostics()
+        {
+            if (_plcService == null)
+            {
+                MessageBox.Show("PLC Service is null", "Diagnostics");
+                return;
+            }
+
+            var state = _plcService.GetMonitoringState();
+            var health = _plcService.GetHealthStatistics();
+
+            var message = "=== MONITORING DIAGNOSTICS ===\n\n" +
+                          $"IsDisposed: {state["IsDisposed"]}\n" +
+                          $"ShouldBeMonitoring: {state["ShouldBeMonitoring"]}\n" +
+                          $"IsActuallyMonitoring: {state["IsActuallyMonitoring"]}\n" +
+                          $"TimerEnabled: {state["TimerEnabled"]}\n" +
+                          $"TimerExists: {state["TimerExists"]}\n" +
+                          $"HasTags: {state["HasTags"]}\n" +
+                          $"Final IsMonitoring: {state["IsMonitoring"]}\n\n" +
+                          "=== HEALTH STATISTICS ===\n" +
+                          $"IsConnectionHealthy: {health["IsConnectionHealthy"]}\n" +
+                          $"TotalBoolTags: {health["TotalBoolTags"]}\n" +
+                          $"TotalDintTags: {health["TotalDintTags"]}\n" +
+                          $"TagsWithErrors: {health["TagsWithErrors"]}\n" +
+                          $"ConsecutiveGlobalErrors: {health["ConsecutiveGlobalErrors"]}\n" +
+                          $"LastGlobalError: {health["LastGlobalError"]}";
+
+            MessageBox.Show(message, "PLC Monitoring Diagnostics", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void showDiagnosticsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowMonitoringDiagnostics();
         }
     }
 }
