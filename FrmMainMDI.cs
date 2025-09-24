@@ -19,6 +19,7 @@ namespace XisCoreSensors
         private bool _isFullScreen = false;
         private FormWindowState _previousWindowState;
         private FormBorderStyle _previousBorderStyle;
+        private bool _originalTopMost;
         //-----------------------------
 
         private PlcService _plcService;
@@ -463,37 +464,42 @@ namespace XisCoreSensors
             new FrmAbout().ShowDialog();
         }
 
-        private void FrmMainMDI_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.F11)
-            {
-                ToggleFullScreen();
-            }
-        }
-
         private void ToggleFullScreen()
         {
             if (!_isFullScreen)
             {
                 // Guardar el estado actual
-                _previousWindowState = this.WindowState;
-                _previousBorderStyle = this.FormBorderStyle;
-                // Cambiar a pantalla completa
-                this.FormBorderStyle = FormBorderStyle.None;
-                this.WindowState = FormWindowState.Maximized;
-                //Cambiar hijo MDI
-                if (this.ActiveMdiChild != null)
+                _previousWindowState = WindowState;
+                _previousBorderStyle = FormBorderStyle;
+                _originalTopMost = TopMost;
+                
+                if(menuStrip1 != null)
                 {
-                    this.ActiveMdiChild.WindowState = FormWindowState.Maximized;
+                    menuStrip1.Visible = false;
+                }
+
+                // Cambiar a pantalla completa
+                FormBorderStyle = FormBorderStyle.None;
+                WindowState = FormWindowState.Maximized;
+                TopMost = true;
+                //Cambiar hijo MDI
+                if (ActiveMdiChild != null)
+                {
+                    ActiveMdiChild.WindowState = FormWindowState.Maximized;
                 }
                 _isFullScreen = true;
             }
             else
             {
                 // Restaurar el estado anterior
-                this.FormBorderStyle = _previousBorderStyle;
-                this.WindowState = _previousWindowState;
+                FormBorderStyle = _previousBorderStyle;
+                WindowState = _previousWindowState;
+                TopMost = _originalTopMost;
                 _isFullScreen = false;
+                if (menuStrip1 != null)
+                {
+                    menuStrip1.Visible = true;
+                }
             }
         }
         
@@ -949,6 +955,11 @@ namespace XisCoreSensors
         private void showDiagnosticsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ShowMonitoringDiagnostics();
+        }
+
+        private void fullScreenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToggleFullScreen();
         }
     }
 }
