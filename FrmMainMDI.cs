@@ -70,8 +70,6 @@ namespace XisCoreSensors
             UpdatePlcStatus(PlcUiState.Reconnecting, errorMessage);
         }
 
-      
-
         public void StartMonitoringForLayout(List<string> boolTags)
         {
             if (_plcService == null) return;
@@ -143,7 +141,7 @@ namespace XisCoreSensors
 
             // --- Lógica para ENTRAR al modo edición ---
 
-            string storedHash = Properties.Settings.Default.EditModePasswordHash;
+            string storedHash = Settings.Default.EditModePasswordHash;
 
             // Escenario 1: No hay contraseña guardada (primer uso)
             if (string.IsNullOrEmpty(storedHash))
@@ -347,7 +345,7 @@ namespace XisCoreSensors
         private void ViewerForm_OnSensorFailed(string message)
         {
             notificationBar1.BringToFront();
-            notificationBar1.ShowMessage(message);
+            notificationBar1.ShowMessage(message, 600);
         }
         
         private void ConfigureNotificationBar()
@@ -517,18 +515,13 @@ namespace XisCoreSensors
             {
                 PausePlcMonitoring();
                 UpdatePlcStatus(PlcUiState.SequencePaused);
+                sequenceNotificationBar.ShowMessage("WAITING FOR OPERATOR TO LOAD PART");
             }
             else
             {
-                ResumePlcMonitoring();               
-            }
-
-            
-
-            foreach (var viewer in MdiChildren.OfType<FrmPartViewer>())
-            {
-                viewer.UpdateSequenceStep(newStep);
-            }
+                ResumePlcMonitoring();
+                sequenceNotificationBar.HideMessage();
+            }                     
         }
 
         public void PausePlcMonitoring()
@@ -541,12 +534,9 @@ namespace XisCoreSensors
         public void ResumePlcMonitoring()
         {
             if (_plcService == null) return;
-            if(!lblPlcStatus.Text.Contains("Idle"))
-            {
-                _plcService.StartMonitoring();
-                UpdatePlcStatus(PlcUiState.Monitoring);
-            }
-                
+            if (lblPlcStatus.Text.Contains("Idle")) return;
+            _plcService.StartMonitoring();
+            UpdatePlcStatus(PlcUiState.Monitoring);
         }
 
         private void UpdatePlcStatus(PlcUiState state, string details = "")

@@ -48,6 +48,7 @@
             this.lblEditModeStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblPlcStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
+            this.sequenceNotificationBar = new XisCoreSensors.Controls.NotificationBar();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -223,11 +224,21 @@
             this.notificationBar1.TabIndex = 5;
             this.notificationBar1.Visible = false;
             // 
+            // sequenceNotificationBar
+            // 
+            this.sequenceNotificationBar.BackColor = System.Drawing.Color.DodgerBlue;
+            this.sequenceNotificationBar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.sequenceNotificationBar.Location = new System.Drawing.Point(0, 124);
+            this.sequenceNotificationBar.Name = "sequenceNotificationBar";
+            this.sequenceNotificationBar.Size = new System.Drawing.Size(991, 120);
+            this.sequenceNotificationBar.TabIndex = 7;
+            // 
             // FrmMainMDI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(991, 605);
+            this.Controls.Add(this.sequenceNotificationBar);
             this.Controls.Add(this.notificationBar1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -272,6 +283,7 @@
         private System.Windows.Forms.ToolStripMenuItem tagMapperToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel lblPlcStatus;
         private System.Windows.Forms.ToolStripMenuItem changeEditModePasswordToolStripMenuItem;
+        private Controls.NotificationBar sequenceNotificationBar;
     }
 }
 

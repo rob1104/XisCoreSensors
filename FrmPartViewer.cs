@@ -721,7 +721,7 @@ namespace XisCoreSensors
                     }
                     var sensorToFocus = _failedSensorsList[_sequenceIndex];
                     ZoomToSensor(sensorToFocus);
-                    OnSensorFailed?.Invoke($"¡Falla Detectada! Sensor: {sensorToFocus.SensorId}");
+                    OnSensorFailed?.Invoke($"¡Failure detected! Sensor: {sensorToFocus.SensorId}");
                     _currentSequenceState = SequenceState.ZoomedIn;
                     _sequenceTimer.Interval = 5000; // Tiempo en zoom
                     _sequenceTimer.Start();
@@ -830,41 +830,7 @@ namespace XisCoreSensors
                 // Actualiza la propiedad 'Status', lo que cambiará su color y comportamiento.
                 sensorControl.Status = isFailed ? SensorControl.SensorStatus.Fail : SensorControl.SensorStatus.Ok;
             }
-        }
-
-        public void UpdateSequenceStep(int step)
-        {
-            var message = "";
-
-            switch (step)
-            {
-                case 0:
-                    message = "WAITING FOR OPERATOR TO LOAD PART";
-                    break;
-                case 1:
-                    message = "";
-                    break;
-                case 2:
-                    message = $"CUSTOM MESSAGE {step}";
-                    break;
-                case 3:
-                    message = $"CUSTOM MESSAGE NEW {step}";
-                    break;
-                default:
-                    message = "";
-                    break;
-            }
-
-            if (!string.IsNullOrEmpty(message))
-            {
-                lblStepMessage.Text = message;
-                lblStepMessage.Visible = true;
-            }
-            else
-            {
-                lblStepMessage.Visible = false;
-            }
-        }
+        }        
 
         public void SetSensorsPausedVisualState(bool isPaused)
         {

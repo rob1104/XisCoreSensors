@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace XisCoreSensors.Controls
@@ -54,14 +48,29 @@ namespace XisCoreSensors.Controls
             _isTextColorToggled = !_isTextColorToggled; // Invertimos el estado
         }
 
-        public void ShowMessage(string message)
+        public void ShowMessage(string message, int timeOutMs = 0)
         {
-            lblMessage.Text = message; // Establece el mensaje
-            Visible = true; // Muestra la barra
-            _timer.Stop(); // Reinicia el temporizador
-            _timer.Start();
+            lblMessage.Text = message;
+            Visible = true;
+            _timer.Stop();
+
+            if(timeOutMs > 0)
+            {
+                _timer.Interval -= timeOutMs;
+                _timer.Start();
+                _blinkTimer.Start();
+            }
+            else {
+                _blinkTimer.Stop();
+            }               
+            
+        }
+
+        public void HideMessage()
+        {
+            Visible = false;
+            _timer.Stop();
             _blinkTimer.Stop();
-            _blinkTimer.Start();
         }
     }
 }

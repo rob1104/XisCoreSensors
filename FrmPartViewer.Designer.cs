@@ -39,7 +39,6 @@
             this.renombrarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.eliminarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lblStepMessage = new System.Windows.Forms.Label();
             this.pnlViewport.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.contextMenu.SuspendLayout();
@@ -50,7 +49,6 @@
             // 
             this.pnlViewport.AutoScroll = true;
             this.pnlViewport.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlViewport.Controls.Add(this.lblStepMessage);
             this.pnlViewport.Controls.Add(this.picCanvas);
             this.pnlViewport.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlViewport.Location = new System.Drawing.Point(0, 0);
@@ -110,18 +108,6 @@
             this.eliminarSensorToolStripMenuItem.Text = "Delete Sensor";
             this.eliminarSensorToolStripMenuItem.Click += new System.EventHandler(this.eliminarSensorToolStripMenuItem_Click);
             // 
-            // lblStepMessage
-            // 
-            this.lblStepMessage.BackColor = System.Drawing.Color.Purple;
-            this.lblStepMessage.Font = new System.Drawing.Font("Segoe UI", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStepMessage.ForeColor = System.Drawing.Color.White;
-            this.lblStepMessage.Location = new System.Drawing.Point(228, 219);
-            this.lblStepMessage.Name = "lblStepMessage";
-            this.lblStepMessage.Size = new System.Drawing.Size(514, 198);
-            this.lblStepMessage.TabIndex = 1;
-            this.lblStepMessage.Text = "label1";
-            this.lblStepMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // FrmPartViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -156,6 +142,5 @@
         private System.Windows.Forms.ToolStripMenuItem renombrarSensorToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem eliminarSensorToolStripMenuItem;
-        private System.Windows.Forms.Label lblStepMessage;
     }
 }
