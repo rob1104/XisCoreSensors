@@ -11,16 +11,18 @@ namespace XisCoreSensors.Plc
 {
     public class PlcService : IDisposable
     {
+        // Eventos para notificar cambios y errores 
         public event Action<string, bool> TagBoolChanged;
         public event Action<string, int> TagDintChanged;
         public event Action<string> MonitoringError;
         public event Action<string, string> TagReadError;
-        public event Action<bool> ConnectionStateChanged; // Nuevo evento para el estado de conexión
-        public event Action<string> ConnectionRecovered; // Nuevo evento para recuperación de conexión
+        public event Action<bool> ConnectionStateChanged; 
+        public event Action<string> ConnectionRecovered;
 
-        private readonly Dictionary<string, Tag<BoolPlcMapper, bool>> _tagsBool = new Dictionary<string, Tag<BoolPlcMapper, bool>>();
-        private readonly Dictionary<string, bool?> _lastKnownBoolStates = new Dictionary<string, bool?>();
+        // Diccionarios para manejar tags y sus estados
+        private readonly Dictionary<string, Tag<BoolPlcMapper, bool>> _tagsBool = new Dictionary<string, Tag<BoolPlcMapper, bool>>();        
         private readonly Dictionary<string, Tag<DintPlcMapper, int>> _tagsDint = new Dictionary<string, Tag<DintPlcMapper, int>>();
+        private readonly Dictionary<string, bool?> _lastKnownBoolStates = new Dictionary<string, bool?>();
         private readonly Dictionary<string, int?> _lastKnownDintStates = new Dictionary<string, int?>();
 
         // Sistema de salud de conexión
@@ -29,25 +31,25 @@ namespace XisCoreSensors.Plc
         private bool _isConnectionHealthy = true;
         private int _consecutiveGlobalErrors = 0;
         private DateTime _lastGlobalError = DateTime.MinValue;
-
         private readonly Timer _pollingTimer;
-        private readonly Timer _healthCheckTimer; // Nuevo timer para chequeo de salud
+        private readonly Timer _healthCheckTimer; 
 
         // Constantes de configuración
         private const int MAX_CONSECUTIVE_ERRORS = 3;
         private const int MAX_GLOBAL_CONSECUTIVE_ERRORS = 5;
-        private const int HEALTH_CHECK_INTERVAL = 10000; // 10 segundos
-        private const int ERROR_RECOVERY_DELAY = 5000; // 5 segundos antes de reintentar
-        private const int TAG_TIMEOUT_MINUTES = 2; // Timeout para considerar un tag como problemático
+        private const int HEALTH_CHECK_INTERVAL = 10000; 
+        private const int ERROR_RECOVERY_DELAY = 5000;
+        private const int TAG_TIMEOUT_MINUTES = 2;
 
+        // Estado de monitoreo
         private bool _isDisposed = false;
         private bool _shouldBeMonitoring = false;
         private bool _isActuallyMonitoring = false;
-        private readonly object _monitoringStateLock = new object();      
+        private readonly object _monitoringStateLock = new object();
+
+        // Propiedad para exponer el estado de salud de la conexión
         public bool IsConnectionHealthy => _isConnectionHealthy;
-
         private bool _isBoolMonitoringPaused = false;
-
         public bool IsMonitoring
         {
             get
@@ -62,7 +64,6 @@ namespace XisCoreSensors.Plc
                 }
             }
         }
-
         public bool ShouldBeMonitoring
         {
             get
@@ -73,14 +74,15 @@ namespace XisCoreSensors.Plc
                 }
             }
         }
-
         public bool TimerIsEnabled => !_isDisposed && _pollingTimer?.Enabled == true;
+
+        public bool IsBoolMonitoringPaused => _isBoolMonitoringPaused;
+        public bool IsDintMonitoringActive => IsMonitoring;
 
         public PlcService()
         {
             _pollingTimer = new Timer { Interval = 300 };
             _pollingTimer.Tick += PollingTimer_Tick;
-
             _healthCheckTimer = new Timer { Interval = HEALTH_CHECK_INTERVAL };
             _healthCheckTimer.Tick += HealthCheckTimer_Tick;
             _healthCheckTimer.Start();
@@ -132,7 +134,6 @@ namespace XisCoreSensors.Plc
         private async void PollingTimer_Tick(object sender, EventArgs e)
         {
             _pollingTimer.Stop();
-           
 
             lock (_monitoringStateLock)
             {
@@ -142,18 +143,21 @@ namespace XisCoreSensors.Plc
                     return;
                 }
 
-                _isActuallyMonitoring = true; // Estamos ejecutando un ciclo de monitoreo
+                _isActuallyMonitoring = true;
             }
 
             bool hasGlobalError = false;
 
             try
             {
+                // CAMBIO CLAVE: Solo pausar el monitoreo de BOOL, no el de DINT
                 if (!_isBoolMonitoringPaused)
                 {
                     await ProcessBoolTags();
                 }
 
+                // SIEMPRE procesar tags DINT, incluso cuando el monitoreo BOOL está pausado
+                // Esto permite detectar cambios de secuencia
                 await ProcessDintTags();
 
                 // Si llegamos aquí sin errores globales, resetear contador
@@ -175,11 +179,11 @@ namespace XisCoreSensors.Plc
 
                 lock (_monitoringStateLock)
                 {
-                    _isActuallyMonitoring = false; // Error en el ciclo actual
+                    _isActuallyMonitoring = false;
                 }
             }
 
-            // Lógica de reinicio del timer mejorada
+            // Lógica de reinicio del timer
             lock (_monitoringStateLock)
             {
                 if (_shouldBeMonitoring && !_isDisposed)
@@ -190,10 +194,8 @@ namespace XisCoreSensors.Plc
                     }
                     else
                     {
-                        // Marcar que no estamos monitoreando efectivamente
                         _isActuallyMonitoring = false;
 
-                        // Esperar antes de reintentar después de múltiples errores
                         _ = Task.Run(async () =>
                         {
                             await Task.Delay(ERROR_RECOVERY_DELAY);
@@ -202,7 +204,7 @@ namespace XisCoreSensors.Plc
                             {
                                 if (_shouldBeMonitoring && !_isDisposed)
                                 {
-                                    _consecutiveGlobalErrors = 0; // Reset para recuperación
+                                    _consecutiveGlobalErrors = 0;
                                     _pollingTimer.Start();
                                 }
                             }
@@ -215,6 +217,7 @@ namespace XisCoreSensors.Plc
                 }
             }
         }
+
 
         private async Task ProcessBoolTags()
         {
@@ -509,8 +512,7 @@ namespace XisCoreSensors.Plc
                 _lastSuccessfulRead.Remove(tagName);
             }
         }
-
-        // Método para reintroducir un tag que fue removido por errores
+       
         public void RetryFailedTag(string tagName, bool isBoolTag = true)
         {
             if (isBoolTag)
@@ -522,8 +524,7 @@ namespace XisCoreSensors.Plc
                 InitializeDintTags(new[] { tagName });
             }
         }
-
-        // Obtener estadísticas de salud del sistema
+       
         public Dictionary<string, object> GetHealthStatistics()
         {
             return new Dictionary<string, object>
@@ -533,7 +534,9 @@ namespace XisCoreSensors.Plc
                 ["TotalDintTags"] = _tagsDint.Count,
                 ["ConsecutiveGlobalErrors"] = _consecutiveGlobalErrors,
                 ["TagsWithErrors"] = _consecutiveErrors.Count(kv => kv.Value > 0),
-                ["LastGlobalError"] = _lastGlobalError
+                ["LastGlobalError"] = _lastGlobalError,
+                ["IsBoolMonitoringPaused"] = _isBoolMonitoringPaused, 
+                ["IsDintMonitoringActive"] = IsDintMonitoringActive 
             };
         }
 

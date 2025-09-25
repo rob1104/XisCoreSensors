@@ -52,6 +52,7 @@
             this.lblPlcStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusSpacer = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblConnectionHealth = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblSequenceStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.sequenceNotificationBar = new XisCoreSensors.Controls.NotificationBar();
             this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
             this.menuStrip1.SuspendLayout();
@@ -226,41 +227,65 @@
             this.lblEditModeStatus,
             this.lblPlcStatus,
             this.toolStripStatusSpacer,
-            this.lblConnectionHealth});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 583);
+            this.lblConnectionHealth,
+            this.lblSequenceStatus});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 581);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(991, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(991, 24);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // lblEditModeStatus
             // 
             this.lblEditModeStatus.BackColor = System.Drawing.Color.Lime;
+            this.lblEditModeStatus.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.lblEditModeStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblEditModeStatus.Name = "lblEditModeStatus";
-            this.lblEditModeStatus.Size = new System.Drawing.Size(91, 17);
+            this.lblEditModeStatus.Size = new System.Drawing.Size(95, 19);
             this.lblEditModeStatus.Text = "MODE: LOCKED";
             // 
             // lblPlcStatus
             // 
+            this.lblPlcStatus.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.lblPlcStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblPlcStatus.Name = "lblPlcStatus";
-            this.lblPlcStatus.Size = new System.Drawing.Size(118, 17);
+            this.lblPlcStatus.Size = new System.Drawing.Size(122, 19);
             this.lblPlcStatus.Text = "toolStripStatusLabel1";
             // 
             // toolStripStatusSpacer
             // 
             this.toolStripStatusSpacer.Name = "toolStripStatusSpacer";
-            this.toolStripStatusSpacer.Size = new System.Drawing.Size(668, 17);
+            this.toolStripStatusSpacer.Size = new System.Drawing.Size(603, 19);
             this.toolStripStatusSpacer.Spring = true;
             // 
             // lblConnectionHealth
             // 
             this.lblConnectionHealth.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.lblConnectionHealth.BackColor = System.Drawing.Color.Gray;
+            this.lblConnectionHealth.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.lblConnectionHealth.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.lblConnectionHealth.Name = "lblConnectionHealth";
-            this.lblConnectionHealth.Size = new System.Drawing.Size(99, 17);
+            this.lblConnectionHealth.Size = new System.Drawing.Size(103, 19);
             this.lblConnectionHealth.Text = "CONN: Unknown";
             this.lblConnectionHealth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblConnectionHealth.ToolTipText = "Connection health status";
+            // 
+            // lblSequenceStatus
+            // 
+            this.lblSequenceStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.lblSequenceStatus.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.lblSequenceStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+            this.lblSequenceStatus.Name = "lblSequenceStatus";
+            this.lblSequenceStatus.Size = new System.Drawing.Size(53, 19);
+            this.lblSequenceStatus.Text = "SEQ: ---";
             // 
             // sequenceNotificationBar
             // 
@@ -299,7 +324,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Xis Sensors 0.2.2";
+            this.Text = "Xis Sensors 0.2.3";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);
@@ -339,6 +364,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusSpacer;
         private System.Windows.Forms.ToolStripMenuItem showDiagnosticsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fullScreenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel lblSequenceStatus;
     }
 }
 

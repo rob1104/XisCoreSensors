@@ -89,7 +89,6 @@ namespace XisCoreSensors
             lstPlcTags.Refresh();
         }
 
-
         private void FrmTagMapper_Load(object sender, EventArgs e)
         {
             _tagMapper.MappingChanged += TagMapper_MappingChanged;
@@ -514,7 +513,7 @@ namespace XisCoreSensors
         private async void btnGetFromPLC_Click(object sender, EventArgs e)
         {
             lblStatus.Text = "Reading tags from PLC... Please wait.";
-            this.Enabled = false; // Deshabilita el formulario para evitar clics accidentales
+            Enabled = false; 
 
             try
             {
@@ -536,7 +535,7 @@ namespace XisCoreSensors
                 //    - Son de tipo BOOL.
                 //    - NO están ya en nuestra lista de tags manuales.
                 var newBoolTags = listTagsCommand.Value
-                    .Where(tag => !_manualTags.Contains(tag.Name, StringComparer.OrdinalIgnoreCase))
+                    .Where(tag => tag.Name.Any(char.IsDigit) && !_manualTags.Contains(tag.Name, StringComparer.OrdinalIgnoreCase))
                     .Select(tag => tag.Name)
                     .ToList();
 
@@ -547,12 +546,12 @@ namespace XisCoreSensors
                     _manualTags.Sort();
                     _catalogManager.Save(_manualTags); // Guarda los nuevos tags en el archivo JSON
 
-                    MessageBox.Show($"{newBoolTags.Count} new BOOL tags were found and added to the catalog.",
+                    MessageBox.Show($"{newBoolTags.Count} new tags were found and added to the catalog.",
                                     "PLC Tags Imported", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("No new BOOL tags were found on the PLC.",
+                    MessageBox.Show("No newOOL tags were found on the PLC.",
                                     "PLC Tags", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 

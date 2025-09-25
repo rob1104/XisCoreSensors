@@ -48,28 +48,26 @@ namespace XisCoreSensors
 
         private bool ValidateMonitoringState()
         {
-            if(_plcService == null) return false;
+            if (_plcService == null) return false;
 
+            // Durante transiciones (como salir del modo edición), ser más permisivo
+            bool timerEnabled = _plcService.TimerIsEnabled;
+            bool shouldBeMonitoring = _plcService.ShouldBeMonitoring;
+            bool isHealthy = _plcService.IsConnectionHealthy;
+
+            // Si debería estar monitoreando, el timer está corriendo y la conexión es saludable,
+            // entonces probablemente está bien (aunque _isActuallyMonitoring aún no se haya actualizado)
+            if (shouldBeMonitoring && timerEnabled && isHealthy)
+            {
+                return true;
+            }
+
+            // Para otros casos, usar la lógica más estricta
             var monitoringState = _plcService.GetMonitoringState();
-            var shouldBe = (bool)monitoringState["ShouldBeMonitoring"];
             var actuallyIs = (bool)monitoringState["IsActuallyMonitoring"];
-            var timerEnabled = (bool)monitoringState["TimerEnabled"];
             var hasTags = (bool)monitoringState["HasTags"];
 
-            // Si debería estar monitoreando pero no lo está realmente
-            if (shouldBe && !actuallyIs && hasTags)
-            {
-                // Hay un problema - el estado no es consistente
-                return false;
-            }
-
-            // Si no hay tags, no puede monitorear
-            if (shouldBe && !hasTags)
-            {
-                return false;
-            }
-
-            return actuallyIs;
+            return shouldBeMonitoring && actuallyIs && hasTags;
         }
 
         private void ConfigureMonitoringTimer()
@@ -680,6 +678,8 @@ namespace XisCoreSensors
                 return;
             }        
             
+            lblSequenceStatus.Text = $"SEQ: {newStep}"; 
+
             if(newStep == 0)
             {
                 PausePlcMonitoring();
@@ -696,7 +696,7 @@ namespace XisCoreSensors
         public void PausePlcMonitoring()
         {
             if (_plcService == null) return;
-            _plcService.StopMonitoring();
+            _plcService.PauseBoolMonitoring(true);
             UpdatePlcStatus(PlcUiState.Paused);
         }
 
@@ -704,8 +704,38 @@ namespace XisCoreSensors
         {
             if (_plcService == null) return;
             if (lblPlcStatus.Text.Contains("Idle")) return;
-            _plcService.StartMonitoring();
-            UpdatePlcStatus(PlcUiState.Monitoring);
+
+            // Mostrar estado de transición
+            UpdatePlcStatus(PlcUiState.Connected, "Resuming sensor monitoring...");
+
+            // Reanudar el monitoreo de sensores booleanos
+            _plcService.PauseBoolMonitoring(false);
+
+            // Dar tiempo para que el primer ciclo se complete
+            var resumeTimer = new System.Windows.Forms.Timer();
+            resumeTimer.Interval = 1000;
+            resumeTimer.Tick += (s, e) =>
+            {
+                resumeTimer.Stop();
+                resumeTimer.Dispose();
+
+                if (_plcService != null)
+                {
+                    if (_plcService.IsConnectionHealthy && _plcService.IsMonitoring)
+                    {
+                        UpdatePlcStatus(PlcUiState.Monitoring);
+                    }
+                    else if (_plcService.ShouldBeMonitoring)
+                    {
+                        UpdatePlcStatus(PlcUiState.Monitoring, "Connection issues");
+                    }
+                    else
+                    {
+                        UpdatePlcStatus(PlcUiState.Error, "Failed to resume monitoring");
+                    }
+                }
+            };
+            resumeTimer.Start();
         }
 
         private void UpdatePlcStatus(PlcUiState state, string details = "")
@@ -719,6 +749,7 @@ namespace XisCoreSensors
                 case PlcUiState.Disconnected:
                     lblPlcStatus.Text = "PLC: Disconnected";
                     lblPlcStatus.BackColor = Color.Orange;
+                    lblPlcStatus.ForeColor = Color.Black;
                     break;
                 case PlcUiState.Connected:
                     lblPlcStatus.Text = string.IsNullOrEmpty(details) ? "PLC: Connected" : $"PLC: {details}";
@@ -763,6 +794,7 @@ namespace XisCoreSensors
                 case PlcUiState.Paused:
                     lblPlcStatus.Text = "PLC: Paused (Edit Mode)";
                     lblPlcStatus.BackColor = Color.Yellow;
+                    lblPlcStatus.ForeColor = Color.Black;
                     break;
                 case PlcUiState.Error:
                     lblPlcStatus.Text = string.IsNullOrEmpty(details) ? "PLC: ERROR" : $"PLC: ERROR - {details}";
@@ -775,7 +807,8 @@ namespace XisCoreSensors
                     break;
                 case PlcUiState.Reconnecting:
                     lblPlcStatus.Text = string.IsNullOrEmpty(details) ? "PLC: Reconnecting..." : $"PLC: {details}";
-                    lblPlcStatus.BackColor = Color.Orange;                  
+                    lblPlcStatus.BackColor = Color.Orange;
+                    lblPlcStatus.ForeColor = Color.Black;
                     break;
                 case PlcUiState.SequencePaused:
                     lblPlcStatus.Text = "PLC: Paused by Sequence (Step 0)";

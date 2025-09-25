@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 using XisCoreSensors.Plc;
 using static XisCoreSensors.Mapping.SensorTagMapping;
 
@@ -7,12 +6,13 @@ namespace XisCoreSensors.PLC
 {
     public class PlcController
     {
+        // Servicios y mapeadores necesarios
         private readonly PlcService _plcService;
         private readonly TagMapper _tagMapper;
 
+        // Eventos para notificar a la UI
         public event Action<string, bool> SensorStateUpdateRequested;
         public event Action<int> SecuenceStepChanged;
-
         public event Action<bool> BoolMonitoringPausedStateChanged;
 
         public PlcController(PlcService plcService, TagMapper tagMapper)
@@ -25,26 +25,24 @@ namespace XisCoreSensors.PLC
             _plcService.TagDintChanged += OnTagDintChanged;
         }
 
-        // Este metodo se llamará cada vez que un tag de tipo DINT cambie su estado.
+        // Este metodo se llamará cada vez que un tag de tipo DINT cambie su valor.
         private void OnTagDintChanged(string tagName, int newValue)
         {
-            string secuenceTagName = Properties.Settings.Default.SequenceTagName;
+            var secuenceTagName = Properties.Settings.Default.SequenceTagName;
             if(tagName.Equals(secuenceTagName, StringComparison.OrdinalIgnoreCase))
             {
                 // 1. Pausa o reanuda el monitoreo de los sensores booleanos
                 //    (Esta lógica ya la tenías y es correcta).
                 var isPaused = (newValue == 0);
                 _plcService.PauseBoolMonitoring(isPaused);
-
                 BoolMonitoringPausedStateChanged?.Invoke(isPaused);
-
                 // 2. Notifica a la UI sobre el nuevo paso de la secuencia.
                 //    El FrmMainMDI se encargará de la lógica visual.
                 SecuenceStepChanged?.Invoke(newValue);
             }
         }
 
-        // Este método se llamará cada vez que un tag cambie su estado.
+        // Este método se llamará cada vez que un tag BOOL cambie su estado.
         private void OnTagBoolChanged(string tagName, bool plcValue)
         {
             // 1. Buscamos qué sensor está mapeado a este tag.
@@ -71,7 +69,6 @@ namespace XisCoreSensors.PLC
             _plcService.TagBoolChanged -= OnTagBoolChanged;
             _plcService.TagDintChanged -= OnTagDintChanged;
         }
-
        
     }
 }
