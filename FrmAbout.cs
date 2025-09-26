@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace XisCoreSensors
@@ -14,9 +9,9 @@ namespace XisCoreSensors
         public FrmAbout()
         {
             InitializeComponent();
-            this.Text = String.Format("Acerca de {0}", AssemblyTitle);
+            this.Text = String.Format("About {0}", AssemblyTitle);
             this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion.Text = String.Format("Versión {0}", AssemblyVersion);
+            this.labelVersion.Text = String.Format("Version {0}", Application.ProductVersion);
             this.labelCopyright.Text = AssemblyCopyright;
             this.labelCompanyName.Text = AssemblyCompany;
             this.textBoxDescription.Text = AssemblyDescription;
@@ -101,5 +96,10 @@ namespace XisCoreSensors
             }
         }
         #endregion
+
+        private void FrmAbout_Load(object sender, EventArgs e)
+        {
+           
+        }
     }
 }

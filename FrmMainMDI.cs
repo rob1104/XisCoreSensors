@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Squirrel;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XisCoreSensors.Controls;
@@ -409,20 +409,51 @@ namespace XisCoreSensors
 
         private async void FrmMainMDI_Load(object sender, EventArgs e)
         {
+            await CheckForUpdatesAsync();
+            Text = "Xis Sensors v" + Application.ProductVersion;
             try
             {
                 if (Settings.Default.LastLayoutPath != string.Empty)
                 {
                     LoadModel();
                 }
-                await ReinitializePlcAsync();               
-
+                await ReinitializePlcAsync();              
                
             }
             catch (Exception exception)
             {
                 lblPlcStatus.Text = $"PLC:Config ERROR. {exception}";
             }            
+        }
+
+        private async Task CheckForUpdatesAsync()
+        {
+            try
+            {
+                var updateUrl = "http://xis.myftp.biz/desarrollos/XisCoreSensors";
+                using(var mgr = new UpdateManager(updateUrl))
+                {
+                    var updateInfo = await mgr.CheckForUpdate();
+                    if(updateInfo.ReleasesToApply.Any())
+                    {
+                        var result = MessageBox.Show("An update is available. Do you want to download and install it now?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                        if (result == DialogResult.Yes)
+                        {
+                            await mgr.UpdateApp();
+                            MessageBox.Show("The application has been updated and will now restart.", "Update Installed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            UpdateManager.RestartApp();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No updates available.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Fallo al buscar actualizaciones: " + ex.Message);
+            }
         }
 
         private void LoadModel()
