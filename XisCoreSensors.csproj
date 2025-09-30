@@ -103,8 +103,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +145,12 @@
     </Compile>
     <Compile Include="FrmConfigPLC.Designer.cs">
       <DependentUpon>FrmConfigPLC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmImageManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmImageManager.Designer.cs">
+      <DependentUpon>FrmImageManager.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmInputBox.cs">
       <SubType>Form</SubType>
@@ -202,6 +210,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmConfigPLC.resx">
       <DependentUpon>FrmConfigPLC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmImageManager.resx">
+      <DependentUpon>FrmImageManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmInputBox.resx">
       <DependentUpon>FrmInputBox.cs</DependentUpon>

@@ -160,10 +160,8 @@ namespace XisCoreSensors
 
             try
             {
-                // Intentar reconectar
-                var catalogManager = new TagCatalogManager();
-                var knownBoolTags = catalogManager.Load();
-                var testTag = knownBoolTags.FirstOrDefault();
+               
+                var testTag = "SEQ";
 
                 if (!string.IsNullOrEmpty(testTag) && await _plcService.TestConnectionAsync(testTag))
                 {
@@ -369,6 +367,7 @@ namespace XisCoreSensors
                 // Opcional: Avisar al usuario si no hay una ventana de visor abierta.
                 MessageBox.Show("Please open a model before load an image.", "No active model viewer", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+
         }
 
         private void saveLayoutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -408,7 +407,8 @@ namespace XisCoreSensors
         }
 
         private async void FrmMainMDI_Load(object sender, EventArgs e)
-        {
+        {           
+
             await CheckForUpdatesAsync();
             Text = "Xis Sensors v" + Application.ProductVersion;
             try
@@ -649,6 +649,7 @@ namespace XisCoreSensors
             _plcController.SensorStateUpdateRequested += PlcController_SensorStateUpdateRequested;
             _plcController.BoolMonitoringPausedStateChanged += PlcController_BoolMonitoringPausedStateChanged;
             _plcController.SecuenceStepChanged += PlcController_SequenceStepChanged;
+            _plcController.ImageSelectorTagChanged += PlcController_ImageSelectorTagChanged;
 
             // 3. Carga los tags del catálogo
             var catalogManager = new TagCatalogManager();
@@ -659,7 +660,7 @@ namespace XisCoreSensors
             }
 
             
-            if (await _plcService.TestConnectionAsync(knownBoolTags.FirstOrDefault()))
+            if (await _plcService.TestConnectionAsync("SEQ"))
             {
                 // Si la conexión es exitosa, actualiza el estado...
                 UpdatePlcStatus(PlcUiState.Connected);
@@ -683,6 +684,12 @@ namespace XisCoreSensors
             if (!string.IsNullOrEmpty(sequenceTag))
             {
                 _plcService.InitializeDintTags(new[] { sequenceTag });
+            }
+
+            var imageTag = Settings.Default.ImageTagName;
+            if (!string.IsNullOrEmpty(imageTag))
+            {
+                _plcService.InitializeDintTags(new[] { imageTag });
             }
         }
 
@@ -722,6 +729,21 @@ namespace XisCoreSensors
                 ResumePlcMonitoring();
                 sequenceNotificationBar.HideMessage();
             }                     
+        }
+
+        private void PlcController_ImageSelectorTagChanged(string tagName, int newValue)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => PlcController_ImageSelectorTagChanged(tagName, newValue)));
+                return;
+            }
+            
+            foreach(var viewer in this.MdiChildren.OfType<FrmPartViewer>())
+            {
+                lblImGStatus.Text = $"IMG: {newValue}";
+                viewer.SwitchBackgroundImage(newValue);
+            }
         }
 
         public void PausePlcMonitoring()

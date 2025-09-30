@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using XisCoreSensors.Controls;
 using XisCoreSensors.Mapping;
 
@@ -10,7 +7,8 @@ namespace XisCoreSensors
 {
     public class LayoutData
     {
-        public string ImagePath { get; set; }
+        public List<string> ImagePaths { get; set; } = new List<string>();
+        public string ImageSelectorTag { get; set; }
         public List<SensorData> Sensors { get; set; } = new List<SensorData>();
         public List<SensorTagMapping> TagMappings { get; set; } = new List<SensorTagMapping>();
     }

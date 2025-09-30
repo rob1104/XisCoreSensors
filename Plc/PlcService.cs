@@ -373,7 +373,7 @@ namespace XisCoreSensors.Plc
 
             try
             {
-                using (var testTag = new Tag<BoolPlcMapper, bool>
+                using (var testTag = new Tag<DintPlcMapper, int>
                        {
                            Name = testTagName,
                            Gateway = Settings.Default.PLC_IP,

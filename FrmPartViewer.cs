@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using XisCoreSensors.Controls;
@@ -37,7 +39,13 @@ namespace XisCoreSensors
         private bool _hasUnsavedChanges = false;
         private string _currentLayoutPath = null;
 
-        public bool IsInEditMode => _isEditMode;
+        
+
+        private List<string> _imagePaths = new List<string>();
+        private List<ImageInfo> _loadedImages = new List<ImageInfo>();
+        private string _imageSelectorTag = "";
+
+        public string ImageSelectorTag => _imageSelectorTag;
 
         public FrmPartViewer()
         {
@@ -78,7 +86,7 @@ namespace XisCoreSensors
 
         public void LoadNewImage()
         {
-            if (!CheckForUnsavedChanges()) return;
+            /*if (!CheckForUnsavedChanges()) return;
             // Asegúrate de que tu OpenFileDialog se llame 'openFileDialog' en el diseñador del FrmPartViewer
             openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -98,7 +106,26 @@ namespace XisCoreSensors
                 Text += " Modfied";
                 // Forzamos un redibujado
                 picCanvas.Invalidate();
+            }*/
+            using (var imageManager = new FrmImageManager(_imagePaths, _imageSelectorTag))
+            {
+                if (imageManager.ShowDialog() == DialogResult.OK)
+                {
+                    // Actualiza los datos del FrmPartViewer con los cambios del diálogo
+                    _imagePaths = imageManager.ImagePaths;
+                    _imageSelectorTag = Properties.Settings.Default.ImageTagName;
+                    SaveLayout();
+                    LoadLayout();
+                    
+                    //_sensors.Clear(); // Limpia la lista de sensores
+                    //_relativeSensorLocations.Clear(); // Limpia el diccionario de posiciones
+                    //_nextSensorNumber = 1; // Reinicia el contador de IDs
+                    //_currentLayoutPath = null; // Resetea la ruta del layout actual
+                    _hasUnsavedChanges = true;
+                    picCanvas.Invalidate();
+                }
             }
+
         }
 
         public bool SaveLayout()
@@ -129,7 +156,8 @@ namespace XisCoreSensors
             {
                 var layoutData = new LayoutData
                 {
-                    ImagePath = picCanvas.Tag?.ToString(), // Necesitamos guardar la ruta original
+                    ImagePaths = _imagePaths,
+                    ImageSelectorTag = _imageSelectorTag,
                     Sensors = new List<SensorData>()
                 };
 
@@ -150,8 +178,8 @@ namespace XisCoreSensors
                     layoutData.TagMappings.AddRange(mainForm.TagMapper.GetAllMappings());
                 }
 
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(layoutData, Newtonsoft.Json.Formatting.Indented);
-                System.IO.File.WriteAllText(path, json);
+                string json = JsonConvert.SerializeObject(layoutData, Formatting.Indented);
+                File.WriteAllText(path, json);
                 _currentLayoutPath = path;         // <-- Actualiza la ruta actual
                 _hasUnsavedChanges = false;        // <-- Resetea la bandera de cambios
                 Text += " Modfied";
@@ -173,13 +201,37 @@ namespace XisCoreSensors
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 LoadLayoutFinal(openFileDialog.FileName);
+                SaveLayout();
             }
         }
 
         private void LoadLayoutFinal(string path)
         {
-            string json = System.IO.File.ReadAllText(path);
-            var layoutData = Newtonsoft.Json.JsonConvert.DeserializeObject<LayoutData>(json);
+            string json = File.ReadAllText(path);
+            var layoutData = JsonConvert.DeserializeObject<LayoutData>(json);
+
+            _imagePaths = layoutData.ImagePaths ?? new List<string>();
+            _imageSelectorTag = layoutData.ImageSelectorTag ?? "";
+            _loadedImages.Clear();
+
+            foreach(var imagePath in _imagePaths)
+            {                
+                if (File.Exists(imagePath))
+                {
+                    var nuevaImagen = new ImageInfo();
+                    nuevaImagen.ImagenCargada = Image.FromFile(imagePath);
+                    nuevaImagen.RutaDelArchivo = imagePath;
+                    _loadedImages.Add(nuevaImagen);
+                }                    
+            }
+
+            if(_loadedImages.Any())
+            {
+                var primeraImagen = _loadedImages.First();
+                picCanvas.Image = primeraImagen.ImagenCargada;
+                picCanvas.Tag = primeraImagen;
+                picCanvas.SizeMode = PictureBoxSizeMode.Zoom;
+            }
 
             _currentLayoutPath = path;
             
@@ -189,7 +241,7 @@ namespace XisCoreSensors
             _sensors.Clear();
             _relativeSensorLocations.Clear();
 
-            if (this.MdiParent is FrmMainMDI mainForm && mainForm.TagMapper != null && layoutData.TagMappings != null)
+            if (MdiParent is FrmMainMDI mainForm && mainForm.TagMapper != null && layoutData.TagMappings != null)
             {
                 mainForm.TagMapper.LoadMappings(layoutData.TagMappings);
             }
@@ -207,13 +259,13 @@ namespace XisCoreSensors
             }
 
             // Cargamos la imagen AHORA. Esto disparará automáticamente el evento 'Resize' del panel.
-            if (System.IO.File.Exists(layoutData.ImagePath))
+            /*if (File.Exists(layoutData.ImagePath))
             {
                 var img = Image.FromFile(layoutData.ImagePath);
                 picCanvas.Tag = layoutData.ImagePath;
                 picCanvas.Image = img; // Esta acción provocará el reposicionamiento.
                 picCanvas.SizeMode = PictureBoxSizeMode.Zoom;
-            }
+            }*/
             RepositionAllSensors();
             _nextSensorNumber = _sensors.Count + 1; // Actualizamos el contador.
             Text = System.IO.Path.GetFileName(_currentLayoutPath); // Actualizamos el título del formulario.
@@ -856,15 +908,33 @@ namespace XisCoreSensors
                 }
             }
         }
+
+        public void SwitchBackgroundImage(int index)
+        {
+            if(InvokeRequired)
+            {
+                Invoke(new Action(() => SwitchBackgroundImage(index)));
+                return; 
+            }
+
+            if(index >= 0 && index < _loadedImages.Count)
+            {
+                picCanvas.Image = _loadedImages[index].ImagenCargada;
+            }
+        }
     }
 
-    
+    public class ImageInfo
+    {
+        public Image ImagenCargada { get; set; }
+        public string RutaDelArchivo { get; set; }
+    }
+
 
     public class EditModeChangedEventArgs : EventArgs
     {
         public string StatusMessage { get; set; }
         public bool IsInEditMode { get; set; }
     }
-
 
 }

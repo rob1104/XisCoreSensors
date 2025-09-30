@@ -14,6 +14,7 @@ namespace XisCoreSensors.PLC
         public event Action<string, bool> SensorStateUpdateRequested;
         public event Action<int> SecuenceStepChanged;
         public event Action<bool> BoolMonitoringPausedStateChanged;
+        public event Action<string, int> ImageSelectorTagChanged;
 
         public PlcController(PlcService plcService, TagMapper tagMapper)
         {
@@ -29,7 +30,8 @@ namespace XisCoreSensors.PLC
         private void OnTagDintChanged(string tagName, int newValue)
         {
             var secuenceTagName = Properties.Settings.Default.SequenceTagName;
-            if(tagName.Equals(secuenceTagName, StringComparison.OrdinalIgnoreCase))
+            var secuenciaImagen = Properties.Settings.Default.ImageTagName;
+            if (tagName.Equals(secuenceTagName, StringComparison.OrdinalIgnoreCase))
             {
                 // 1. Pausa o reanuda el monitoreo de los sensores booleanos
                 //    (Esta lógica ya la tenías y es correcta).
@@ -40,6 +42,11 @@ namespace XisCoreSensors.PLC
                 //    El FrmMainMDI se encargará de la lógica visual.
                 SecuenceStepChanged?.Invoke(newValue);
             }
+            else if(tagName.Equals(secuenciaImagen, StringComparison.OrdinalIgnoreCase))
+            {
+                ImageSelectorTagChanged?.Invoke(tagName, newValue);
+            }
+
         }
 
         // Este método se llamará cada vez que un tag BOOL cambie su estado.

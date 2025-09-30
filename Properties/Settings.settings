@@ -29,5 +29,11 @@
     <Setting Name="SequenceTagName" Type="System.String" Scope="User">
       <Value Profile="(Default)">SEQ</Value>
     </Setting>
+    <Setting Name="ImageTagName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">IMG</Value>
+    </Setting>
+    <Setting Name="SettingsUpgradeRequired" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
