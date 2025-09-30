@@ -154,5 +154,17 @@ namespace XisCoreSensors.Properties {
                 this["SettingsUpgradeRequired"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("%APPDATA%\\XisDesarrollos\\XisCoreSensors")]
+        public string PlcCatalogPath {
+            get {
+                return ((string)(this["PlcCatalogPath"]));
+            }
+            set {
+                this["PlcCatalogPath"] = value;
+            }
+        }
     }
 }

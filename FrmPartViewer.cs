@@ -182,7 +182,7 @@ namespace XisCoreSensors
                 File.WriteAllText(path, json);
                 _currentLayoutPath = path;         // <-- Actualiza la ruta actual
                 _hasUnsavedChanges = false;        // <-- Resetea la bandera de cambios
-                Text += " Modfied";
+                Text += " Saved";
                 Properties.Settings.Default.LastLayoutPath = path;
                 Properties.Settings.Default.Save();
                 return true; 
@@ -699,7 +699,7 @@ namespace XisCoreSensors
                 // 5. Liberamos sus recursos.
                 sensorToDelete.Dispose();
                 _hasUnsavedChanges = true;
-                Text += " Modfied";
+                Text += " Modified";
             }
         }
 
@@ -726,14 +726,14 @@ namespace XisCoreSensors
                         // 2. --- VALIDACIONES ---
                         if (string.IsNullOrWhiteSpace(newId))
                         {
-                            MessageBox.Show("El ID no puede estar vacío.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("Id can not be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
 
                         // Verificamos si el ID ya existe (ignorando el sensor actual).
                         if (_sensors.Any(s => s.SensorId.Equals(newId, StringComparison.OrdinalIgnoreCase) && s != sensorToRename))
                         {
-                            MessageBox.Show($"El ID '{newId}' ya está en uso. Por favor, elige otro.", "ID Duplicado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show($"Id '{newId}' in use for another sensor. Please, try again...", "Duplicated id", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
 

@@ -8,7 +8,10 @@ namespace XisCoreSensors
 {
     internal class TagCatalogManager
     {
-        private static readonly string FilePath = Path.Combine(Application.StartupPath, "PlcCatalog.json");
+        private static readonly string FolderPath =
+            Environment.ExpandEnvironmentVariables(Properties.Settings.Default.PlcCatalogPath);
+
+        private static readonly string FilePath = Path.Combine(FolderPath, "PlcCatalog.json");
 
         public List<string> Load()
         {
@@ -33,6 +36,7 @@ namespace XisCoreSensors
         {
             try
             {
+                Directory.CreateDirectory(FolderPath);
                 string json = JsonConvert.SerializeObject(tags, Formatting.Indented);
                 File.WriteAllText(FilePath, json);
             }

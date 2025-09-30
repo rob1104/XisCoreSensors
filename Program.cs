@@ -2,8 +2,6 @@
 using Squirrel;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using XisCoreSensors.Properties;
 
@@ -33,64 +31,14 @@ namespace XisCoreSensors
                 Settings.Default.Save(); // <-- ¡Paso crucial! Ahora la config está a salvo.                
             }
 
-            // 3. Ahora, intenta la operación secundaria que puede fallar.
-            InicializarCatalogo();
-
             // squirrel --releasify  XisCoreSensors.X.X.X.nupkg
-
-
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new FrmMainMDI());
         }
 
-        public static void InicializarCatalogo()
-        {
-            try
-            {
-                string directorioActual = AppContext.BaseDirectory;
-                var directorioPadre = Directory.GetParent(directorioActual)?.Parent;
-
-                if (directorioPadre == null)
-                {
-                    // Opcional: Registrar que no se pudo encontrar el directorio padre.
-                    return;
-                }
-
-                // 1. Busca todos los directorios que empiezan con "app-".
-                var directoriosDeVersiones = directorioPadre.GetDirectories("app-*")
-                    .Select(dir => {
-                        // 2. Extrae el texto de la versión y intenta convertirlo.
-                        string versionString = dir.Name.Substring("app-".Length);
-                        Version.TryParse(versionString, out Version version); // Usa TryParse para evitar errores.
-                        return new { Directory = dir, Version = version }; // Crea un objeto temporal con el directorio y su versión.
-                    })
-                    .Where(v => v.Version != null) // 3. Filtra cualquier directorio que no tenga una versión válida.
-                    .OrderByDescending(v => v.Version) // 4. ¡LA CLAVE! Ordena por el objeto Version, no por el nombre.
-                    .Select(v => v.Directory) // Vuelve a seleccionar solo el directorio.
-                    .ToList();
-
-                // 5. El resto de la lógica es la misma, pero ahora con la lista correctamente ordenada.
-                if (directoriosDeVersiones.Count > 1)
-                {
-                    string directorioAnterior = directoriosDeVersiones[1].FullName;
-                    string archivoOrigen = Path.Combine(directorioAnterior, "PlcCatalog.json");
-                    string archivoDestino = Path.Combine(directorioActual, "PlcCatalog.json");
-
-                    if (File.Exists(archivoOrigen) && !File.Exists(archivoDestino))
-                    {
-                        File.Copy(archivoOrigen, archivoDestino);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Para una aplicación real, considera usar un sistema de logs más formal
-                // que escribir en la consola, como NLog o Serilog.
-                System.Diagnostics.Debug.WriteLine("Error al copiar el catálogo: " + ex.Message);
-            }
-        }
+       
     
 
         private static void HandleSquirrelEvents(string[] args)
