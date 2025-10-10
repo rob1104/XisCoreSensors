@@ -7,14 +7,21 @@ namespace XisCoreSensors.Controls
 {
     public partial class SensorControl : UserControl
     {
+        public bool RotateText { get; set; } = false;
+
         private string _sensorId;
         private string _plcTag;
 
         public enum SensorStatus { Ok, Fail, Unmapped, Paused }
+        public enum SensorType { Normal, Laser }
+
         private SensorStatus _status = SensorStatus.Unmapped;
 
+        public SensorType Type { get; set; } = SensorType.Normal;
+
+
         // --- INICIO: CÓDIGO NUEVO PARA PARPADEO ---
-        private Timer _flashTimer;
+        private readonly Timer _flashTimer;
         // Controla la intensidad actual del color (255 es opaco, valores menores son más tenues)
         private int _flashAlpha = 255;
         private bool _isFadingOut = true; // Controla si estamos atenuando o abrillantando
@@ -78,7 +85,7 @@ namespace XisCoreSensors.Controls
         {
             InitializeComponent();
             // Establecemos el tamaño por defecto y habilitamos el doble búfer para un dibujo más suave.
-            Size = new Size(42, 42);
+            Size = new Size(55, 55);
             DoubleBuffered = true;
 
             // --- INICIO: CÓDIGO NUEVO ---
@@ -119,72 +126,171 @@ namespace XisCoreSensors.Controls
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-            // Determina el color base según el estado
+            // --- ROTACIÓN COMPLETA DEL SENSOR ---
+            if (RotateText) // Reutilizamos la propiedad existente
+            {
+                var originalState = e.Graphics.Save();
+
+                // Rotar 90 grados a la derecha (sentido horario) alrededor del centro
+                e.Graphics.TranslateTransform(this.Width / 2f, this.Height / 2f);
+                e.Graphics.RotateTransform(-90); // Cambiar a -90 para rotar a la izquierda
+                e.Graphics.TranslateTransform(-this.Height / 2f, -this.Width / 2f);
+
+                // Intercambiar dimensiones para que el dibujo se ajuste
+                float w = Height; // Ahora el ancho es la altura
+                float h = Width;  // Y la altura es el ancho
+
+                PaintSensor(e.Graphics, w, h, false); // No establecer Region cuando está rotado
+
+                e.Graphics.Restore(originalState);
+            }
+            else
+            {
+                PaintSensor(e.Graphics, Width, Height, true); // Establecer Region solo cuando NO está rotado
+            }
+        }
+
+        private void PaintSensor(Graphics g, float width, float height, bool setRegion = true)
+        {
             Color baseColor;
+            Brush textColor;
+
             switch (_status)
             {
                 case SensorStatus.Ok:
                     baseColor = Color.LimeGreen;
+                    textColor = Brushes.Red;
                     break;
                 case SensorStatus.Fail:
                     baseColor = Color.FromArgb(_flashAlpha, Color.Red);
+                    textColor = Brushes.Yellow;
                     break;
                 case SensorStatus.Paused:
                     baseColor = Color.FromArgb(_flashAlpha, Color.Yellow);
+                    textColor = Brushes.Black;
                     break;
                 case SensorStatus.Unmapped:
                 default:
                     baseColor = Color.DimGray;
+                    textColor = Brushes.White;
                     break;
             }
 
-            // Crea la región circular
-            using (var path = new GraphicsPath())
-            {
-                int margin = 3; // Margen aumentado para mejor definición del borde
-                Rectangle mainRect = new Rectangle(margin, margin, this.Width - margin * 2 - 1, this.Height - margin * 2 - 1);
-                Rectangle outerRect = new Rectangle(0, 0, this.Width - 1, this.Height - 1);
+            int margin = 3;
+            Rectangle mainRect = new Rectangle(margin, margin, (int)width - margin * 2 - 1, (int)height - margin * 2 - 1);
+            Rectangle outerRect = new Rectangle(0, 0, (int)width - 1, (int)height - 1);
 
-                path.AddEllipse(outerRect);
-                this.Region = new Region(path);
+            using (var path = new GraphicsPath())
+            using (var mainPath = new GraphicsPath())
+            {
+                // Definir las formas según el tipo de sensor
+                if (Type == SensorType.Normal)
+                {
+                    path.AddEllipse(outerRect);
+                    mainPath.AddEllipse(mainRect);
+                }
+                else // SensorType.Laser
+                {
+                    // Triángulo exterior
+                    var outerPoints = new PointF[]
+                    {
+                new PointF(width / 2f, 0),
+                new PointF(0, height - 1),
+                new PointF(width - 1, height - 1)
+                    };
+                    path.AddPolygon(outerPoints);
+
+                    // Triángulo interior (main)
+                    var mainPoints = new PointF[]
+                    {
+                new PointF(width / 2f, margin),
+                new PointF(margin, height - margin - 1),
+                new PointF(width - margin - 1, height - margin - 1)
+                    };
+                    mainPath.AddPolygon(mainPoints);
+                }
+
+                // Solo establecer el Region cuando NO está rotado
+                if (setRegion)
+                {
+                    this.Region = new Region(path);
+                }
 
                 // --- BORDE EXTERIOR (Efecto 3D) ---
 
                 // 1. Sombra exterior (borde oscuro)
                 using (var shadowBrush = new SolidBrush(Color.FromArgb(120, Color.Black)))
                 {
-                    e.Graphics.FillEllipse(shadowBrush, 1, 1, this.Width - 1, this.Height - 1);
-                }
-
-                // 2. Borde metálico principal
-                using (var borderPath = new GraphicsPath())
-                {
-                    borderPath.AddEllipse(outerRect);
-
-                    // Gradiente para simular metal brushed
-                    using (var borderBrush = new LinearGradientBrush(
-                        outerRect,
-                        Color.FromArgb(180, 180, 180), // Gris claro
-                        Color.FromArgb(80, 80, 80),    // Gris oscuro
-                        45f)) // Ángulo diagonal
+                    using (var shadowPath = new GraphicsPath())
                     {
-                        e.Graphics.FillPath(borderBrush, borderPath);
+                        if (Type == SensorType.Normal)
+                        {
+                            shadowPath.AddEllipse(1, 1, width - 1, height - 1);
+                        }
+                        else
+                        {
+                            var shadowPoints = new PointF[]
+                            {
+                        new PointF(width / 2f, 1),
+                        new PointF(1, height - 1),
+                        new PointF(width - 1, height - 1)
+                            };
+                            shadowPath.AddPolygon(shadowPoints);
+                        }
+                        g.FillPath(shadowBrush, shadowPath);
                     }
                 }
 
-                // 3. Borde interior brillante (highlight)
-                Rectangle innerBorderRect = new Rectangle(1, 1, this.Width - 3, this.Height - 3);
-                using (var innerBorderPen = new Pen(Color.FromArgb(150, Color.White), 1))
+                // 2. Borde metálico principal con gradiente
+                using (var borderBrush = new LinearGradientBrush(
+                    outerRect,
+                    Color.FromArgb(180, 180, 180),
+                    Color.FromArgb(80, 80, 80),
+                    45f))
                 {
-                    e.Graphics.DrawEllipse(innerBorderPen, innerBorderRect);
+                    g.FillPath(borderBrush, path);
+                }
+
+                // 3. Borde interior brillante (highlight)
+                if (Type == SensorType.Normal)
+                {
+                    Rectangle innerBorderRect = new Rectangle(1, 1, (int)width - 3, (int)height - 3);
+                    using (var innerBorderPen = new Pen(Color.FromArgb(150, Color.White), 1))
+                    {
+                        g.DrawEllipse(innerBorderPen, innerBorderRect);
+                    }
+                }
+                else // Triángulo con borde amarillo más visible
+                {
+                    // Borde amarillo exterior del triángulo
+                    var outerBorderPoints = new PointF[]
+                    {
+                new PointF(width / 2f, 1.5f),
+                new PointF(1.5f, height - 1.5f),
+                new PointF(width - 1.5f, height - 1.5f)
+                    };
+                    using (var yellowBorderPen = new Pen(Color.FromArgb(220, Color.Gold), 2.5f))
+                    {
+                        g.DrawPolygon(yellowBorderPen, outerBorderPoints);
+                    }
+
+                    // Línea interna brillante para más profundidad
+                    var innerPoints = new PointF[]
+                    {
+                new PointF(width / 2f, 2.5f),
+                new PointF(2.5f, height - 2.5f),
+                new PointF(width - 2.5f, height - 2.5f)
+                    };
+                    using (var innerBorderPen = new Pen(Color.FromArgb(180, Color.Yellow), 1f))
+                    {
+                        g.DrawPolygon(innerBorderPen, innerPoints);
+                    }
                 }
 
                 // --- SUPERFICIE PRINCIPAL DEL SENSOR ---
-
-                // Relleno principal con el color del estado
                 using (var mainBrush = new SolidBrush(baseColor))
                 {
-                    e.Graphics.FillEllipse(mainBrush, mainRect);
+                    g.FillPath(mainBrush, mainPath);
                 }
 
                 // --- EFECTOS DE ILUMINACIÓN ---
@@ -197,13 +303,32 @@ namespace XisCoreSensors.Controls
                     mainRect.Height * 0.4f);
 
                 Color highlightColor = Color.FromArgb(200, Color.White);
-                using (var highlightBrush = new LinearGradientBrush(
-                    highlightRect,
-                    highlightColor,
-                    Color.Transparent,
-                    LinearGradientMode.Vertical))
+                using (var highlightPath = new GraphicsPath())
                 {
-                    e.Graphics.FillEllipse(highlightBrush, highlightRect);
+                    if (Type == SensorType.Normal)
+                    {
+                        highlightPath.AddEllipse(highlightRect);
+                    }
+                    else
+                    {
+                        // Para triángulo, crear un área de highlight proporcional
+                        var highlightPoints = new PointF[]
+                        {
+                    new PointF(width / 2f, mainRect.Y + mainRect.Height * 0.15f),
+                    new PointF(mainRect.X + mainRect.Width * 0.2f, mainRect.Y + mainRect.Height * 0.5f),
+                    new PointF(mainRect.X + mainRect.Width * 0.8f, mainRect.Y + mainRect.Height * 0.5f)
+                        };
+                        highlightPath.AddPolygon(highlightPoints);
+                    }
+
+                    using (var highlightBrush = new LinearGradientBrush(
+                        highlightRect,
+                        highlightColor,
+                        Color.Transparent,
+                        LinearGradientMode.Vertical))
+                    {
+                        g.FillPath(highlightBrush, highlightPath);
+                    }
                 }
 
                 // 2. Sombra interior (parte inferior)
@@ -214,16 +339,36 @@ namespace XisCoreSensors.Controls
                     mainRect.Height * 0.3f);
 
                 Color shadowColor = Color.FromArgb(60, Color.Black);
-                using (var shadowBrush = new LinearGradientBrush(
-                    shadowRect,
-                    Color.Transparent,
-                    shadowColor,
-                    LinearGradientMode.Vertical))
+                using (var shadowPath = new GraphicsPath())
                 {
-                    e.Graphics.FillEllipse(shadowBrush, shadowRect);
+                    if (Type == SensorType.Normal)
+                    {
+                        shadowPath.AddEllipse(shadowRect);
+                    }
+                    else
+                    {
+                        // Para triángulo, crear sombra en la base
+                        var shadowPoints = new PointF[]
+                        {
+                    new PointF(mainRect.X + mainRect.Width * 0.3f, mainRect.Y + mainRect.Height * 0.7f),
+                    new PointF(mainRect.X + mainRect.Width * 0.15f, mainRect.Bottom - margin),
+                    new PointF(mainRect.Right - mainRect.Width * 0.15f, mainRect.Bottom - margin),
+                    new PointF(mainRect.X + mainRect.Width * 0.7f, mainRect.Y + mainRect.Height * 0.7f)
+                        };
+                        shadowPath.AddPolygon(shadowPoints);
+                    }
+
+                    using (var shadowBrush = new LinearGradientBrush(
+                        shadowRect,
+                        Color.Transparent,
+                        shadowColor,
+                        LinearGradientMode.Vertical))
+                    {
+                        g.FillPath(shadowBrush, shadowPath);
+                    }
                 }
 
-                // 3. Punto de luz central (opcional, para efecto más dramático)
+                // 3. Punto de luz central
                 if (_status == SensorStatus.Ok || _status == SensorStatus.Fail)
                 {
                     RectangleF centerLight = new RectangleF(
@@ -233,14 +378,36 @@ namespace XisCoreSensors.Controls
                         mainRect.Height * 0.3f);
 
                     Color centerColor = Color.FromArgb(100, Color.White);
-                    using (var centerBrush = new RadialGradientBrush(centerLight, centerColor, Color.Transparent))
+
+                    using (var centerPath = new GraphicsPath())
                     {
-                        e.Graphics.FillEllipse(centerBrush, centerLight);
+                        if (Type == SensorType.Normal)
+                        {
+                            centerPath.AddEllipse(centerLight);
+                        }
+                        else
+                        {
+                            // Pequeño triángulo de luz
+                            var centerPoints = new PointF[]
+                            {
+                        new PointF(width / 2f, centerLight.Y),
+                        new PointF(centerLight.X, centerLight.Bottom),
+                        new PointF(centerLight.Right, centerLight.Bottom)
+                            };
+                            centerPath.AddPolygon(centerPoints);
+                        }
+
+                        using (var centerBrush = new PathGradientBrush(centerPath))
+                        {
+                            centerBrush.CenterColor = centerColor;
+                            centerBrush.SurroundColors = new Color[] { Color.Transparent };
+                            g.FillPath(centerBrush, centerPath);
+                        }
                     }
                 }
             }
 
-            // --- TEXTO DEL SENSOR (sin cambios) ---
+            // --- TEXTO DEL SENSOR ---
             using (StringFormat stringFormat = new StringFormat())
             {
                 stringFormat.Alignment = StringAlignment.Center;
@@ -248,42 +415,62 @@ namespace XisCoreSensors.Controls
 
                 if (!string.IsNullOrEmpty(this.SensorId))
                 {
-                    float fontSize = Math.Max(1, this.Height * 0.35f);
+                    float fontSize;
+
+                    if (Type == SensorType.Normal)
+                    {
+                        fontSize = height * 0.4f; // Tamaño de fuente para sensor normal
+                    }
+                    else
+                    {
+                        fontSize = height * 0.25f; // Tamaño de fuente más pequeño para triángulo
+                    }
+
                     using (var font = new Font("Arial", fontSize, FontStyle.Bold, GraphicsUnit.Pixel))
                     {
-                        // Sombra del texto para mejor legibilidad
-                        using (var shadowBrush = new SolidBrush(Color.FromArgb(150, Color.Black)))
+                        // Ajustar posición del texto para triángulo
+                        var textRect = new RectangleF(0, 0, width, height);
+                        if (Type == SensorType.Laser)
                         {
-                            var shadowRect = this.ClientRectangle;
-                            shadowRect.Offset(1, 1);
-                            e.Graphics.DrawString(this.SensorId, font, shadowBrush, shadowRect, stringFormat);
+                            // Mover el texto un poco hacia abajo en el triángulo
+                            textRect.Y += height * 0.15f;
                         }
 
-                        // Texto principal
-                        e.Graphics.DrawString(this.SensorId, font, Brushes.White, this.ClientRectangle, stringFormat);
+                        // Sombra del texto
+                        using (var shadowBrush = new SolidBrush(Color.FromArgb(150, Color.Black)))
+                        {
+                            var shadowRect = textRect;
+                            shadowRect.Offset(1, 1);
+                            g.DrawString(this.SensorId, font, shadowBrush, shadowRect, stringFormat);
+                        }
+                        g.DrawString(this.SensorId, font, textColor, textRect, stringFormat);
                     }
                 }
 
-                // Indicador de unmapped (sin cambios)
+                // Indicador de unmapped
                 if (_status == SensorStatus.Unmapped)
                 {
-                    int indicatorSize = 8;
-                    int x = Width - indicatorSize - 6; // Ajustado para el nuevo borde
-                    int y = 6;
+                    var indicatorSize = 8;
+                    var x = (int)width - indicatorSize - 6;
+                    var y = 6;
 
                     using (var brush = new SolidBrush(Color.Red))
                     {
-                        e.Graphics.FillEllipse(brush, x, y, indicatorSize, indicatorSize);
+                        g.FillEllipse(brush, x, y, indicatorSize, indicatorSize);
                     }
                     using (var pen = new Pen(Color.White, 2))
                     {
-                        e.Graphics.DrawEllipse(pen, x, y, indicatorSize, indicatorSize);
+                        g.DrawEllipse(pen, x, y, indicatorSize, indicatorSize);
                     }
                 }
             }
         }
+
         public bool IsMapped => !string.IsNullOrEmpty(_plcTag);
+
     }
+
+
     public class RadialGradientBrush : IDisposable
     {
         private GraphicsPath _path;

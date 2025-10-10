@@ -98,6 +98,8 @@ namespace XisCoreSensors
             UpdateStatistics();
             UpdateButtonStates();
             lstPlcTags.ClearSelected();
+
+            chkRotate.Checked = Properties.Settings.Default.RotateSensorText;
         }
 
         private void RefreshTagList()
@@ -274,7 +276,9 @@ namespace XisCoreSensors
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            bool saveSuccess = _ownerPartViewer.SaveLayout();
+            Properties.Settings.Default.RotateSensorText = chkRotate.Checked;
+            Properties.Settings.Default.Save();
+            var saveSuccess = _ownerPartViewer.SaveLayout();
             if (saveSuccess)
             {
                 DialogResult = DialogResult.OK;

@@ -34,7 +34,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.BackColor = System.Drawing.Color.Transparent;
             this.Name = "SensorControl";
             this.Size = new System.Drawing.Size(148, 148);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.SensorControl_Paint);

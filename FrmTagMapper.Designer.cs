@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnGetFromPLC = new System.Windows.Forms.Button();
             this.btnAddRange = new System.Windows.Forms.Button();
             this.btnAddTag = new System.Windows.Forms.Button();
             this.lblPlcStatus = new System.Windows.Forms.Label();
@@ -53,7 +54,7 @@
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnAutoMap = new System.Windows.Forms.Button();
-            this.btnGetFromPLC = new System.Windows.Forms.Button();
+            this.chkRotate = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -103,6 +104,16 @@
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "PLC Tags";
+            // 
+            // btnGetFromPLC
+            // 
+            this.btnGetFromPLC.Location = new System.Drawing.Point(102, 420);
+            this.btnGetFromPLC.Name = "btnGetFromPLC";
+            this.btnGetFromPLC.Size = new System.Drawing.Size(100, 23);
+            this.btnGetFromPLC.TabIndex = 5;
+            this.btnGetFromPLC.Text = "Get from PLC";
+            this.btnGetFromPLC.UseVisualStyleBackColor = true;
+            this.btnGetFromPLC.Click += new System.EventHandler(this.btnGetFromPLC_Click);
             // 
             // btnAddRange
             // 
@@ -316,6 +327,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.chkRotate);
             this.panel1.Controls.Add(this.btnAutoMap);
             this.panel1.Controls.Add(this.btnMapSelected);
             this.panel1.Controls.Add(this.btnCancel);
@@ -337,15 +349,15 @@
             this.btnAutoMap.UseVisualStyleBackColor = true;
             this.btnAutoMap.Click += new System.EventHandler(this.btnAutoMap_Click);
             // 
-            // btnGetFromPLC
+            // chkRotate
             // 
-            this.btnGetFromPLC.Location = new System.Drawing.Point(102, 420);
-            this.btnGetFromPLC.Name = "btnGetFromPLC";
-            this.btnGetFromPLC.Size = new System.Drawing.Size(100, 23);
-            this.btnGetFromPLC.TabIndex = 5;
-            this.btnGetFromPLC.Text = "Get from PLC";
-            this.btnGetFromPLC.UseVisualStyleBackColor = true;
-            this.btnGetFromPLC.Click += new System.EventHandler(this.btnGetFromPLC_Click);
+            this.chkRotate.AutoSize = true;
+            this.chkRotate.Location = new System.Drawing.Point(484, 20);
+            this.chkRotate.Name = "chkRotate";
+            this.chkRotate.Size = new System.Drawing.Size(99, 17);
+            this.chkRotate.TabIndex = 6;
+            this.chkRotate.Text = "Rotate Sensors";
+            this.chkRotate.UseVisualStyleBackColor = true;
             // 
             // FrmTagMapper
             // 
@@ -377,6 +389,7 @@
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -409,5 +422,6 @@
         private System.Windows.Forms.Button btnAddRange;
         private System.Windows.Forms.Button btnAutoMap;
         private System.Windows.Forms.Button btnGetFromPLC;
+        private System.Windows.Forms.CheckBox chkRotate;
     }
 }

@@ -38,5 +38,8 @@
     <Setting Name="PlcCatalogPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">%APPDATA%\XisDesarrollos\XisCoreSensors</Value>
     </Setting>
+    <Setting Name="RotateSensorText" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

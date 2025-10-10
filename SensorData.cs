@@ -20,5 +20,7 @@ namespace XisCoreSensors
         public float RelativeY { get; set; } 
         public SensorControl.SensorStatus Status { get; set; } = SensorControl.SensorStatus.Unmapped;
         public string PlcTag { get; set; }
+
+        public SensorControl.SensorType Type { get; set; } = SensorControl.SensorType.Normal;
     }
 }

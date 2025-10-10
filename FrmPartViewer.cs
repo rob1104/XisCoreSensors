@@ -17,7 +17,7 @@ namespace XisCoreSensors
         private Dictionary<string, PointF> _relativeSensorLocations = new Dictionary<string, PointF>();
         private bool _isZoomed = false;
         private const float ZoomFactor = 3f;
-        private Size _originalSensorSize = new Size(42,42);
+        private Size _originalSensorSize = new Size(55,55);
         // Variable para controlar si podemos mover/añadir sensores.
         private bool _isEditMode = false;
         // Variables para gestionar el arrastre de sensores.
@@ -169,7 +169,8 @@ namespace XisCoreSensors
                         RelativeX = _relativeSensorLocations[sensor.SensorId].X,
                         RelativeY = _relativeSensorLocations[sensor.SensorId].Y,
                         PlcTag = sensor.PlcTag,
-                        Status = sensor.Status
+                        Status = sensor.Status,
+                        Type = sensor.Type
                     });
                 }
 
@@ -250,7 +251,7 @@ namespace XisCoreSensors
             // Nota: NO cargamos la imagen todavía.
             foreach (var sensorData in layoutData.Sensors)
             {
-                CreateSensor(sensorData.Id, new PointF(sensorData.RelativeX, sensorData.RelativeY), sensorData.Status);
+                CreateSensor(sensorData.Id, new PointF(sensorData.RelativeX, sensorData.RelativeY), sensorData.Type, sensorData.Status);
                 var sensor = _sensors.LastOrDefault();
                 if (sensor != null && !string.IsNullOrEmpty(sensorData.PlcTag))
                 {
@@ -283,14 +284,15 @@ namespace XisCoreSensors
 
         }
 
-        private void CreateSensor(string id, PointF relativePos, SensorControl.SensorStatus status = SensorControl.SensorStatus.Ok)
+        private void CreateSensor(string id, PointF relativePos, SensorControl.SensorType type, SensorControl.SensorStatus status = SensorControl.SensorStatus.Ok)
         {
-            var sensor = new SensorControl { SensorId = id, Tag = id, Status = status };
+            var sensor = new SensorControl { SensorId = id, Tag = id, Status = status, Type = type };
             sensor.MouseDown += Sensor_MouseDown;
             sensor.MouseMove += Sensor_MouseMove;
             sensor.MouseUp += Sensor_MouseUp;
             sensor.StatusChanged += Sensor_StatusChanged;
             sensor.ContextMenuStrip = contextMenuSensor;
+            sensor.RotateText = Properties.Settings.Default.RotateSensorText;
             _sensors.Add(sensor);
             picCanvas.Controls.Add(sensor);
             _relativeSensorLocations[id] = relativePos;
@@ -493,7 +495,7 @@ namespace XisCoreSensors
                 );
 
                 // Llama a nuestro método central con la posición por defecto.
-                AddSensorAtLocation(defaultLocation);
+                AddSensorAtLocation(defaultLocation, SensorControl.SensorType.Normal);
             }
         }
 
@@ -593,11 +595,10 @@ namespace XisCoreSensors
 
         private void agregarSensorToolTipMenuItem_Click(object sender, EventArgs e)
         {
-            Point clickPosition = picCanvas.PointToClient(contextMenu.SourceControl.PointToScreen(contextMenu.Bounds.Location));
-            AddSensorAtLocation(clickPosition);
+            
         }
 
-        private void AddSensorAtLocation(Point location)
+        private void AddSensorAtLocation(Point location, SensorControl.SensorType type)
         {
             if (!_isEditMode)
             {
@@ -612,7 +613,9 @@ namespace XisCoreSensors
             {
                 SensorId = newId,
                 Tag = newId,
-                Location = location // Usa la ubicación proporcionada
+                Location = location, 
+                Type = type,
+                RotateText = Properties.Settings.Default.RotateSensorText
             };
 
             // Asigna los eventos y el menú contextual
@@ -920,6 +923,55 @@ namespace XisCoreSensors
             if(index >= 0 && index < _loadedImages.Count)
             {
                 picCanvas.Image = _loadedImages[index].ImagenCargada;
+            }
+        }
+
+        private void normalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var _clickPosition = picCanvas.PointToClient(contextMenu.SourceControl.PointToScreen(contextMenu.Bounds.Location));
+            AddSensorAtLocation(_clickPosition, SensorControl.SensorType.Normal);
+        }
+
+        private void laserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var _clickPosition = picCanvas.PointToClient(contextMenu.SourceControl.PointToScreen(contextMenu.Bounds.Location));
+            AddSensorAtLocation(_clickPosition, SensorControl.SensorType.Laser);
+
+        }
+
+        private void contextMenuSensor_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var editMode = _isEditMode;
+
+            toNormalToolStripMenuItem.Enabled = editMode;
+            toLaserToolStripMenuItem.Enabled = editMode;
+
+            if(editMode && contextMenuSensor.SourceControl is SensorControl sensor)
+            {
+                toNormalToolStripMenuItem.Enabled = (sensor.Type != SensorControl.SensorType.Normal);
+                toLaserToolStripMenuItem.Enabled = (sensor.Type != SensorControl.SensorType.Laser);
+            }
+            
+
+        }
+
+        private void toNormalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(contextMenuSensor.SourceControl is SensorControl sensor)
+            {
+                sensor.Type = SensorControl.SensorType.Normal;
+                sensor.Invalidate();
+                MarkAsModified();
+            }
+        }
+
+        private void toLaserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(contextMenuSensor.SourceControl is SensorControl sensor)
+            {
+                sensor.Type = SensorControl.SensorType.Laser;
+                sensor.Invalidate();
+                MarkAsModified();
             }
         }
     }

@@ -166,5 +166,17 @@ namespace XisCoreSensors.Properties {
                 this["PlcCatalogPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RotateSensorText {
+            get {
+                return ((bool)(this["RotateSensorText"]));
+            }
+            set {
+                this["RotateSensorText"] = value;
+            }
+        }
     }
 }
