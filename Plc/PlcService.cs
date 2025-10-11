@@ -99,16 +99,20 @@ namespace XisCoreSensors.Plc
             var problemTags = new List<string>();
 
             // Verificar salud de tags booleanos
-            foreach (var tagName in _tagsBool.Keys)
+            if (!_isBoolMonitoringPaused)
             {
-                if (_lastSuccessfulRead.TryGetValue(tagName, out var lastSuccess))
+                foreach (var tagName in _tagsBool.Keys)
                 {
-                    if ((currentTime - lastSuccess).TotalMinutes > TAG_TIMEOUT_MINUTES)
+                    if (_lastSuccessfulRead.TryGetValue(tagName, out var lastSuccess))
                     {
-                        problemTags.Add(tagName);
+                        if ((currentTime - lastSuccess).TotalMinutes > TAG_TIMEOUT_MINUTES)
+                        {
+                            problemTags.Add(tagName);
+                        }
                     }
                 }
             }
+            
 
             // Verificar salud de tags DINT
             foreach (var tagName in _tagsDint.Keys)

@@ -785,6 +785,15 @@ namespace XisCoreSensors
             if (_plcService == null) return;
             if (lblPlcStatus.Text.Contains("Idle")) return;
 
+            if (ActiveMdiChild is FrmPartViewer activeViewer)
+            {
+                if(activeViewer.CurrentSequenceStep == 0)
+                {
+                    UpdatePlcStatus(PlcUiState.SequencePaused);
+                    return;
+                }
+            }
+
             // Mostrar estado de transición
             UpdatePlcStatus(PlcUiState.Connected, "Resuming sensor monitoring...");
 
