@@ -1,5 +1,4 @@
-﻿using Squirrel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -10,6 +9,7 @@ using XisCoreSensors.Plc;
 using XisCoreSensors.PLC;
 using XisCoreSensors.Properties;
 using static XisCoreSensors.Mapping.SensorTagMapping;
+using static XisCoreSensors.PLC.PlcController;
 
 namespace XisCoreSensors
 {
@@ -26,6 +26,7 @@ namespace XisCoreSensors
         private PlcController _plcController;
         private System.Windows.Forms.Timer _monitoringIndicatorTimer;
         private bool _indicatorVisible = false;
+        private AlertManager _alertManager;
 
         private System.Windows.Forms.Timer _reconnectTimer;
 
@@ -40,6 +41,7 @@ namespace XisCoreSensors
         public FrmMainMDI()
         {
             InitializeComponent();
+            _alertManager = new AlertManager("alerts.json");
             ConfigureStatusStrip();
             ConfigureNotificationBar();
             ConfigureMonitoringTimer();
@@ -51,9 +53,9 @@ namespace XisCoreSensors
             if (_plcService == null) return false;
 
             // Durante transiciones (como salir del modo edición), ser más permisivo
-            bool timerEnabled = _plcService.TimerIsEnabled;
-            bool shouldBeMonitoring = _plcService.ShouldBeMonitoring;
-            bool isHealthy = _plcService.IsConnectionHealthy;
+            var timerEnabled = _plcService.TimerIsEnabled;
+            var shouldBeMonitoring = _plcService.ShouldBeMonitoring;
+            var isHealthy = _plcService.IsConnectionHealthy;
 
             // Si debería estar monitoreando, el timer está corriendo y la conexión es saludable,
             // entonces probablemente está bien (aunque _isActuallyMonitoring aún no se haya actualizado)
@@ -407,10 +409,7 @@ namespace XisCoreSensors
         }
 
         private async void FrmMainMDI_Load(object sender, EventArgs e)
-        {           
-
-            await CheckForUpdatesAsync();
-            Text = "Xis Sensors v" + Application.ProductVersion;
+        {                      
             try
             {
                 if (Settings.Default.LastLayoutPath != string.Empty)
@@ -426,35 +425,7 @@ namespace XisCoreSensors
             }            
         }
 
-        private async Task CheckForUpdatesAsync()
-        {
-            try
-            {
-                var updateUrl = "http://xis.myftp.biz/desarrollos/XisCoreSensors";
-                using(var mgr = new UpdateManager(updateUrl))
-                {
-                    var updateInfo = await mgr.CheckForUpdate();
-                    if(updateInfo.ReleasesToApply.Any())
-                    {
-                        var result = MessageBox.Show("An update is available. Do you want to download and install it now?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                        if (result == DialogResult.Yes)
-                        {
-                            await mgr.UpdateApp();
-                            MessageBox.Show("The application has been updated and will now restart.", "Update Installed", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            UpdateManager.RestartApp();
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No updates available.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Fallo al buscar actualizaciones: " + ex.Message);
-            }
-        }
+      
 
         private void LoadModel()
         {
@@ -486,6 +457,7 @@ namespace XisCoreSensors
             loadLayoutToolStripMenuItem.Enabled = e.IsInEditMode;
             saveLayoutToolStripMenuItem1.Enabled = e.IsInEditMode;
             loadImageToolStripMenuItem.Enabled = e.IsInEditMode;
+            editAlertMessagesToolStripMenuItem.Enabled = e.IsInEditMode;
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -534,8 +506,8 @@ namespace XisCoreSensors
         
         private void ViewerForm_OnSensorFailed(string message)
         {
-            notificationBar1.BringToFront();
-            notificationBar1.ShowMessage(message, 600);
+            //notificationBar1.BringToFront();
+            //notificationBar1.ShowMessage(message, 400);
         }
         
         private void ConfigureNotificationBar()
@@ -650,6 +622,7 @@ namespace XisCoreSensors
             _plcController.BoolMonitoringPausedStateChanged += PlcController_BoolMonitoringPausedStateChanged;
             _plcController.SecuenceStepChanged += PlcController_SequenceStepChanged;
             _plcController.ImageSelectorTagChanged += PlcController_ImageSelectorTagChanged;
+            _plcController.StopwatchCommandReceived += PlcController_StopwatchCommandReceived;
 
             // 3. Carga los tags del catálogo
             var catalogManager = new TagCatalogManager();
@@ -691,6 +664,27 @@ namespace XisCoreSensors
             {
                 _plcService.InitializeDintTags(new[] { imageTag });
             }
+
+            var crhonoTag = Settings.Default.ChronoTgName;
+            if(!string.IsNullOrEmpty(crhonoTag))
+            {
+                _plcService.InitializeDintTags(new[] { crhonoTag });
+            }
+        }
+
+        private void PlcController_StopwatchCommandReceived(StopWatchCommand command)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => PlcController_StopwatchCommandReceived(command)));
+                return;
+            }
+
+            // Busca el visor activo y le envía el comando.
+            if (ActiveMdiChild is FrmPartViewer activeViewer)
+            {
+                activeViewer.ControlStopWatch(command);
+            }
         }
 
         private void PlcController_BoolMonitoringPausedStateChanged(bool isPaused)
@@ -718,16 +712,49 @@ namespace XisCoreSensors
             
             lblSequenceStatus.Text = $"SEQ: {newStep}"; 
 
-            if(newStep == 0)
+            string alertMessage = _alertManager.GetMessageForSequence(newStep);
+
+            if (!string.IsNullOrEmpty(alertMessage))
+            {
+                // Pausa el monitoreo de booleanos si es SEQ=0 (lógica que ya tenías)
+                if (newStep == 0)
+                {
+                    PausePlcMonitoring();
+                    UpdatePlcStatus(PlcUiState.SequencePaused);
+                    
+                }
+                else
+                {
+                    ResumePlcMonitoring();
+                }
+                if (ActiveMdiChild is FrmPartViewer activeViewer)
+                {
+                    activeViewer.ShowAlertMessage(alertMessage?.ToUpper());
+                }
+                
+            }
+            else
+            {
+                // Si no hay un mensaje configurado para el número, reanuda el monitoreo y oculta la barra.
+                ResumePlcMonitoring();
+                
+            }
+
+            foreach (var viewer in this.MdiChildren.OfType<FrmPartViewer>())
+            {
+                viewer.UpdateSequenceStep(newStep);
+            }
+
+            if (newStep == 0)
             {
                 PausePlcMonitoring();
                 UpdatePlcStatus(PlcUiState.SequencePaused);
-                sequenceNotificationBar.ShowMessage("WAITING FOR OPERATOR TO LOAD PART");
+                //sequenceNotificationBar.ShowMessage("WAITING FOR OPERATOR TO LOAD PART");
             }
             else
             {
                 ResumePlcMonitoring();
-                sequenceNotificationBar.HideMessage();
+                //sequenceNotificationBar.HideMessage();
             }                     
         }
 
@@ -1046,6 +1073,14 @@ namespace XisCoreSensors
         private void fullScreenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ToggleFullScreen();
+        }
+
+        private void editAlertMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var editorForm = new FrmAlertEditor(_alertManager))
+            {
+                editorForm.ShowDialog(this);
+            }
         }
     }
 }

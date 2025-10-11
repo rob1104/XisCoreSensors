@@ -330,26 +330,34 @@ namespace XisCoreSensors
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string selectedTag = lstPlcTags.SelectedItem.ToString();
+            if(lstPlcTags.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Please select a tag to delete.", "No Tags Selected", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var selectedTas = lstPlcTags.SelectedItems
+                                                    .Cast<PlcTagListItem>()
+                                                    .Select(tag => tag.TagName)
+                                                    .ToList();
+
 
             var result = MessageBox.Show(
-                $"Are you sure you want to permanently delete the manual tag '{selectedTag}'?",
+                $"Are you sure you want to delete the selected {selectedTas.Count} tag(s)? This action cannot be undone.",
                 "Confirm Deletion",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);
 
-            if (result == DialogResult.Yes)
+            if(result == DialogResult.Yes)
             {
-                // Elimina el tag de nuestra lista maestra de tags manuales.
-                _manualTags.Remove(selectedTag);
-
-                // Guarda la lista actualizada en el archivo JSON.
+                foreach(var tag in selectedTas)
+                {
+                    _manualTags.Remove(tag);
+                }
                 _catalogManager.Save(_manualTags);
-
-                // Refresca la lista de la UI para que el cambio sea visible.
                 RefreshTagList();
-
-                lblStatus.Text = $"Tag '{selectedTag}' was deleted.";
+                lblStatus.Text = $"{selectedTas.Count} tag(s) deleted from catalog.";
             }
         }
 

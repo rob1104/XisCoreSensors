@@ -150,15 +150,17 @@ namespace XisCoreSensors.Plc
 
             try
             {
-                // CAMBIO CLAVE: Solo pausar el monitoreo de BOOL, no el de DINT
+                // ***** CORRECCIÓN *****
+                // 1. Lee SIEMPRE los tags DINT primero.
+                // Esto asegura que el estado del tag SEQ se conozca de inmediato.
+                await ProcessDintTags();
+
+                // 2. AHORA, comprueba si el monitoreo de booleanos está pausado.
+                // Si la lectura anterior de SEQ fue 0, _isBoolMonitoringPaused ya será 'true'.
                 if (!_isBoolMonitoringPaused)
                 {
-                    await ProcessBoolTags();
+                    await ProcessBoolTags(); // <-- Este bloque ahora se saltará si SEQ es 0.
                 }
-
-                // SIEMPRE procesar tags DINT, incluso cuando el monitoreo BOOL está pausado
-                // Esto permite detectar cambios de secuencia
-                await ProcessDintTags();
 
                 // Si llegamos aquí sin errores globales, resetear contador
                 if (_consecutiveGlobalErrors > 0)

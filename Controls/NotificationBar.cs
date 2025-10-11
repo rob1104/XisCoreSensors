@@ -30,7 +30,7 @@ namespace XisCoreSensors.Controls
 
             // Temporizador para cambiar el color del texto
             _blinkTimer = new Timer();
-            _blinkTimer.Interval = 300; // Cambia cada 0.3 segundos
+            _blinkTimer.Interval = 500; // Cambia cada 0.3 segundos
             _blinkTimer.Tick += BlinkTimer_Tick;
         }
 

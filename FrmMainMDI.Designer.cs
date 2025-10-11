@@ -42,6 +42,7 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tagMapperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editAlertMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeEditModePasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.forcePLCReconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showDiagnosticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,10 +53,10 @@
             this.lblPlcStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusSpacer = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblConnectionHealth = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblImGStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblSequenceStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.sequenceNotificationBar = new XisCoreSensors.Controls.NotificationBar();
             this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
-            this.lblImGStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -89,7 +90,7 @@
             // 
             this.model1ToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.play_icon;
             this.model1ToolStripMenuItem.Name = "model1ToolStripMenuItem";
-            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.model1ToolStripMenuItem.Text = "View";
             this.model1ToolStripMenuItem.Click += new System.EventHandler(this.model1ToolStripMenuItem_Click);
             // 
@@ -98,7 +99,7 @@
             this.loadImageToolStripMenuItem.Enabled = false;
             this.loadImageToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Images_icon;
             this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.loadImageToolStripMenuItem.Text = "Images...";
             this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
             // 
@@ -107,7 +108,7 @@
             this.saveLayoutToolStripMenuItem.Enabled = false;
             this.saveLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.saves;
             this.saveLayoutToolStripMenuItem.Name = "saveLayoutToolStripMenuItem";
-            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.saveLayoutToolStripMenuItem.Text = "Save Layout As...";
             this.saveLayoutToolStripMenuItem.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem_Click);
             // 
@@ -116,7 +117,7 @@
             this.saveLayoutToolStripMenuItem1.Enabled = false;
             this.saveLayoutToolStripMenuItem1.Image = global::XisCoreSensors.Properties.Resources.save_icon;
             this.saveLayoutToolStripMenuItem1.Name = "saveLayoutToolStripMenuItem1";
-            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
             this.saveLayoutToolStripMenuItem1.Text = "Save Layout";
             this.saveLayoutToolStripMenuItem1.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem1_Click);
             // 
@@ -125,7 +126,7 @@
             this.loadLayoutToolStripMenuItem.Enabled = false;
             this.loadLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Folder_Open_icon;
             this.loadLayoutToolStripMenuItem.Name = "loadLayoutToolStripMenuItem";
-            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.loadLayoutToolStripMenuItem.Text = "Load Layout...";
             this.loadLayoutToolStripMenuItem.Click += new System.EventHandler(this.loadLayoutToolStripMenuItem_Click);
             // 
@@ -159,6 +160,7 @@
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pLCToolStripMenuItem,
             this.tagMapperToolStripMenuItem,
+            this.editAlertMessagesToolStripMenuItem,
             this.changeEditModePasswordToolStripMenuItem,
             this.forcePLCReconnectToolStripMenuItem,
             this.showDiagnosticsToolStripMenuItem});
@@ -183,6 +185,14 @@
             this.tagMapperToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
             this.tagMapperToolStripMenuItem.Text = "Tag Mapper...";
             this.tagMapperToolStripMenuItem.Click += new System.EventHandler(this.tagMapperToolStripMenuItem_Click);
+            // 
+            // editAlertMessagesToolStripMenuItem
+            // 
+            this.editAlertMessagesToolStripMenuItem.Enabled = false;
+            this.editAlertMessagesToolStripMenuItem.Name = "editAlertMessagesToolStripMenuItem";
+            this.editAlertMessagesToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.editAlertMessagesToolStripMenuItem.Text = "Edit alert messages...";
+            this.editAlertMessagesToolStripMenuItem.Click += new System.EventHandler(this.editAlertMessagesToolStripMenuItem_Click);
             // 
             // changeEditModePasswordToolStripMenuItem
             // 
@@ -278,6 +288,17 @@
             this.lblConnectionHealth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblConnectionHealth.ToolTipText = "Connection health status";
             // 
+            // lblImGStatus
+            // 
+            this.lblImGStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.lblImGStatus.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.lblImGStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+            this.lblImGStatus.Name = "lblImGStatus";
+            this.lblImGStatus.Size = new System.Drawing.Size(54, 19);
+            this.lblImGStatus.Text = "IMG: ---";
+            // 
             // lblSequenceStatus
             // 
             this.lblSequenceStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
@@ -311,17 +332,6 @@
             this.notificationBar1.TabIndex = 5;
             this.notificationBar1.Visible = false;
             // 
-            // lblImGStatus
-            // 
-            this.lblImGStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.lblImGStatus.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
-            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
-            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
-            this.lblImGStatus.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
-            this.lblImGStatus.Name = "lblImGStatus";
-            this.lblImGStatus.Size = new System.Drawing.Size(54, 19);
-            this.lblImGStatus.Text = "IMG: ---";
-            // 
             // FrmMainMDI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -337,7 +347,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Xis Sensors 1.0.0";
+            this.Text = "XisSensors 1.1.0.2";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);
@@ -379,6 +389,7 @@
         private System.Windows.Forms.ToolStripMenuItem fullScreenToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel lblSequenceStatus;
         private System.Windows.Forms.ToolStripStatusLabel lblImGStatus;
+        private System.Windows.Forms.ToolStripMenuItem editAlertMessagesToolStripMenuItem;
     }
 }
 

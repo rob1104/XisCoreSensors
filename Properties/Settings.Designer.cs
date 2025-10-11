@@ -178,5 +178,17 @@ namespace XisCoreSensors.Properties {
                 this["RotateSensorText"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("CHRONO")]
+        public string ChronoTgName {
+            get {
+                return ((string)(this["ChronoTgName"]));
+            }
+            set {
+                this["ChronoTgName"] = value;
+            }
+        }
     }
 }

@@ -41,5 +41,8 @@
     <Setting Name="RotateSensorText" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="ChronoTgName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">CHRONO</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

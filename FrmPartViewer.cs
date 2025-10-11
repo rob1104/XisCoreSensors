@@ -1,11 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using XisCoreSensors.Controls;
+using XisCoreSensors.PLC;
 
 namespace XisCoreSensors
 {
@@ -32,18 +34,20 @@ namespace XisCoreSensors
         //Secuencia de errores (Modo patrulla)
         private Timer _sequenceTimer;
         private List<SensorControl> _failedSensorsList = new List<SensorControl>();
-        private enum SequenceState { Idle, ZoomedIn, PausedBetweenSensors }
+        private enum SequenceState { Idle, PreZoomPause, ZoomedIn, PausedBetweenSensors }
         private int _sequenceIndex = -1;
         private SequenceState _currentSequenceState = SequenceState.Idle;
 
         private bool _hasUnsavedChanges = false;
         private string _currentLayoutPath = null;
 
-        
+        private readonly Stopwatch _stopwatch = new Stopwatch();        
 
         private List<string> _imagePaths = new List<string>();
         private List<ImageInfo> _loadedImages = new List<ImageInfo>();
         private string _imageSelectorTag = "";
+
+        public int CurrentSequenceStep { get; private set; } = -1; // Valor inicial indefinido.
 
         public string ImageSelectorTag => _imageSelectorTag;
 
@@ -51,6 +55,12 @@ namespace XisCoreSensors
         {
             InitializeComponent();
             InitalizeSequenceTimer();
+        }
+
+        // Método público para que el formulario principal pueda actualizar este valor.
+        public void UpdateSequenceStep(int newStep)
+        {
+            CurrentSequenceStep = newStep;
         }
 
         private void InitalizeSequenceTimer()
@@ -301,12 +311,13 @@ namespace XisCoreSensors
 
         private void FrmPartViewer_Load(object sender, EventArgs e)
         {
+            clockTimer_Tick(sender, e);
             // Ajustamos el tamaño inicial del lienzo al del viewport
             picCanvas.Size = pnlViewport.ClientSize;
             picCanvas.Resize += picCanvas_Resize;
 
             if(Properties.Settings.Default.LastLayoutPath != null &&
-               System.IO.File.Exists(Properties.Settings.Default.LastLayoutPath))
+               File.Exists(Properties.Settings.Default.LastLayoutPath))
             {
                 LoadLayoutFinal(Properties.Settings.Default.LastLayoutPath);
             }
@@ -760,36 +771,55 @@ namespace XisCoreSensors
         {
             _sequenceTimer.Stop();
 
-            if(_failedSensorsList.Count == 0)
+            if(CurrentSequenceStep == 0 ) 
             {
                 StopSequence();
                 return;
             }
-            
-            switch(_currentSequenceState)
+
+            if (_failedSensorsList.Count == 0)
             {
+                StopSequence();
+                return;
+            }
+
+            switch (_currentSequenceState)
+            {
+                // 1. Inicia el ciclo. Se asegura de que la vista esté alejada y espera 5 segundos.
                 case SequenceState.Idle:
                     _sequenceIndex++;
-                    if(_sequenceIndex >= _failedSensorsList.Count)
+                    if (_sequenceIndex >= _failedSensorsList.Count)
                     {
-                        _sequenceIndex = 0; // Reiniciamos el índice
+                        _sequenceIndex = 0; // Reiniciamos el índice si llegamos al final de la lista.
                     }
-                    var sensorToFocus = _failedSensorsList[_sequenceIndex];
-                    ZoomToSensor(sensorToFocus);
-                    OnSensorFailed?.Invoke($"¡Failure detected! Sensor: {sensorToFocus.SensorId}");
-                    _currentSequenceState = SequenceState.ZoomedIn;
-                    _sequenceTimer.Interval = 5000; // Tiempo en zoom
+                    ResetZoom(); // Nos aseguramos de que la imagen esté completa.
+                    _currentSequenceState = SequenceState.PreZoomPause;
+                    _sequenceTimer.Interval = 5000; // 5 segundos con la imagen completa.
                     _sequenceTimer.Start();
                     break;
+
+                // 2. Después de 5s, hace zoom al sensor fallado y espera 3 segundos.
+                case SequenceState.PreZoomPause:
+                    var sensorToFocus = _failedSensorsList[_sequenceIndex];
+                    ZoomToSensor(sensorToFocus);
+                    OnSensorFailed?.Invoke($"¡Falla detectada! Sensor: {sensorToFocus.SensorId}");
+                    _currentSequenceState = SequenceState.ZoomedIn;
+                    _sequenceTimer.Interval = 3000; // 3 segundos con el zoom ampliado.
+                    _sequenceTimer.Start();
+                    break;
+
+                // 3. Después de 3s, se aleja de nuevo y espera 5 segundos antes de pasar al siguiente sensor.
                 case SequenceState.ZoomedIn:
                     ResetZoom();
                     _currentSequenceState = SequenceState.PausedBetweenSensors;
-                    _sequenceTimer.Interval = 2000; // Pausa entre sensores
+                    _sequenceTimer.Interval = 5000; // 5 segundos de pausa entre sensores.
                     _sequenceTimer.Start();
                     break;
+
+                // 4. Inicia la transición rápida al siguiente sensor en la lista.
                 case SequenceState.PausedBetweenSensors:
                     _currentSequenceState = SequenceState.Idle;
-                    _sequenceTimer.Interval = 10; // Transición rápida
+                    _sequenceTimer.Interval = 10; // Transición rápida para volver a empezar el ciclo.
                     _sequenceTimer.Start();
                     break;
             }
@@ -973,6 +1003,64 @@ namespace XisCoreSensors
                 sensor.Invalidate();
                 MarkAsModified();
             }
+        }
+
+        private void clockTimer_Tick(object sender, EventArgs e)
+        {
+            lblClock.Text = DateTime.Now.ToString("hh:mm:ss tt");
+        }
+
+        public void ShowAlertMessage(string message)
+        {
+            // Asegura que la actualización se haga en el hilo de la UI.
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => ShowAlertMessage(message)));
+                return;
+            }
+
+            if (string.IsNullOrEmpty(message))
+            {
+                lblMessage.Visible = false;
+            }
+            else
+            {
+                lblMessage.Text = message;
+                lblMessage.Visible = true;
+                // Nos aseguramos de que la etiqueta siempre esté por encima del panel del visor.
+                lblMessage.BringToFront();
+            }
+        }
+
+        public void ControlStopWatch(PlcController.StopWatchCommand command)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => ControlStopWatch(command)));
+                return;
+            }
+            switch (command)
+            {
+                case PlcController.StopWatchCommand.Start:
+                    _stopwatch.Start();
+                    stopwatchTimer.Start();
+                    break;
+                case PlcController.StopWatchCommand.Pause:
+                    _stopwatch.Stop();
+                    stopwatchTimer.Stop();
+                    break;
+                case PlcController.StopWatchCommand.Reset:
+                    _stopwatch.Reset();
+                    stopwatchTimer.Stop();
+                    // Actualiza la UI inmediatamente al resetear.
+                    lblStopWatch.Text = "00:00.00";
+                    break;
+            }
+        }
+
+        private void stopwatchTimer_Tick(object sender, EventArgs e)
+        {
+            lblStopWatch.Text = _stopwatch.Elapsed.ToString(@"mm\:ss");
         }
     }
 

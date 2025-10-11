@@ -53,8 +53,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btnAutoMap = new System.Windows.Forms.Button();
             this.chkRotate = new System.Windows.Forms.CheckBox();
+            this.btnAutoMap = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -157,6 +157,7 @@
             this.lstPlcTags.FormattingEnabled = true;
             this.lstPlcTags.Location = new System.Drawing.Point(6, 48);
             this.lstPlcTags.Name = "lstPlcTags";
+            this.lstPlcTags.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.lstPlcTags.Size = new System.Drawing.Size(196, 368);
             this.lstPlcTags.TabIndex = 0;
             this.lstPlcTags.SelectedIndexChanged += new System.EventHandler(this.lstPlcTags_SelectedIndexChanged);
@@ -339,16 +340,6 @@
             this.panel1.Size = new System.Drawing.Size(884, 54);
             this.panel1.TabIndex = 3;
             // 
-            // btnAutoMap
-            // 
-            this.btnAutoMap.Location = new System.Drawing.Point(323, 12);
-            this.btnAutoMap.Name = "btnAutoMap";
-            this.btnAutoMap.Size = new System.Drawing.Size(100, 30);
-            this.btnAutoMap.TabIndex = 5;
-            this.btnAutoMap.Text = "Auto Map";
-            this.btnAutoMap.UseVisualStyleBackColor = true;
-            this.btnAutoMap.Click += new System.EventHandler(this.btnAutoMap_Click);
-            // 
             // chkRotate
             // 
             this.chkRotate.AutoSize = true;
@@ -358,6 +349,16 @@
             this.chkRotate.TabIndex = 6;
             this.chkRotate.Text = "Rotate Sensors";
             this.chkRotate.UseVisualStyleBackColor = true;
+            // 
+            // btnAutoMap
+            // 
+            this.btnAutoMap.Location = new System.Drawing.Point(323, 12);
+            this.btnAutoMap.Name = "btnAutoMap";
+            this.btnAutoMap.Size = new System.Drawing.Size(100, 30);
+            this.btnAutoMap.TabIndex = 5;
+            this.btnAutoMap.Text = "Auto Map";
+            this.btnAutoMap.UseVisualStyleBackColor = true;
+            this.btnAutoMap.Click += new System.EventHandler(this.btnAutoMap_Click);
             // 
             // FrmTagMapper
             // 

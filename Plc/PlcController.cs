@@ -15,6 +15,14 @@ namespace XisCoreSensors.PLC
         public event Action<int> SecuenceStepChanged;
         public event Action<bool> BoolMonitoringPausedStateChanged;
         public event Action<string, int> ImageSelectorTagChanged;
+        public event Action<StopWatchCommand> StopwatchCommandReceived;
+
+        public enum StopWatchCommand
+        {
+            Start,
+            Pause,
+            Reset
+        }
 
         public PlcController(PlcService plcService, TagMapper tagMapper)
         {
@@ -31,6 +39,8 @@ namespace XisCoreSensors.PLC
         {
             var secuenceTagName = Properties.Settings.Default.SequenceTagName;
             var secuenciaImagen = Properties.Settings.Default.ImageTagName;
+            var chronoTagName = Properties.Settings.Default.ChronoTgName;
+
             if (tagName.Equals(secuenceTagName, StringComparison.OrdinalIgnoreCase))
             {
                 // 1. Pausa o reanuda el monitoreo de los sensores booleanos
@@ -45,6 +55,25 @@ namespace XisCoreSensors.PLC
             else if(tagName.Equals(secuenciaImagen, StringComparison.OrdinalIgnoreCase))
             {
                 ImageSelectorTagChanged?.Invoke(tagName, newValue);
+            }
+            else if(tagName.Equals(chronoTagName, StringComparison.OrdinalIgnoreCase))
+            {
+                // Interpreta el valor del tag como un comando para el cronómetro.
+                switch (newValue)
+                {
+                    case 1:
+                        StopwatchCommandReceived?.Invoke(StopWatchCommand.Start);
+                        break;
+                    case 2:
+                        StopwatchCommandReceived?.Invoke(StopWatchCommand.Pause);
+                        break;
+                    case 3:
+                        StopwatchCommandReceived?.Invoke(StopWatchCommand.Reset);
+                        break;      
+                    default:
+                        // Valor no reconocido, no hacer nada.
+                        break;
+                }
             }
 
         }

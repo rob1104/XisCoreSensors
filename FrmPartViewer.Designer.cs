@@ -39,11 +39,16 @@
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.contextMenuSensor = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.renombrarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.eliminarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toLaserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.eliminarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clockTimer = new System.Windows.Forms.Timer(this.components);
+            this.stopwatchTimer = new System.Windows.Forms.Timer(this.components);
+            this.lblMessage = new XisCoreSensors.Controls.VerticalLabel();
+            this.lblStopWatch = new XisCoreSensors.Controls.VerticalLabel();
+            this.lblClock = new XisCoreSensors.Controls.VerticalLabel();
             this.pnlViewport.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.contextMenu.SuspendLayout();
@@ -54,6 +59,7 @@
             // 
             this.pnlViewport.AutoScroll = true;
             this.pnlViewport.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlViewport.Controls.Add(this.lblClock);
             this.pnlViewport.Controls.Add(this.picCanvas);
             this.pnlViewport.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlViewport.Location = new System.Drawing.Point(0, 0);
@@ -91,14 +97,14 @@
             // normalToolStripMenuItem
             // 
             this.normalToolStripMenuItem.Name = "normalToolStripMenuItem";
-            this.normalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.normalToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.normalToolStripMenuItem.Text = "Normal";
             this.normalToolStripMenuItem.Click += new System.EventHandler(this.normalToolStripMenuItem_Click);
             // 
             // laserToolStripMenuItem
             // 
             this.laserToolStripMenuItem.Name = "laserToolStripMenuItem";
-            this.laserToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.laserToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.laserToolStripMenuItem.Text = "Laser";
             this.laserToolStripMenuItem.Click += new System.EventHandler(this.laserToolStripMenuItem_Click);
             // 
@@ -110,7 +116,7 @@
             this.toolStripMenuItem1,
             this.eliminarSensorToolStripMenuItem});
             this.contextMenuSensor.Name = "contextMenuSensor";
-            this.contextMenuSensor.Size = new System.Drawing.Size(181, 98);
+            this.contextMenuSensor.Size = new System.Drawing.Size(146, 76);
             this.contextMenuSensor.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuSensor_Opening);
             // 
             // renombrarSensorToolStripMenuItem
@@ -119,6 +125,31 @@
             this.renombrarSensorToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.renombrarSensorToolStripMenuItem.Text = "Edit ID...";
             this.renombrarSensorToolStripMenuItem.Click += new System.EventHandler(this.renombrarSensorToolStripMenuItem_Click);
+            // 
+            // changeTypeToolStripMenuItem
+            // 
+            this.changeTypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toNormalToolStripMenuItem,
+            this.toLaserToolStripMenuItem});
+            this.changeTypeToolStripMenuItem.Name = "changeTypeToolStripMenuItem";
+            this.changeTypeToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.changeTypeToolStripMenuItem.Text = "Change type";
+            // 
+            // toNormalToolStripMenuItem
+            // 
+            this.toNormalToolStripMenuItem.Enabled = false;
+            this.toNormalToolStripMenuItem.Name = "toNormalToolStripMenuItem";
+            this.toNormalToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.toNormalToolStripMenuItem.Text = "To Normal";
+            this.toNormalToolStripMenuItem.Click += new System.EventHandler(this.toNormalToolStripMenuItem_Click);
+            // 
+            // toLaserToolStripMenuItem
+            // 
+            this.toLaserToolStripMenuItem.Enabled = false;
+            this.toLaserToolStripMenuItem.Name = "toLaserToolStripMenuItem";
+            this.toLaserToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.toLaserToolStripMenuItem.Text = "To Laser";
+            this.toLaserToolStripMenuItem.Click += new System.EventHandler(this.toLaserToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -132,36 +163,58 @@
             this.eliminarSensorToolStripMenuItem.Text = "Delete Sensor";
             this.eliminarSensorToolStripMenuItem.Click += new System.EventHandler(this.eliminarSensorToolStripMenuItem_Click);
             // 
-            // changeTypeToolStripMenuItem
+            // clockTimer
             // 
-            this.changeTypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toNormalToolStripMenuItem,
-            this.toLaserToolStripMenuItem});
-            this.changeTypeToolStripMenuItem.Name = "changeTypeToolStripMenuItem";
-            this.changeTypeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.changeTypeToolStripMenuItem.Text = "Change type";
+            this.clockTimer.Enabled = true;
+            this.clockTimer.Interval = 1000;
+            this.clockTimer.Tick += new System.EventHandler(this.clockTimer_Tick);
             // 
-            // toNormalToolStripMenuItem
+            // stopwatchTimer
             // 
-            this.toNormalToolStripMenuItem.Enabled = false;
-            this.toNormalToolStripMenuItem.Name = "toNormalToolStripMenuItem";
-            this.toNormalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.toNormalToolStripMenuItem.Text = "To Normal";
-            this.toNormalToolStripMenuItem.Click += new System.EventHandler(this.toNormalToolStripMenuItem_Click);
+            this.stopwatchTimer.Tick += new System.EventHandler(this.stopwatchTimer_Tick);
             // 
-            // toLaserToolStripMenuItem
+            // lblMessage
             // 
-            this.toLaserToolStripMenuItem.Enabled = false;
-            this.toLaserToolStripMenuItem.Name = "toLaserToolStripMenuItem";
-            this.toLaserToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.toLaserToolStripMenuItem.Text = "To Laser";
-            this.toLaserToolStripMenuItem.Click += new System.EventHandler(this.toLaserToolStripMenuItem_Click);
+            this.lblMessage.BackColor = System.Drawing.Color.Black;
+            this.lblMessage.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblMessage.Font = new System.Drawing.Font("Verdana", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMessage.ForeColor = System.Drawing.Color.Yellow;
+            this.lblMessage.Location = new System.Drawing.Point(1701, 0);
+            this.lblMessage.Name = "lblMessage";
+            this.lblMessage.Size = new System.Drawing.Size(123, 1002);
+            this.lblMessage.TabIndex = 1;
+            this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblStopWatch
+            // 
+            this.lblStopWatch.BackColor = System.Drawing.Color.White;
+            this.lblStopWatch.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblStopWatch.Font = new System.Drawing.Font("Tahoma", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStopWatch.ForeColor = System.Drawing.Color.Blue;
+            this.lblStopWatch.Location = new System.Drawing.Point(0, 0);
+            this.lblStopWatch.Name = "lblStopWatch";
+            this.lblStopWatch.Size = new System.Drawing.Size(106, 1002);
+            this.lblStopWatch.TabIndex = 2;
+            this.lblStopWatch.Text = "00:00";
+            // 
+            // lblClock
+            // 
+            this.lblClock.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.lblClock.Font = new System.Drawing.Font("Tahoma", 39.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblClock.ForeColor = System.Drawing.Color.GhostWhite;
+            this.lblClock.Location = new System.Drawing.Point(283, 8);
+            this.lblClock.Name = "lblClock";
+            this.lblClock.Size = new System.Drawing.Size(83, 470);
+            this.lblClock.TabIndex = 1;
+            this.lblClock.Text = "00:00:00";
             // 
             // FrmPartViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1824, 1002);
+            this.Controls.Add(this.lblMessage);
+            this.Controls.Add(this.lblStopWatch);
             this.Controls.Add(this.pnlViewport);
             this.KeyPreview = true;
             this.Name = "FrmPartViewer";
@@ -196,5 +249,10 @@
         private System.Windows.Forms.ToolStripMenuItem changeTypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toNormalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toLaserToolStripMenuItem;
+        private Controls.VerticalLabel lblMessage;
+        private Controls.VerticalLabel lblClock;
+        private System.Windows.Forms.Timer clockTimer;
+        private Controls.VerticalLabel lblStopWatch;
+        private System.Windows.Forms.Timer stopwatchTimer;
     }
 }

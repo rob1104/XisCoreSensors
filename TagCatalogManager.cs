@@ -9,7 +9,7 @@ namespace XisCoreSensors
     internal class TagCatalogManager
     {
         private static readonly string FolderPath =
-            Environment.ExpandEnvironmentVariables(Properties.Settings.Default.PlcCatalogPath);
+            Application.StartupPath;
 
         private static readonly string FilePath = Path.Combine(FolderPath, "PlcCatalog.json");
 

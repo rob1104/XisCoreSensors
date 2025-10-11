@@ -19,6 +19,8 @@ namespace XisCoreSensors.Controls
 
         public SensorType Type { get; set; } = SensorType.Normal;
 
+        
+
 
         // --- INICIO: CÓDIGO NUEVO PARA PARPADEO ---
         private readonly Timer _flashTimer;
