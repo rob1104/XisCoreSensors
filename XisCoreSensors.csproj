@@ -51,7 +51,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Gakuseisean-Ivista-2-Alarm-Info.ico</ApplicationIcon>
+    <ApplicationIcon>XisSensors.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
@@ -260,7 +260,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gakuseisean-Ivista-2-Alarm-Info.ico" />
-    <Content Include="VC_redist.x86.exe" />
+    <Content Include="XisSensors.ico" />
     <None Include="Resources\play-icon.png" />
     <None Include="Resources\Images-icon.png" />
     <None Include="Resources\Folder-Open-icon.png" />

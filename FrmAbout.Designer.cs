@@ -102,6 +102,7 @@
             this.labelVersion.TabIndex = 0;
             this.labelVersion.Text = "Version 1.0.0";
             this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelVersion.Visible = false;
             // 
             // labelCopyright
             // 

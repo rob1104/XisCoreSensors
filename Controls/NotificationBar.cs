@@ -25,7 +25,7 @@ namespace XisCoreSensors.Controls
             Height = 120; // Altura fija
             //Temporizador
             _timer = new Timer();
-            _timer.Interval = 5000; // 5 segundos
+            _timer.Interval = Properties.Settings.Default.FullViewDuration;
             _timer.Tick += (sender, e) => Visible = false; // Oculta la barra después del tiempo
 
             // Temporizador para cambiar el color del texto

@@ -1,5 +1,6 @@
 ﻿using AutoUpdaterDotNET;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -12,19 +13,33 @@ namespace XisCoreSensors
         /// </summary>
         [STAThread]
         static void Main(string[] args)
-        {
-
-            AutoUpdater.InstalledVersion = new Version("1.1.0.4");
-            AutoUpdater.ShowSkipButton = false;
-            AutoUpdater.LetUserSelectRemindLater = false;
-            AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;
-            AutoUpdater.RemindLaterAt = 15;
-            AutoUpdater.Start("http://xis.myftp.biz/desarrollos/XisCoreSensors/update.xml");
+        {           
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new FrmMainMDI());
-        }     
-    
+
+            
+        } 
+        
+        public static void CheckForUpdates()
+        {
+            try
+            {
+                AutoUpdater.InstalledVersion = new Version("1.1.0.6");
+                AutoUpdater.ShowSkipButton = false;
+                AutoUpdater.LetUserSelectRemindLater = false;
+                AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;
+                AutoUpdater.RemindLaterAt = 15;
+                AutoUpdater.Start("http://xis.myftp.biz/desarrollos/XisCoreSensors/update.xml");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, 
+                    Application.ProductName, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
     }
 }

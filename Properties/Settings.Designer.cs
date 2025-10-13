@@ -190,5 +190,29 @@ namespace XisCoreSensors.Properties {
                 this["ChronoTgName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3000")]
+        public int FullViewDuration {
+            get {
+                return ((int)(this["FullViewDuration"]));
+            }
+            set {
+                this["FullViewDuration"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int ZoomInDuration {
+            get {
+                return ((int)(this["ZoomInDuration"]));
+            }
+            set {
+                this["ZoomInDuration"] = value;
+            }
+        }
     }
 }

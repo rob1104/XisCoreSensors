@@ -323,6 +323,9 @@ namespace XisCoreSensors
             }
 
             _isEditMode = false;
+
+            lblClock.Parent = picCanvas;
+
         }       
 
         private void picCanvas_Resize(object sender, EventArgs e)
@@ -771,7 +774,7 @@ namespace XisCoreSensors
         {
             _sequenceTimer.Stop();
 
-            if(CurrentSequenceStep == 0 ) 
+            if(CurrentSequenceStep == 0 || _isEditMode) 
             {
                 StopSequence();
                 return;
@@ -794,7 +797,7 @@ namespace XisCoreSensors
                     }
                     ResetZoom(); // Nos aseguramos de que la imagen esté completa.
                     _currentSequenceState = SequenceState.PreZoomPause;
-                    _sequenceTimer.Interval = 5000; // 5 segundos con la imagen completa.
+                    _sequenceTimer.Interval = Properties.Settings.Default.FullViewDuration;
                     _sequenceTimer.Start();
                     break;
 
@@ -804,7 +807,7 @@ namespace XisCoreSensors
                     ZoomToSensor(sensorToFocus);
                     OnSensorFailed?.Invoke($"¡Falla detectada! Sensor: {sensorToFocus.SensorId}");
                     _currentSequenceState = SequenceState.ZoomedIn;
-                    _sequenceTimer.Interval = 3000; // 3 segundos con el zoom ampliado.
+                    _sequenceTimer.Interval = Properties.Settings.Default.ZoomInDuration;
                     _sequenceTimer.Start();
                     break;
 
@@ -812,7 +815,7 @@ namespace XisCoreSensors
                 case SequenceState.ZoomedIn:
                     ResetZoom();
                     _currentSequenceState = SequenceState.PausedBetweenSensors;
-                    _sequenceTimer.Interval = 5000; // 5 segundos de pausa entre sensores.
+                    _sequenceTimer.Interval = Properties.Settings.Default.FullViewDuration;
                     _sequenceTimer.Start();
                     break;
 
@@ -1061,6 +1064,16 @@ namespace XisCoreSensors
         private void stopwatchTimer_Tick(object sender, EventArgs e)
         {
             lblStopWatch.Text = _stopwatch.Elapsed.ToString(@"mm\:ss");
+        }
+
+        private void pnlViewport_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void lblClock_Paint(object sender, PaintEventArgs e)
+        {
+            lblClock.Invalidate();
         }
     }
 

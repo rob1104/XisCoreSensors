@@ -66,6 +66,7 @@
             this.pnlViewport.Name = "pnlViewport";
             this.pnlViewport.Size = new System.Drawing.Size(1824, 1002);
             this.pnlViewport.TabIndex = 0;
+            this.pnlViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlViewport_Paint);
             // 
             // picCanvas
             // 
@@ -199,7 +200,7 @@
             // 
             // lblClock
             // 
-            this.lblClock.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.lblClock.BackColor = System.Drawing.Color.DarkMagenta;
             this.lblClock.Font = new System.Drawing.Font("Tahoma", 39.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblClock.ForeColor = System.Drawing.Color.GhostWhite;
             this.lblClock.Location = new System.Drawing.Point(283, 8);
@@ -207,6 +208,7 @@
             this.lblClock.Size = new System.Drawing.Size(83, 470);
             this.lblClock.TabIndex = 1;
             this.lblClock.Text = "00:00:00";
+            this.lblClock.Paint += new System.Windows.Forms.PaintEventHandler(this.lblClock_Paint);
             // 
             // FrmPartViewer
             // 
@@ -250,9 +252,9 @@
         private System.Windows.Forms.ToolStripMenuItem toNormalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toLaserToolStripMenuItem;
         private Controls.VerticalLabel lblMessage;
-        private Controls.VerticalLabel lblClock;
         private System.Windows.Forms.Timer clockTimer;
         private Controls.VerticalLabel lblStopWatch;
         private System.Windows.Forms.Timer stopwatchTimer;
+        private Controls.VerticalLabel lblClock;
     }
 }

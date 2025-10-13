@@ -409,9 +409,10 @@ namespace XisCoreSensors
         }
 
         private async void FrmMainMDI_Load(object sender, EventArgs e)
-        {                      
+        {             
             try
             {
+                Program.CheckForUpdates();
                 if (Settings.Default.LastLayoutPath != string.Empty)
                 {
                     LoadModel();

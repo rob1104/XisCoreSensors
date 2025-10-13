@@ -27,12 +27,14 @@ namespace XisCoreSensors
             cmbProtocol.SelectedItem = (Protocol)Properties.Settings.Default.PLC_Protocol;
             txtTimeout.Text = Properties.Settings.Default.PLC_Timeout.ToString();
             txtPulseTime.Text = Properties.Settings.Default.Pulse_Time.ToString();
+            txtFullView.Value = Properties.Settings.Default.FullViewDuration;
+            txtZoomView.Value = Properties.Settings.Default.ZoomInDuration;
         }
 
         private void GuardaConfig()
         {
-            PlcType selectedPlcType = (PlcType)cmbPlcyType.SelectedItem;
-            Protocol selectedProtocol = (Protocol)cmbProtocol.SelectedItem;
+            var selectedPlcType = (PlcType)cmbPlcyType.SelectedItem;
+            var selectedProtocol = (Protocol)cmbProtocol.SelectedItem;
 
             Properties.Settings.Default.PLC_IP = txtIp.Text;
             Properties.Settings.Default.PLC_Path = txtPath.Text;
@@ -40,6 +42,8 @@ namespace XisCoreSensors
             Properties.Settings.Default.PLC_Protocol = (int)selectedProtocol;
             Properties.Settings.Default.PLC_Timeout = (int)txtTimeout.Value;
             Properties.Settings.Default.Pulse_Time = (int)txtPulseTime.Value;
+            Properties.Settings.Default.FullViewDuration = (int)txtFullView.Value;
+            Properties.Settings.Default.ZoomInDuration = (int)txtZoomView.Value;
             Properties.Settings.Default.Save();
         }
 

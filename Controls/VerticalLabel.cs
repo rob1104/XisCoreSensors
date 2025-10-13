@@ -47,5 +47,23 @@ namespace XisCoreSensors.Controls
                 g.ResetTransform();
             }
         }
+
+        protected override void OnPaintBackground(PaintEventArgs pevent)
+        {
+            if (this.Parent != null && this.BackColor == Color.Transparent)
+            {
+                // Pinta el fondo del control padre, simulando transparencia
+                var state = pevent.Graphics.Save();
+                pevent.Graphics.TranslateTransform(-this.Left, -this.Top);
+                var pe = new PaintEventArgs(pevent.Graphics, this.Parent.ClientRectangle);
+                this.InvokePaintBackground(this.Parent, pe);
+                this.InvokePaint(this.Parent, pe);
+                pevent.Graphics.Restore(state);
+            }
+            else
+            {
+                base.OnPaintBackground(pevent);
+            }
+        }
     }
 }

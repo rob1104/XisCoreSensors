@@ -44,9 +44,19 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.txtPulseTime = new System.Windows.Forms.NumericUpDown();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtFullView = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtZoomView = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.txtTimeout)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtPulseTime)).BeginInit();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtFullView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtZoomView)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -67,9 +77,9 @@
             // 
             // btnGuardar
             // 
-            this.btnGuardar.Location = new System.Drawing.Point(171, 232);
+            this.btnGuardar.Location = new System.Drawing.Point(171, 324);
             this.btnGuardar.Name = "btnGuardar";
-            this.btnGuardar.Size = new System.Drawing.Size(75, 23);
+            this.btnGuardar.Size = new System.Drawing.Size(75, 39);
             this.btnGuardar.TabIndex = 1;
             this.btnGuardar.Text = "Save";
             this.btnGuardar.UseVisualStyleBackColor = true;
@@ -230,11 +240,117 @@
             0,
             0});
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.txtZoomView);
+            this.groupBox2.Controls.Add(this.label9);
+            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Controls.Add(this.txtFullView);
+            this.groupBox2.Location = new System.Drawing.Point(12, 218);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(234, 100);
+            this.groupBox2.TabIndex = 3;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Zoom Config";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(28, 34);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(51, 13);
+            this.label9.TabIndex = 16;
+            this.label9.Text = "Full view:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(156, 34);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(61, 13);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "miliseconds";
+            // 
+            // txtFullView
+            // 
+            this.txtFullView.Increment = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.txtFullView.Location = new System.Drawing.Point(86, 32);
+            this.txtFullView.Maximum = new decimal(new int[] {
+            60000,
+            0,
+            0,
+            0});
+            this.txtFullView.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.txtFullView.Name = "txtFullView";
+            this.txtFullView.Size = new System.Drawing.Size(59, 20);
+            this.txtFullView.TabIndex = 15;
+            this.txtFullView.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(17, 60);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(62, 13);
+            this.label11.TabIndex = 19;
+            this.label11.Text = "Zoom view:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(158, 60);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(61, 13);
+            this.label12.TabIndex = 20;
+            this.label12.Text = "miliseconds";
+            // 
+            // txtZoomView
+            // 
+            this.txtZoomView.Increment = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.txtZoomView.Location = new System.Drawing.Point(85, 58);
+            this.txtZoomView.Maximum = new decimal(new int[] {
+            60000,
+            0,
+            0,
+            0});
+            this.txtZoomView.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.txtZoomView.Name = "txtZoomView";
+            this.txtZoomView.Size = new System.Drawing.Size(59, 20);
+            this.txtZoomView.TabIndex = 18;
+            this.txtZoomView.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // FrmConfigPLC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(262, 272);
+            this.ClientSize = new System.Drawing.Size(262, 375);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnGuardar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -248,6 +364,10 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtPulseTime)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtFullView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtZoomView)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -270,5 +390,12 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown txtPulseTime;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.NumericUpDown txtZoomView;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.NumericUpDown txtFullView;
     }
 }

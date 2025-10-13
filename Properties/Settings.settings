@@ -44,5 +44,11 @@
     <Setting Name="ChronoTgName" Type="System.String" Scope="User">
       <Value Profile="(Default)">CHRONO</Value>
     </Setting>
+    <Setting Name="FullViewDuration" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">3000</Value>
+    </Setting>
+    <Setting Name="ZoomInDuration" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
