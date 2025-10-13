@@ -15,6 +15,7 @@ namespace XisCoreSensors.PLC
         public event Action<int> SecuenceStepChanged;
         public event Action<bool> BoolMonitoringPausedStateChanged;
         public event Action<string, int> ImageSelectorTagChanged;
+        public event Action<int> AlarmNumberChanged;
         public event Action<StopWatchCommand> StopwatchCommandReceived;
 
         public enum StopWatchCommand
@@ -40,6 +41,7 @@ namespace XisCoreSensors.PLC
             var secuenceTagName = Properties.Settings.Default.SequenceTagName;
             var secuenciaImagen = Properties.Settings.Default.ImageTagName;
             var chronoTagName = Properties.Settings.Default.ChronoTgName;
+            var alarmTagName = Properties.Settings.Default.AlarmTagName;
 
             if (tagName.Equals(secuenceTagName, StringComparison.OrdinalIgnoreCase))
             {
@@ -51,6 +53,11 @@ namespace XisCoreSensors.PLC
                 // 2. Notifica a la UI sobre el nuevo paso de la secuencia.
                 //    El FrmMainMDI se encargará de la lógica visual.
                 SecuenceStepChanged?.Invoke(newValue);
+            }
+            else if (tagName.Equals(alarmTagName, StringComparison.OrdinalIgnoreCase))
+            {
+                // Simplemente notifica a la UI que el número de alarma ha cambiado.
+                AlarmNumberChanged?.Invoke(newValue);
             }
             else if(tagName.Equals(secuenciaImagen, StringComparison.OrdinalIgnoreCase))
             {

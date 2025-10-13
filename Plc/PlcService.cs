@@ -580,5 +580,15 @@ namespace XisCoreSensors.Plc
             _healthCheckTimer?.Dispose();
             ClearTags();
         }
+
+        public async Task WriteDintTagAsync(string tagName, int value)
+        {
+            if (!_tagsDint.TryGetValue(tagName, out var tagToWrite))
+            {
+                throw new ArgumentException($"El tag DINT '{tagName}' no ha sido inicializado.");
+            }
+            tagToWrite.Value = value;
+            await tagToWrite.WriteAsync();
+        }
     }
 }

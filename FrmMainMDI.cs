@@ -624,6 +624,7 @@ namespace XisCoreSensors
             _plcController.SecuenceStepChanged += PlcController_SequenceStepChanged;
             _plcController.ImageSelectorTagChanged += PlcController_ImageSelectorTagChanged;
             _plcController.StopwatchCommandReceived += PlcController_StopwatchCommandReceived;
+            _plcController.AlarmNumberChanged += PlcController_AlarmNumberChanged;
 
             // 3. Carga los tags del catálogo
             var catalogManager = new TagCatalogManager();
@@ -671,6 +672,12 @@ namespace XisCoreSensors
             {
                 _plcService.InitializeDintTags(new[] { crhonoTag });
             }
+
+            var alarmTag = Settings.Default.AlarmTagName;
+            if (!string.IsNullOrEmpty(alarmTag))
+            {
+                _plcService.InitializeDintTags(new[] { alarmTag });
+            }
         }
 
         private void PlcController_StopwatchCommandReceived(StopWatchCommand command)
@@ -679,6 +686,20 @@ namespace XisCoreSensors
             {
                 Invoke(new Action(() => PlcController_StopwatchCommandReceived(command)));
                 return;
+            }
+
+            // ***** AÑADIR ESTA LÓGICA *****
+            switch (command)
+            {
+                case StopWatchCommand.Start:
+                    lblChronoStatus.Text = "CHRONO: RUN";
+                    break;
+                case StopWatchCommand.Pause:
+                    lblChronoStatus.Text = "CHRONO: PAUSE";
+                    break;
+                case StopWatchCommand.Reset:
+                    lblChronoStatus.Text = "CHRONO: RESET";
+                    break;
             }
 
             // Busca el visor activo y le envía el comando.
@@ -703,60 +724,52 @@ namespace XisCoreSensors
             }
         }
 
-        private void PlcController_SequenceStepChanged(int newStep)
+        private async void PlcController_SequenceStepChanged(int newStep)
         {
-            if(InvokeRequired)
+            if (InvokeRequired)
             {
                 Invoke(new Action(() => PlcController_SequenceStepChanged(newStep)));
                 return;
-            }        
-            
-            lblSequenceStatus.Text = $"SEQ: {newStep}"; 
-
-            string alertMessage = _alertManager.GetMessageForSequence(newStep);
-
-            if (!string.IsNullOrEmpty(alertMessage))
-            {
-                // Pausa el monitoreo de booleanos si es SEQ=0 (lógica que ya tenías)
-                if (newStep == 0)
-                {
-                    PausePlcMonitoring();
-                    UpdatePlcStatus(PlcUiState.SequencePaused);
-                    
-                }
-                else
-                {
-                    ResumePlcMonitoring();
-                }
-                if (ActiveMdiChild is FrmPartViewer activeViewer)
-                {
-                    activeViewer.ShowAlertMessage(alertMessage?.ToUpper());
-                }
-                
-            }
-            else
-            {
-                // Si no hay un mensaje configurado para el número, reanuda el monitoreo y oculta la barra.
-                ResumePlcMonitoring();
-                
             }
 
-            foreach (var viewer in this.MdiChildren.OfType<FrmPartViewer>())
-            {
-                viewer.UpdateSequenceStep(newStep);
-            }
+            lblSequenceStatus.Text = $"SEQ: {newStep}";
 
+            // La lógica del mensaje se ha movido. Aquí solo actualizamos el estado de pausa.
             if (newStep == 0)
             {
+                await _plcService.WriteDintTagAsync(Settings.Default.AlarmTagName, 0);
                 PausePlcMonitoring();
                 UpdatePlcStatus(PlcUiState.SequencePaused);
-                //sequenceNotificationBar.ShowMessage("WAITING FOR OPERATOR TO LOAD PART");
+            }
+            else if (newStep == 1 )
+            {
+                await _plcService.WriteDintTagAsync(Settings.Default.AlarmTagName, 1);
+                ResumePlcMonitoring();
             }
             else
             {
                 ResumePlcMonitoring();
-                //sequenceNotificationBar.HideMessage();
-            }                     
+            }               
+        }
+
+        private void PlcController_AlarmNumberChanged(int alarmNumber)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => PlcController_AlarmNumberChanged(alarmNumber)));
+                return;
+            }
+
+            lblAlarmStatus.Text = $"ALARM: {alarmNumber}";
+
+            // Busca el mensaje correspondiente al número de alarma.
+            var alertMessage = _alertManager.GetMessageForSequence(alarmNumber);
+
+            // Envía el mensaje al visor activo para que lo muestre.
+            if (ActiveMdiChild is FrmPartViewer activeViewer)
+            {
+                activeViewer.ShowAlertMessage(alertMessage?.ToUpper());
+            }
         }
 
         private void PlcController_ImageSelectorTagChanged(string tagName, int newValue)

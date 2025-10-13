@@ -1056,7 +1056,7 @@ namespace XisCoreSensors
                     _stopwatch.Reset();
                     stopwatchTimer.Stop();
                     // Actualiza la UI inmediatamente al resetear.
-                    lblStopWatch.Text = "00:00.00";
+                    lblStopWatch.Text = "00:00";
                     break;
             }
         }

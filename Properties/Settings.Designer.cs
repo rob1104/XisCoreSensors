@@ -214,5 +214,17 @@ namespace XisCoreSensors.Properties {
                 this["ZoomInDuration"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("ALARM")]
+        public string AlarmTagName {
+            get {
+                return ((string)(this["AlarmTagName"]));
+            }
+            set {
+                this["AlarmTagName"] = value;
+            }
+        }
     }
 }

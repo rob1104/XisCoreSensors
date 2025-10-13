@@ -55,6 +55,8 @@
             this.lblConnectionHealth = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblImGStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblSequenceStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblAlarmStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblChronoStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.sequenceNotificationBar = new XisCoreSensors.Controls.NotificationBar();
             this.notificationBar1 = new XisCoreSensors.Controls.NotificationBar();
             this.menuStrip1.SuspendLayout();
@@ -240,7 +242,9 @@
             this.toolStripStatusSpacer,
             this.lblConnectionHealth,
             this.lblImGStatus,
-            this.lblSequenceStatus});
+            this.lblSequenceStatus,
+            this.lblAlarmStatus,
+            this.lblChronoStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 581);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(991, 24);
@@ -271,7 +275,7 @@
             // toolStripStatusSpacer
             // 
             this.toolStripStatusSpacer.Name = "toolStripStatusSpacer";
-            this.toolStripStatusSpacer.Size = new System.Drawing.Size(549, 19);
+            this.toolStripStatusSpacer.Size = new System.Drawing.Size(402, 19);
             this.toolStripStatusSpacer.Spring = true;
             // 
             // lblConnectionHealth
@@ -310,6 +314,20 @@
             this.lblSequenceStatus.Size = new System.Drawing.Size(53, 19);
             this.lblSequenceStatus.Text = "SEQ: ---";
             // 
+            // lblAlarmStatus
+            // 
+            this.lblAlarmStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.lblAlarmStatus.Name = "lblAlarmStatus";
+            this.lblAlarmStatus.Size = new System.Drawing.Size(68, 19);
+            this.lblAlarmStatus.Text = "ALARM: ---";
+            // 
+            // lblChronoStatus
+            // 
+            this.lblChronoStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.lblChronoStatus.Name = "lblChronoStatus";
+            this.lblChronoStatus.Size = new System.Drawing.Size(79, 19);
+            this.lblChronoStatus.Text = "CHRONO: ---";
+            // 
             // sequenceNotificationBar
             // 
             this.sequenceNotificationBar.BackColor = System.Drawing.Color.DodgerBlue;
@@ -347,7 +365,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "XisSensors 1.1.0.6";
+            this.Text = "XisSensors 1.1.0.8";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);
@@ -390,6 +408,8 @@
         private System.Windows.Forms.ToolStripStatusLabel lblSequenceStatus;
         private System.Windows.Forms.ToolStripStatusLabel lblImGStatus;
         private System.Windows.Forms.ToolStripMenuItem editAlertMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel lblAlarmStatus;
+        private System.Windows.Forms.ToolStripStatusLabel lblChronoStatus;
     }
 }
 
