@@ -80,10 +80,10 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.model1ToolStripMenuItem,
-            this.loadImageToolStripMenuItem,
             this.saveLayoutToolStripMenuItem,
             this.saveLayoutToolStripMenuItem1,
-            this.loadLayoutToolStripMenuItem});
+            this.loadLayoutToolStripMenuItem,
+            this.loadImageToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -92,7 +92,7 @@
             // 
             this.model1ToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.play_icon;
             this.model1ToolStripMenuItem.Name = "model1ToolStripMenuItem";
-            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.model1ToolStripMenuItem.Text = "View";
             this.model1ToolStripMenuItem.Click += new System.EventHandler(this.model1ToolStripMenuItem_Click);
             // 
@@ -101,7 +101,7 @@
             this.loadImageToolStripMenuItem.Enabled = false;
             this.loadImageToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Images_icon;
             this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadImageToolStripMenuItem.Text = "Images...";
             this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
             // 
@@ -110,7 +110,7 @@
             this.saveLayoutToolStripMenuItem.Enabled = false;
             this.saveLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.saves;
             this.saveLayoutToolStripMenuItem.Name = "saveLayoutToolStripMenuItem";
-            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveLayoutToolStripMenuItem.Text = "Save Layout As...";
             this.saveLayoutToolStripMenuItem.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem_Click);
             // 
@@ -119,7 +119,7 @@
             this.saveLayoutToolStripMenuItem1.Enabled = false;
             this.saveLayoutToolStripMenuItem1.Image = global::XisCoreSensors.Properties.Resources.save_icon;
             this.saveLayoutToolStripMenuItem1.Name = "saveLayoutToolStripMenuItem1";
-            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
+            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.saveLayoutToolStripMenuItem1.Text = "Save Layout";
             this.saveLayoutToolStripMenuItem1.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem1_Click);
             // 
@@ -128,7 +128,7 @@
             this.loadLayoutToolStripMenuItem.Enabled = false;
             this.loadLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Folder_Open_icon;
             this.loadLayoutToolStripMenuItem.Name = "loadLayoutToolStripMenuItem";
-            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadLayoutToolStripMenuItem.Text = "Load Layout...";
             this.loadLayoutToolStripMenuItem.Click += new System.EventHandler(this.loadLayoutToolStripMenuItem_Click);
             // 
@@ -176,7 +176,7 @@
             this.pLCToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.plc;
             this.pLCToolStripMenuItem.Name = "pLCToolStripMenuItem";
             this.pLCToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
-            this.pLCToolStripMenuItem.Text = "PLC...";
+            this.pLCToolStripMenuItem.Text = "PLC / Monitoring...";
             this.pLCToolStripMenuItem.Click += new System.EventHandler(this.pLCToolStripMenuItem_Click);
             // 
             // tagMapperToolStripMenuItem
@@ -365,7 +365,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "XisSensors 1.1.0.8";
+            this.Text = "XisSensors 1.1.0.9";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);

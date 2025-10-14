@@ -79,17 +79,13 @@ namespace XisCoreSensors
             _isEditMode = !_isEditMode;
             picCanvas.Cursor = _isEditMode ? Cursors.Cross : Cursors.Default;
             var message = _isEditMode ? "MODE: EDIT" : "Modo: LOCKED";
+
+
             EditModeChanged?.Invoke(this, new EditModeChangedEventArgs
             {
                 StatusMessage = message,
                 IsInEditMode = _isEditMode
-            });
-
-            if(MdiParent is FrmMainMDI parentForm)
-            {
-                if (_isEditMode) parentForm.PausePlcMonitoring();
-                else parentForm.ResumePlcMonitoring();
-            }
+            });           
 
             return _isEditMode;
         }
@@ -125,7 +121,7 @@ namespace XisCoreSensors
                     _imagePaths = imageManager.ImagePaths;
                     _imageSelectorTag = Properties.Settings.Default.ImageTagName;
                     SaveLayout();
-                    LoadLayout();
+                    LoadLayoutFinal(Properties.Settings.Default.LastLayoutPath);
                     
                     //_sensors.Clear(); // Limpia la lista de sensores
                     //_relativeSensorLocations.Clear(); // Limpia el diccionario de posiciones
@@ -774,7 +770,7 @@ namespace XisCoreSensors
         {
             _sequenceTimer.Stop();
 
-            if(CurrentSequenceStep == 0 || _isEditMode) 
+            if (CurrentSequenceStep == 0 || _isEditMode)
             {
                 StopSequence();
                 return;
@@ -943,6 +939,13 @@ namespace XisCoreSensors
                     }
                 }
             }
+
+            if(isPaused)
+            {
+                StopSequence();
+            }
+
+
         }
 
         public void SwitchBackgroundImage(int index)

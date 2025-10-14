@@ -26,7 +26,7 @@ namespace XisCoreSensors
         {
             try
             {
-                AutoUpdater.InstalledVersion = new Version("1.1.0.8");
+                AutoUpdater.InstalledVersion = new Version("1.1.0.9");
                 AutoUpdater.ShowSkipButton = false;
                 AutoUpdater.LetUserSelectRemindLater = false;
                 AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;

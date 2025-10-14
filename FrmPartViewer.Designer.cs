@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.pnlViewport = new System.Windows.Forms.Panel();
+            this.lblClock = new XisCoreSensors.Controls.VerticalLabel();
             this.picCanvas = new System.Windows.Forms.PictureBox();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.agregarSensorToolTipMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,7 +49,6 @@
             this.stopwatchTimer = new System.Windows.Forms.Timer(this.components);
             this.lblMessage = new XisCoreSensors.Controls.VerticalLabel();
             this.lblStopWatch = new XisCoreSensors.Controls.VerticalLabel();
-            this.lblClock = new XisCoreSensors.Controls.VerticalLabel();
             this.pnlViewport.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.contextMenu.SuspendLayout();
@@ -67,6 +67,18 @@
             this.pnlViewport.Size = new System.Drawing.Size(1824, 1002);
             this.pnlViewport.TabIndex = 0;
             this.pnlViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlViewport_Paint);
+            // 
+            // lblClock
+            // 
+            this.lblClock.BackColor = System.Drawing.Color.DarkMagenta;
+            this.lblClock.Font = new System.Drawing.Font("Verdana", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblClock.ForeColor = System.Drawing.Color.GhostWhite;
+            this.lblClock.Location = new System.Drawing.Point(304, 8);
+            this.lblClock.Name = "lblClock";
+            this.lblClock.Size = new System.Drawing.Size(62, 448);
+            this.lblClock.TabIndex = 1;
+            this.lblClock.Text = "00:00:00";
+            this.lblClock.Paint += new System.Windows.Forms.PaintEventHandler(this.lblClock_Paint);
             // 
             // picCanvas
             // 
@@ -188,27 +200,15 @@
             // 
             // lblStopWatch
             // 
-            this.lblStopWatch.BackColor = System.Drawing.Color.White;
+            this.lblStopWatch.BackColor = System.Drawing.Color.Black;
             this.lblStopWatch.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblStopWatch.Font = new System.Drawing.Font("Tahoma", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStopWatch.ForeColor = System.Drawing.Color.Blue;
+            this.lblStopWatch.Font = new System.Drawing.Font("Verdana", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStopWatch.ForeColor = System.Drawing.Color.Yellow;
             this.lblStopWatch.Location = new System.Drawing.Point(0, 0);
             this.lblStopWatch.Name = "lblStopWatch";
             this.lblStopWatch.Size = new System.Drawing.Size(106, 1002);
             this.lblStopWatch.TabIndex = 2;
             this.lblStopWatch.Text = "00:00";
-            // 
-            // lblClock
-            // 
-            this.lblClock.BackColor = System.Drawing.Color.DarkMagenta;
-            this.lblClock.Font = new System.Drawing.Font("Tahoma", 39.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblClock.ForeColor = System.Drawing.Color.GhostWhite;
-            this.lblClock.Location = new System.Drawing.Point(283, 8);
-            this.lblClock.Name = "lblClock";
-            this.lblClock.Size = new System.Drawing.Size(83, 470);
-            this.lblClock.TabIndex = 1;
-            this.lblClock.Text = "00:00:00";
-            this.lblClock.Paint += new System.Windows.Forms.PaintEventHandler(this.lblClock_Paint);
             // 
             // FrmPartViewer
             // 

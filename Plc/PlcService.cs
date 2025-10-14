@@ -590,5 +590,34 @@ namespace XisCoreSensors.Plc
             tagToWrite.Value = value;
             await tagToWrite.WriteAsync();
         }
+
+        public async Task<(bool success, int value)> ReadDintTagAsync(string tagName)
+        {
+            if (string.IsNullOrEmpty(tagName) || _isDisposed)
+            {
+                return (false, 0);
+            }
+
+            try
+            {
+                using (var tag = new Tag<DintPlcMapper, int>
+                       {
+                           Name = tagName,
+                           Gateway = Settings.Default.PLC_IP,
+                           Path = Settings.Default.PLC_Path,
+                           PlcType = (PlcType)Settings.Default.PLC_Type,
+                           Protocol = (Protocol)Settings.Default.PLC_Protocol,
+                           Timeout = TimeSpan.FromSeconds(2)
+                       })
+                {
+                    await tag.ReadAsync();                   
+                    return (true, tag.Value);                   
+                }
+            }
+            catch
+            {
+                return (false, 0);
+            }
+        }
     }
 }

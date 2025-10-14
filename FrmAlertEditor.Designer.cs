@@ -95,7 +95,7 @@
             this.txtMessage.Font = new System.Drawing.Font("Tahoma", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMessage.ForeColor = System.Drawing.Color.Blue;
             this.txtMessage.Location = new System.Drawing.Point(278, 91);
-            this.txtMessage.MaxLength = 48;
+            this.txtMessage.MaxLength = 64;
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.Size = new System.Drawing.Size(629, 92);

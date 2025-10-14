@@ -459,6 +459,15 @@ namespace XisCoreSensors
             saveLayoutToolStripMenuItem1.Enabled = e.IsInEditMode;
             loadImageToolStripMenuItem.Enabled = e.IsInEditMode;
             editAlertMessagesToolStripMenuItem.Enabled = e.IsInEditMode;
+
+            if(e.IsInEditMode)
+            {
+                PausePlcMonitoring();
+            }
+            else
+            {
+                ResumePlcMonitoring();
+            }
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -724,7 +733,7 @@ namespace XisCoreSensors
             }
         }
 
-        private async void PlcController_SequenceStepChanged(int newStep)
+        private void PlcController_SequenceStepChanged(int newStep)
         {
             if (InvokeRequired)
             {
@@ -736,16 +745,10 @@ namespace XisCoreSensors
 
             // La lógica del mensaje se ha movido. Aquí solo actualizamos el estado de pausa.
             if (newStep == 0)
-            {
-                await _plcService.WriteDintTagAsync(Settings.Default.AlarmTagName, 0);
+            {               
                 PausePlcMonitoring();
                 UpdatePlcStatus(PlcUiState.SequencePaused);
-            }
-            else if (newStep == 1 )
-            {
-                await _plcService.WriteDintTagAsync(Settings.Default.AlarmTagName, 1);
-                ResumePlcMonitoring();
-            }
+            }          
             else
             {
                 ResumePlcMonitoring();
@@ -794,19 +797,34 @@ namespace XisCoreSensors
             UpdatePlcStatus(PlcUiState.Paused);
         }
 
-        public void ResumePlcMonitoring()
+        public async void ResumePlcMonitoring()
         {
             if (_plcService == null) return;
             if (lblPlcStatus.Text.Contains("Idle")) return;
 
-            if (ActiveMdiChild is FrmPartViewer activeViewer)
+
+            var seqTag = Settings.Default.SequenceTagName;
+
+            if(!string.IsNullOrEmpty(seqTag))
             {
-                if(activeViewer.CurrentSequenceStep == 0)
+                var (success, seqValue) = await _plcService.ReadDintTagAsync(seqTag);
+
+                if(success && seqValue == 0)
                 {
                     UpdatePlcStatus(PlcUiState.SequencePaused);
-                    return;
+
+                    if (ActiveMdiChild is FrmPartViewer activeViewer)
+                    {
+                        if(activeViewer.CurrentSequenceStep == 0)
+                        {
+                            activeViewer.UpdateSequenceStep(0);                                  
+                        }
+                        return;
+                    }
                 }
             }
+
+           
 
             // Mostrar estado de transición
             UpdatePlcStatus(PlcUiState.Connected, "Resuming sensor monitoring...");
