@@ -29,6 +29,10 @@ namespace XisCoreSensors
             txtPulseTime.Text = Properties.Settings.Default.Pulse_Time.ToString();
             txtFullView.Value = Properties.Settings.Default.FullViewDuration;
             txtZoomView.Value = Properties.Settings.Default.ZoomInDuration;
+            txtSEQ.Text = Properties.Settings.Default.SequenceTagName;
+            txtIMG.Text = Properties.Settings.Default.ImageTagName;
+            txtCHRONO.Text = Properties.Settings.Default.ChronoTgName;
+            txtALARM.Text = Properties.Settings.Default.AlarmTagName;
         }
 
         private void GuardaConfig()
@@ -44,6 +48,10 @@ namespace XisCoreSensors
             Properties.Settings.Default.Pulse_Time = (int)txtPulseTime.Value;
             Properties.Settings.Default.FullViewDuration = (int)txtFullView.Value;
             Properties.Settings.Default.ZoomInDuration = (int)txtZoomView.Value;
+            Properties.Settings.Default.SequenceTagName = txtSEQ.Text;
+            Properties.Settings.Default.ImageTagName = txtIMG.Text;
+            Properties.Settings.Default.ChronoTgName = txtCHRONO.Text;
+            Properties.Settings.Default.AlarmTagName = txtALARM.Text;
             Properties.Settings.Default.Save();
         }
 

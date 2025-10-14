@@ -1,6 +1,5 @@
 ﻿using AutoUpdaterDotNET;
 using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -26,7 +25,7 @@ namespace XisCoreSensors
         {
             try
             {
-                AutoUpdater.InstalledVersion = new Version("1.1.0.9");
+                AutoUpdater.InstalledVersion = new Version("1.1.0.10");
                 AutoUpdater.ShowSkipButton = false;
                 AutoUpdater.LetUserSelectRemindLater = false;
                 AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;

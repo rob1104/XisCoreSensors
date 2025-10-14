@@ -45,18 +45,28 @@
             this.label8 = new System.Windows.Forms.Label();
             this.txtPulseTime = new System.Windows.Forms.NumericUpDown();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtFullView = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.txtZoomView = new System.Windows.Forms.NumericUpDown();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtFullView = new System.Windows.Forms.NumericUpDown();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.txtSEQ = new System.Windows.Forms.TextBox();
+            this.txtIMG = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.txtALARM = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.txtCHRONO = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.txtTimeout)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtPulseTime)).BeginInit();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtFullView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtZoomView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtFullView)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -77,7 +87,7 @@
             // 
             // btnGuardar
             // 
-            this.btnGuardar.Location = new System.Drawing.Point(171, 324);
+            this.btnGuardar.Location = new System.Drawing.Point(421, 344);
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new System.Drawing.Size(75, 39);
             this.btnGuardar.TabIndex = 1;
@@ -248,57 +258,12 @@
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.txtFullView);
-            this.groupBox2.Location = new System.Drawing.Point(12, 218);
+            this.groupBox2.Location = new System.Drawing.Point(260, 15);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(234, 100);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Zoom Config";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(28, 34);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(51, 13);
-            this.label9.TabIndex = 16;
-            this.label9.Text = "Full view:";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(156, 34);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(61, 13);
-            this.label10.TabIndex = 17;
-            this.label10.Text = "miliseconds";
-            // 
-            // txtFullView
-            // 
-            this.txtFullView.Increment = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.txtFullView.Location = new System.Drawing.Point(86, 32);
-            this.txtFullView.Maximum = new decimal(new int[] {
-            60000,
-            0,
-            0,
-            0});
-            this.txtFullView.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.txtFullView.Name = "txtFullView";
-            this.txtFullView.Size = new System.Drawing.Size(59, 20);
-            this.txtFullView.TabIndex = 15;
-            this.txtFullView.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             // 
             // label11
             // 
@@ -345,11 +310,138 @@
             0,
             0});
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(28, 34);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(51, 13);
+            this.label9.TabIndex = 16;
+            this.label9.Text = "Full view:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(156, 34);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(61, 13);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "miliseconds";
+            // 
+            // txtFullView
+            // 
+            this.txtFullView.Increment = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.txtFullView.Location = new System.Drawing.Point(86, 32);
+            this.txtFullView.Maximum = new decimal(new int[] {
+            60000,
+            0,
+            0,
+            0});
+            this.txtFullView.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.txtFullView.Name = "txtFullView";
+            this.txtFullView.Size = new System.Drawing.Size(59, 20);
+            this.txtFullView.TabIndex = 15;
+            this.txtFullView.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.txtALARM);
+            this.groupBox3.Controls.Add(this.label15);
+            this.groupBox3.Controls.Add(this.txtCHRONO);
+            this.groupBox3.Controls.Add(this.label16);
+            this.groupBox3.Controls.Add(this.txtIMG);
+            this.groupBox3.Controls.Add(this.label14);
+            this.groupBox3.Controls.Add(this.txtSEQ);
+            this.groupBox3.Controls.Add(this.label13);
+            this.groupBox3.Location = new System.Drawing.Point(18, 227);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(476, 97);
+            this.groupBox3.TabIndex = 4;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "DINT Tags";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(42, 32);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(32, 13);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "SEQ:";
+            // 
+            // txtSEQ
+            // 
+            this.txtSEQ.Location = new System.Drawing.Point(80, 29);
+            this.txtSEQ.Name = "txtSEQ";
+            this.txtSEQ.Size = new System.Drawing.Size(148, 20);
+            this.txtSEQ.TabIndex = 1;
+            // 
+            // txtIMG
+            // 
+            this.txtIMG.Location = new System.Drawing.Point(305, 29);
+            this.txtIMG.Name = "txtIMG";
+            this.txtIMG.Size = new System.Drawing.Size(156, 20);
+            this.txtIMG.TabIndex = 3;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(270, 32);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(30, 13);
+            this.label14.TabIndex = 2;
+            this.label14.Text = "IMG:";
+            // 
+            // txtALARM
+            // 
+            this.txtALARM.Location = new System.Drawing.Point(305, 55);
+            this.txtALARM.Name = "txtALARM";
+            this.txtALARM.Size = new System.Drawing.Size(156, 20);
+            this.txtALARM.TabIndex = 7;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(253, 58);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(47, 13);
+            this.label15.TabIndex = 6;
+            this.label15.Text = "ALARM:";
+            // 
+            // txtCHRONO
+            // 
+            this.txtCHRONO.Location = new System.Drawing.Point(80, 55);
+            this.txtCHRONO.Name = "txtCHRONO";
+            this.txtCHRONO.Size = new System.Drawing.Size(148, 20);
+            this.txtCHRONO.TabIndex = 5;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(17, 58);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(57, 13);
+            this.label16.TabIndex = 4;
+            this.label16.Text = "CHRONO:";
+            // 
             // FrmConfigPLC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(262, 375);
+            this.ClientSize = new System.Drawing.Size(506, 394);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnGuardar);
@@ -366,8 +458,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.txtPulseTime)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtFullView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtZoomView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtFullView)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -397,5 +491,14 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.NumericUpDown txtFullView;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox txtALARM;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox txtCHRONO;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox txtIMG;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox txtSEQ;
+        private System.Windows.Forms.Label label13;
     }
 }

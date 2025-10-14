@@ -32,10 +32,10 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.model1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveLayoutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuChkEditMode = new System.Windows.Forms.ToolStripMenuItem();
             this.fullScreenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,25 +92,16 @@
             // 
             this.model1ToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.play_icon;
             this.model1ToolStripMenuItem.Name = "model1ToolStripMenuItem";
-            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.model1ToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.model1ToolStripMenuItem.Text = "View";
             this.model1ToolStripMenuItem.Click += new System.EventHandler(this.model1ToolStripMenuItem_Click);
-            // 
-            // loadImageToolStripMenuItem
-            // 
-            this.loadImageToolStripMenuItem.Enabled = false;
-            this.loadImageToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Images_icon;
-            this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.loadImageToolStripMenuItem.Text = "Images...";
-            this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
             // 
             // saveLayoutToolStripMenuItem
             // 
             this.saveLayoutToolStripMenuItem.Enabled = false;
             this.saveLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.saves;
             this.saveLayoutToolStripMenuItem.Name = "saveLayoutToolStripMenuItem";
-            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.saveLayoutToolStripMenuItem.Text = "Save Layout As...";
             this.saveLayoutToolStripMenuItem.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem_Click);
             // 
@@ -119,7 +110,7 @@
             this.saveLayoutToolStripMenuItem1.Enabled = false;
             this.saveLayoutToolStripMenuItem1.Image = global::XisCoreSensors.Properties.Resources.save_icon;
             this.saveLayoutToolStripMenuItem1.Name = "saveLayoutToolStripMenuItem1";
-            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.saveLayoutToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
             this.saveLayoutToolStripMenuItem1.Text = "Save Layout";
             this.saveLayoutToolStripMenuItem1.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem1_Click);
             // 
@@ -128,9 +119,18 @@
             this.loadLayoutToolStripMenuItem.Enabled = false;
             this.loadLayoutToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Folder_Open_icon;
             this.loadLayoutToolStripMenuItem.Name = "loadLayoutToolStripMenuItem";
-            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadLayoutToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.loadLayoutToolStripMenuItem.Text = "Load Layout...";
             this.loadLayoutToolStripMenuItem.Click += new System.EventHandler(this.loadLayoutToolStripMenuItem_Click);
+            // 
+            // loadImageToolStripMenuItem
+            // 
+            this.loadImageToolStripMenuItem.Enabled = false;
+            this.loadImageToolStripMenuItem.Image = global::XisCoreSensors.Properties.Resources.Images_icon;
+            this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.loadImageToolStripMenuItem.Text = "Images...";
+            this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -365,7 +365,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FrmMainMDI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "XisSensors 1.1.0.9";
+            this.Text = "XisSensors 1.1.0.10";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMainMDI_FormClosing);
             this.Load += new System.EventHandler(this.FrmMainMDI_Load);

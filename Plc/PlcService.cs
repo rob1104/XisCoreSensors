@@ -49,6 +49,8 @@ namespace XisCoreSensors.Plc
 
         // Propiedad para exponer el estado de salud de la conexión
         public bool IsConnectionHealthy => _isConnectionHealthy;
+
+
         private bool _isBoolMonitoringPaused = false;
         public bool IsMonitoring
         {
@@ -224,7 +226,6 @@ namespace XisCoreSensors.Plc
             }
         }
 
-
         private async Task ProcessBoolTags()
         {
             var tagsToRemove = new List<string>();
@@ -320,7 +321,7 @@ namespace XisCoreSensors.Plc
                 }
             }
 
-            // Remover tags problemáticos
+            // Remover tags problemáticos...
             foreach (var tagName in tagsToRemove)
             {
                 RemoveDintTag(tagName);
@@ -516,18 +517,6 @@ namespace XisCoreSensors.Plc
                 _lastKnownDintStates.Remove(tagName);
                 _consecutiveErrors.Remove(tagName);
                 _lastSuccessfulRead.Remove(tagName);
-            }
-        }
-       
-        public void RetryFailedTag(string tagName, bool isBoolTag = true)
-        {
-            if (isBoolTag)
-            {
-                InitializeBoolTags(new[] { tagName });
-            }
-            else
-            {
-                InitializeDintTags(new[] { tagName });
             }
         }
        

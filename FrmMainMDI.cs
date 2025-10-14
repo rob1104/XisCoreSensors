@@ -24,19 +24,20 @@ namespace XisCoreSensors
 
         private PlcService _plcService;
         private PlcController _plcController;
-        private System.Windows.Forms.Timer _monitoringIndicatorTimer;
+        private readonly AlertManager _alertManager;
+        
         private bool _indicatorVisible = false;
-        private AlertManager _alertManager;
+        private bool _isInRecoveryMode = false;        
 
-        private System.Windows.Forms.Timer _reconnectTimer;
+        private Timer _monitoringIndicatorTimer;
+        private Timer _reconnectTimer;
+        private Timer _recoveryAttemptTimer;
+        private Timer _healthDisplayTimer;      
+
+        private enum PlcUiState { Disconnected, Connected, Monitoring, 
+            Paused, Error, Idle, Reconnecting, SequencePaused }             
 
         public TagMapper TagMapper { get; } = new TagMapper();
-
-        private enum PlcUiState { Disconnected, Connected, Monitoring, Paused, Error, Idle, Reconnecting, SequencePaused }
-
-        private bool _isInRecoveryMode = false;
-        private System.Windows.Forms.Timer _recoveryAttemptTimer;
-        private System.Windows.Forms.Timer _healthDisplayTimer;
 
         public FrmMainMDI()
         {
@@ -74,20 +75,20 @@ namespace XisCoreSensors
 
         private void ConfigureMonitoringTimer()
         {
-            _monitoringIndicatorTimer = new System.Windows.Forms.Timer();
+            _monitoringIndicatorTimer = new Timer();
             _monitoringIndicatorTimer.Interval = 750;
             _monitoringIndicatorTimer.Tick += MonitoringIndicatorTimer_Tick;
 
-            _reconnectTimer = new System.Windows.Forms.Timer();
+            _reconnectTimer = new Timer();
             _reconnectTimer.Interval = 5000;
             _reconnectTimer.Tick += ReconnectTimer_Tick;
 
-            _recoveryAttemptTimer = new System.Windows.Forms.Timer();
+            _recoveryAttemptTimer = new Timer();
             _recoveryAttemptTimer.Interval = 15000;
             _recoveryAttemptTimer.Tick += RecoveryAttemptTimer_Tick;
 
-            _healthDisplayTimer = new System.Windows.Forms.Timer();
-            _healthDisplayTimer.Interval = 5000; // Actualizar cada 5 segundos
+            _healthDisplayTimer = new Timer();
+            _healthDisplayTimer.Interval = 5000;
             _healthDisplayTimer.Tick += (s, e) => UpdateConnectionHealthDisplay();
             _healthDisplayTimer.Start();
         }
@@ -152,16 +153,15 @@ namespace XisCoreSensors
 
         private async void RecoveryAttemptTimer_Tick(object sender, EventArgs e)
         {
-            if (!_isInRecoveryMode)
-            {
-                _recoveryAttemptTimer.Stop();
-                return;
-            }
-
-            UpdatePlcStatus(PlcUiState.Reconnecting, "Attempting automatic recovery...");
-
             try
             {
+                if (!_isInRecoveryMode)
+                {
+                    _recoveryAttemptTimer.Stop();
+                    return;
+                }
+
+                UpdatePlcStatus(PlcUiState.Reconnecting, "Attempting automatic recovery...");
                
                 var testTag = "SEQ";
 
@@ -424,9 +424,7 @@ namespace XisCoreSensors
             {
                 lblPlcStatus.Text = $"PLC:Config ERROR. {exception}";
             }            
-        }
-
-      
+        }      
 
         private void LoadModel()
         {
@@ -558,28 +556,36 @@ namespace XisCoreSensors
 
         private async void tagMapperToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(!(ActiveMdiChild is FrmPartViewer activeViewer))
+            try
             {
-                MessageBox.Show("Please open a model before open Tag Mapper.", "No active model viewer", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
+                if(!(ActiveMdiChild is FrmPartViewer activeViewer))
+                {
+                    MessageBox.Show("Please open a model before open Tag Mapper.", "No active model viewer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
 
-            var sensors = activeViewer.GetSensors();
+                var sensors = activeViewer.GetSensors();
 
-            if(sensors == null || !sensors.Any())
-            {
-                MessageBox.Show("No sensors found in the current model. Please add sensors before opening Tag Mapper.", "No sensors", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
+                if(sensors == null || !sensors.Any())
+                {
+                    MessageBox.Show("No sensors found in the current model. Please add sensors before opening Tag Mapper.", "No sensors", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
             
-            using (var tagMapperForm = new FrmTagMapper(activeViewer, sensors, TagMapper))
-            {
-                var result = tagMapperForm.ShowDialog();
+                using (var tagMapperForm = new FrmTagMapper(activeViewer, sensors, TagMapper))
+                {
+                    var result = tagMapperForm.ShowDialog();
 
-                if (result != DialogResult.OK) return;
-                ApplyMappingsToSensors(sensors);                   
-                await ReinitializePlcAsync();
-                MessageBox.Show("Tag mappings and layout have been updated and the PLC connection has been refreshed.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (result != DialogResult.OK) return;
+                    ApplyMappingsToSensors(sensors);                   
+                    await ReinitializePlcAsync();
+                    MessageBox.Show("Tag mappings and layout have been updated and the PLC connection has been refreshed.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error opening Tag Mapper: " + 
+                    ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
         
@@ -986,13 +992,12 @@ namespace XisCoreSensors
         }
 
         public async void ForceConnectionRecovery()
-        {
-            if (_plcService == null) return;
-
-            UpdatePlcStatus(PlcUiState.Reconnecting, "Manual recovery attempt...");
-
+        {         
             try
             {
+                if (_plcService == null) return;
+
+                UpdatePlcStatus(PlcUiState.Reconnecting, "Manual recovery attempt...");
                 await ReinitializePlcAsync();
             }
             catch (Exception ex)
