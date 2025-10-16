@@ -42,6 +42,7 @@ namespace XisCoreSensors
         public FrmMainMDI()
         {
             InitializeComponent();
+            ApplyStartupMonitor();
             _alertManager = new AlertManager("alerts.json");
             ConfigureStatusStrip();
             ConfigureNotificationBar();
@@ -1126,6 +1127,29 @@ namespace XisCoreSensors
             using (var editorForm = new FrmAlertEditor(_alertManager))
             {
                 editorForm.ShowDialog(this);
+            }
+        }
+
+        private void ApplyStartupMonitor()
+        {
+            try
+            {
+                var monitorIndex = Settings.Default.StartupMonitor;
+                var screens = Screen.AllScreens;
+
+                if (monitorIndex < 0 || monitorIndex >= screens.Length) return;
+
+                var tarhetScreen = screens[monitorIndex];
+                StartPosition = FormStartPosition.Manual;
+                Location = tarhetScreen.Bounds.Location;
+                WindowState = FormWindowState.Maximized;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Monitor settings could not be applied: {e.Message}", 
+                    "Screen Error", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Warning);
             }
         }
     }

@@ -17,6 +17,7 @@ namespace XisCoreSensors
             cmbProtocol.DataSource = Enum.GetValues(typeof(Protocol));
 
             CargaConfig();
+            LoadMonitors();
         }
 
         private void CargaConfig()
@@ -52,6 +53,7 @@ namespace XisCoreSensors
             Properties.Settings.Default.ImageTagName = txtIMG.Text;
             Properties.Settings.Default.ChronoTgName = txtCHRONO.Text;
             Properties.Settings.Default.AlarmTagName = txtALARM.Text;
+            Properties.Settings.Default.StartupMonitor = cmbMonitors.SelectedIndex;
             Properties.Settings.Default.Save();
         }
 
@@ -60,6 +62,34 @@ namespace XisCoreSensors
             GuardaConfig(); 
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private void LoadMonitors()
+        {
+            var screens = Screen.AllScreens;
+
+            cmbMonitors.Items.Clear();
+
+            for(var i = 0; i < screens.Length; i++)
+            {
+                var screen = screens[i];
+                var screenName = $"Monitor {i + 1} - {screen.Bounds.Width}x{screen.Bounds.Height}";
+                if(screen.Primary)
+                {
+                    screenName += " (Principal)";
+                }
+                cmbMonitors.Items.Add(screenName);
+            }
+
+            var savedIndex = Properties.Settings.Default.StartupMonitor;
+            if(savedIndex >= 0 && savedIndex < cmbMonitors.Items.Count)
+            {
+                cmbMonitors.SelectedIndex = savedIndex;
+            }
+            else if(cmbMonitors.Items.Count > 0)
+            {
+                cmbMonitors.SelectedIndex = 0;
+            }
         }
     }
 }

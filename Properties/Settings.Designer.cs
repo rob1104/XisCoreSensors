@@ -226,5 +226,17 @@ namespace XisCoreSensors.Properties {
                 this["AlarmTagName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int StartupMonitor {
+            get {
+                return ((int)(this["StartupMonitor"]));
+            }
+            set {
+                this["StartupMonitor"] = value;
+            }
+        }
     }
 }

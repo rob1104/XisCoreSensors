@@ -52,14 +52,17 @@
             this.label10 = new System.Windows.Forms.Label();
             this.txtFullView = new System.Windows.Forms.NumericUpDown();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.txtSEQ = new System.Windows.Forms.TextBox();
-            this.txtIMG = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
             this.txtALARM = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.txtCHRONO = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
+            this.txtIMG = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.txtSEQ = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.cmbMonitors = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.txtTimeout)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtPulseTime)).BeginInit();
@@ -67,6 +70,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.txtZoomView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtFullView)).BeginInit();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -372,38 +376,6 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "DINT Tags";
             // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(42, 32);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(32, 13);
-            this.label13.TabIndex = 0;
-            this.label13.Text = "SEQ:";
-            // 
-            // txtSEQ
-            // 
-            this.txtSEQ.Location = new System.Drawing.Point(80, 29);
-            this.txtSEQ.Name = "txtSEQ";
-            this.txtSEQ.Size = new System.Drawing.Size(148, 20);
-            this.txtSEQ.TabIndex = 1;
-            // 
-            // txtIMG
-            // 
-            this.txtIMG.Location = new System.Drawing.Point(305, 29);
-            this.txtIMG.Name = "txtIMG";
-            this.txtIMG.Size = new System.Drawing.Size(156, 20);
-            this.txtIMG.TabIndex = 3;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(270, 32);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(30, 13);
-            this.label14.TabIndex = 2;
-            this.label14.Text = "IMG:";
-            // 
             // txtALARM
             // 
             this.txtALARM.Location = new System.Drawing.Point(305, 55);
@@ -436,11 +408,73 @@
             this.label16.TabIndex = 4;
             this.label16.Text = "CHRONO:";
             // 
+            // txtIMG
+            // 
+            this.txtIMG.Location = new System.Drawing.Point(305, 29);
+            this.txtIMG.Name = "txtIMG";
+            this.txtIMG.Size = new System.Drawing.Size(156, 20);
+            this.txtIMG.TabIndex = 3;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(270, 32);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(30, 13);
+            this.label14.TabIndex = 2;
+            this.label14.Text = "IMG:";
+            // 
+            // txtSEQ
+            // 
+            this.txtSEQ.Location = new System.Drawing.Point(80, 29);
+            this.txtSEQ.Name = "txtSEQ";
+            this.txtSEQ.Size = new System.Drawing.Size(148, 20);
+            this.txtSEQ.TabIndex = 1;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(42, 32);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(32, 13);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "SEQ:";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.cmbMonitors);
+            this.groupBox4.Controls.Add(this.label17);
+            this.groupBox4.Location = new System.Drawing.Point(252, 121);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(242, 100);
+            this.groupBox4.TabIndex = 5;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Monitor";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(5, 33);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(81, 13);
+            this.label17.TabIndex = 0;
+            this.label17.Text = "Startup monitor:";
+            // 
+            // cmbMonitors
+            // 
+            this.cmbMonitors.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMonitors.FormattingEnabled = true;
+            this.cmbMonitors.Location = new System.Drawing.Point(8, 49);
+            this.cmbMonitors.Name = "cmbMonitors";
+            this.cmbMonitors.Size = new System.Drawing.Size(217, 21);
+            this.cmbMonitors.TabIndex = 1;
+            // 
             // FrmConfigPLC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(506, 394);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -462,6 +496,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.txtFullView)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -500,5 +536,8 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox txtSEQ;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.ComboBox cmbMonitors;
+        private System.Windows.Forms.Label label17;
     }
 }
