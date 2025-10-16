@@ -44,11 +44,10 @@
             this.toLaserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.eliminarSensorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clockTimer = new System.Windows.Forms.Timer(this.components);
             this.stopwatchTimer = new System.Windows.Forms.Timer(this.components);
             this.lblMessage = new XisCoreSensors.Controls.VerticalLabel();
             this.lblStopWatch = new XisCoreSensors.Controls.VerticalLabel();
-            this.lblClock = new XisCoreSensors.Controls.VerticalLabel();
+            this.lblClock = new XisCoreSensors.Controls.StyllizedVerticalClock();
             this.pnlViewport.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.contextMenu.SuspendLayout();
@@ -165,12 +164,6 @@
             this.eliminarSensorToolStripMenuItem.Text = "Delete Sensor";
             this.eliminarSensorToolStripMenuItem.Click += new System.EventHandler(this.eliminarSensorToolStripMenuItem_Click);
             // 
-            // clockTimer
-            // 
-            this.clockTimer.Enabled = true;
-            this.clockTimer.Interval = 1000;
-            this.clockTimer.Tick += new System.EventHandler(this.clockTimer_Tick);
-            // 
             // stopwatchTimer
             // 
             this.stopwatchTimer.Tick += new System.EventHandler(this.stopwatchTimer_Tick);
@@ -201,15 +194,23 @@
             // 
             // lblClock
             // 
-            this.lblClock.BackColor = System.Drawing.Color.DarkMagenta;
-            this.lblClock.Font = new System.Drawing.Font("Verdana", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblClock.ForeColor = System.Drawing.Color.GhostWhite;
-            this.lblClock.Location = new System.Drawing.Point(293, 185);
+            this.lblClock.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.lblClock.CornerRadius = 0;
+            this.lblClock.Font = new System.Drawing.Font("Segoe UI", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblClock.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.lblClock.GlowSize = 8;
+            this.lblClock.Location = new System.Drawing.Point(288, 186);
             this.lblClock.Name = "lblClock";
-            this.lblClock.Size = new System.Drawing.Size(62, 448);
+            this.lblClock.PrimaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.lblClock.SecondaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.lblClock.ShowBackground = true;
+            this.lblClock.ShowBorder = false;
+            this.lblClock.ShowGlow = false;
+            this.lblClock.ShowGradient = false;
+            this.lblClock.Size = new System.Drawing.Size(75, 455);
             this.lblClock.TabIndex = 1;
-            this.lblClock.Text = "00:00:00";
-            this.lblClock.Paint += new System.Windows.Forms.PaintEventHandler(this.lblClock_Paint);
+            this.lblClock.Text = "styllizedVerticalClock1";
+            this.lblClock.TextColor = System.Drawing.Color.White;
             // 
             // FrmPartViewer
             // 
@@ -253,9 +254,8 @@
         private System.Windows.Forms.ToolStripMenuItem toNormalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toLaserToolStripMenuItem;
         private Controls.VerticalLabel lblMessage;
-        private System.Windows.Forms.Timer clockTimer;
         private Controls.VerticalLabel lblStopWatch;
         private System.Windows.Forms.Timer stopwatchTimer;
-        private Controls.VerticalLabel lblClock;
+        private Controls.StyllizedVerticalClock lblClock;
     }
 }

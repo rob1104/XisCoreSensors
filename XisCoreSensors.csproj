@@ -119,6 +119,12 @@
     <Compile Include="Controls\SensorControl.Designer.cs">
       <DependentUpon>SensorControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\StyllizedVerticalClock.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\StyllizedVerticalClock.Designer.cs">
+      <DependentUpon>StyllizedVerticalClock.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\VerticalLabel.cs">
       <SubType>Component</SubType>
     </Compile>

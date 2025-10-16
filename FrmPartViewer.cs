@@ -308,8 +308,7 @@ namespace XisCoreSensors
         }
 
         private void FrmPartViewer_Load(object sender, EventArgs e)
-        {
-            clockTimer_Tick(sender, e);
+        {            
             // Ajustamos el tamaño inicial del lienzo al del viewport
             picCanvas.Size = pnlViewport.ClientSize;
             picCanvas.Resize += picCanvas_Resize;
@@ -320,9 +319,9 @@ namespace XisCoreSensors
                 LoadLayoutFinal(Properties.Settings.Default.LastLayoutPath);
             }
 
-            _isEditMode = false;
-
-            lblClock.Parent = picCanvas;
+            _isEditMode = false;      
+            
+   
 
         }       
 
@@ -1012,11 +1011,7 @@ namespace XisCoreSensors
                 MarkAsModified();
             }
         }
-
-        private void clockTimer_Tick(object sender, EventArgs e)
-        {
-            lblClock.Text = DateTime.Now.ToString("hh:mm:ss tt");
-        }
+   
 
         public void ShowAlertMessage(string message)
         {
@@ -1074,11 +1069,6 @@ namespace XisCoreSensors
         private void pnlViewport_Paint(object sender, PaintEventArgs e)
         {
 
-        }
-
-        private void lblClock_Paint(object sender, PaintEventArgs e)
-        {
-            lblClock.Invalidate();
         }
 
         private void picCanvas_MouseDown(object sender, MouseEventArgs e)
