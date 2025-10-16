@@ -16,21 +16,27 @@ namespace XisCoreSensors
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmMainMDI());
-
-            
+            Application.Run(new FrmMainMDI());            
         } 
         
         public static void CheckForUpdates()
         {
             try
             {
-                AutoUpdater.InstalledVersion = new Version("1.1.0.10");
+                var updateUrl = "";
+
+                #if RELEASE2                                
+                            updateUrl = "http://xis.myftp.biz/desarrollos/XisCoreSensors_Build_2/update.xml";
+                #else                           
+                            updateUrl = "http://xis.myftp.biz/desarrollos/XisCoreSensors/update.xml";
+                #endif
+
+                AutoUpdater.InstalledVersion = new Version("1.1.0.12");
                 AutoUpdater.ShowSkipButton = false;
                 AutoUpdater.LetUserSelectRemindLater = false;
                 AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;
                 AutoUpdater.RemindLaterAt = 15;
-                AutoUpdater.Start("http://xis.myftp.biz/desarrollos/XisCoreSensors/update.xml");
+                AutoUpdater.Start(updateUrl);
             }
             catch (Exception ex)
             {

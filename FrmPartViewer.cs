@@ -51,6 +51,8 @@ namespace XisCoreSensors
 
         public string ImageSelectorTag => _imageSelectorTag;
 
+        private Point _lastClickPosition = Point.Empty;
+
         public FrmPartViewer()
         {
             InitializeComponent();
@@ -964,14 +966,14 @@ namespace XisCoreSensors
 
         private void normalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var _clickPosition = picCanvas.PointToClient(contextMenu.SourceControl.PointToScreen(contextMenu.Bounds.Location));
-            AddSensorAtLocation(_clickPosition, SensorControl.SensorType.Normal);
+           
+            AddSensorAtLocation(_lastClickPosition, SensorControl.SensorType.Normal);
         }
 
         private void laserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var _clickPosition = picCanvas.PointToClient(contextMenu.SourceControl.PointToScreen(contextMenu.Bounds.Location));
-            AddSensorAtLocation(_clickPosition, SensorControl.SensorType.Laser);
+            
+            AddSensorAtLocation(_lastClickPosition, SensorControl.SensorType.Laser);
 
         }
 
@@ -1077,6 +1079,14 @@ namespace XisCoreSensors
         private void lblClock_Paint(object sender, PaintEventArgs e)
         {
             lblClock.Invalidate();
+        }
+
+        private void picCanvas_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                _lastClickPosition = e.Location;
+            }
         }
     }
 
