@@ -319,10 +319,7 @@ namespace XisCoreSensors
                 LoadLayoutFinal(Properties.Settings.Default.LastLayoutPath);
             }
 
-            _isEditMode = false;      
-            
-   
-
+            _isEditMode = false;
         }       
 
         private void picCanvas_Resize(object sender, EventArgs e)
@@ -386,10 +383,7 @@ namespace XisCoreSensors
             Application.DoEvents();
 
             // Luego completamos el movimiento
-            pnlViewport.AutoScrollPosition = new Point(targetScrollX, targetScrollY);
-
-            // Resaltamos visualmente el sensor que tiene la falla
-            //HighlightFailedSensor(sensorToFocus);
+            pnlViewport.AutoScrollPosition = new Point(targetScrollX, targetScrollY);           
         }
 
         private void ResetZoom()
@@ -782,6 +776,26 @@ namespace XisCoreSensors
                 StopSequence();
                 return;
             }
+
+
+            if(_failedSensorsList.Count >= 4)
+            {
+                ResetZoom();
+                _sequenceIndex++;
+                if(_sequenceIndex >= _failedSensorsList.Count)
+                {
+                    _sequenceIndex = 0;
+                }
+
+                var nextSensor = _failedSensorsList[_sequenceIndex];
+                OnSensorFailed?.Invoke($"Multiple failures! Current focus: {nextSensor.SensorId}");
+                _sequenceTimer.Interval = Properties.Settings.Default.FullViewDuration;
+                _sequenceTimer.Start();
+                _currentSequenceState = SequenceState.Idle;
+                return;
+
+            }
+
 
             switch (_currentSequenceState)
             {
