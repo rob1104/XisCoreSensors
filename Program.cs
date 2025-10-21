@@ -31,7 +31,7 @@ namespace XisCoreSensors
                             updateUrl = "http://xis.myftp.biz/desarrollos/XisCoreSensors/update.xml";
                 #endif
 
-                AutoUpdater.InstalledVersion = new Version("1.1.0.15");
+                AutoUpdater.InstalledVersion = new Version("1.1.0.16");
                 AutoUpdater.ShowSkipButton = false;
                 AutoUpdater.LetUserSelectRemindLater = false;
                 AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;
@@ -44,7 +44,6 @@ namespace XisCoreSensors
                     Application.ProductName, 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
     }
 }
